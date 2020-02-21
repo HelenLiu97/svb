@@ -1,0 +1,5 @@
+2020-02-20 16:19:50,679 :: ERROR :: card_detail_api_error:HTTPSConnectionPool(host='api.svb.com', port=443): Read timed out. (read timeout=10)
+2020-02-20 16:20:31,507 :: ERROR :: card_detail_api_error:HTTPSConnectionPool(host='api.svb.com', port=443): Read timed out. (read timeout=10)
+2020-02-20 16:20:47,246 :: ERROR :: card_detail_api_error:HTTPSConnectionPool(host='api.svb.com', port=443): Read timed out. (read timeout=10)
+2020-02-20 16:21:23,097 :: ERROR :: card_detail_api_error:HTTPSConnectionPool(host='api.svb.com', port=443): Read timed out. (read timeout=10)
+2020-02-20 16:53:04,724 :: ERROR :: ¸üÐÂADMIN×Ö¶ÎÊ§°Ü!(1054, "Unknown column 'up_remain_tim' in 'field list'")

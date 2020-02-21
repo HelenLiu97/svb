@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<title>修改密码--layui后台管理模板 2.0</title>
+	<meta name="renderer" content="webkit">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+	<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+	<meta name="apple-mobile-web-app-status-bar-style" content="black">
+	<meta name="apple-mobile-web-app-capable" content="yes">
+	<meta name="format-detection" content="telephone=no">
+	<link rel="stylesheet" href="../../static/layui/css/layui.css" media="all" />
+	<link rel="stylesheet" href="../../static/css/public.css" media="all" />
+</head>
+<body class="childrenBody">
+<form class="layui-form layui-row changePwd">
+	<div class="layui-col-xs12 layui-col-sm6 layui-col-md6">
+		<div class="layui-form-item">
+			<label class="layui-form-label">用户名</label>
+			<div class="layui-input-block">
+				<input type="text" value="{{ admin_name }}" disabled class="layui-input layui-disabled" name="user_name">
+			</div>
+		</div>
+		<div class="layui-form-item">
+			<label class="layui-form-label">旧密码</label>
+			<div class="layui-input-block">
+				<input type="password" value="" name="old_pass" placeholder="请输入旧密码"  class="layui-input pwd">
+			</div>
+		</div>
+		<div class="layui-form-item">
+			<label class="layui-form-label">新密码</label>
+			<div class="layui-input-block">
+				<input type="password" value="" name="new_pass_one" placeholder="长度范围8-16位，必须包含数字,字符,符号任意两种或以上！"  id="oldPwd" class="layui-input pwd">
+			</div>
+		</div>
+		<div class="layui-form-item">
+			<label class="layui-form-label">确认密码</label>
+			<div class="layui-input-block">
+				<input type="password" value="" name="new_pass_two" placeholder="长度范围8-16位，必须包含数字,字符,符号任意两种或以上！"  class="layui-input pwd">
+			</div>
+		</div>
+		<div class="layui-form-item">
+			<div class="layui-input-block">
+				<button class="layui-btn" lay-submit="" lay-filter="changePwd">立即修改</button>
+				<button type="reset" class="layui-btn layui-btn-primary">重置</button>
+			</div>
+		</div>
+	</div>
+</form>
+<script type="text/javascript" src="../../static/layui/layui.js"></script>
+<script>
+    layui.use('form', function(){
+        var form = layui.form;
+      //监听提交
+        form.on('submit(changePwd)', function(data){
+            {#layer.msg(JSON.stringify(data.field));#}
+            var data_info = {data:JSON.stringify(data.field)};
+            var $ = layui.jquery;
+
+            $.ajax({
+				type : 'POST',
+				url : '/admin/change_pass/',
+				data : data_info,
+				dataType : 'json',
+                beforeSend: function(){
+				    layer.load()
+                },
+				success : function(data) {
+					// 成功提示框
+                    if (data.code == 0){
+                        layer.msg('修改密码成功!请重新登录！', {
+						icon : 6,
+                        time:1500,
+					}, function () {
+                            layer.close(layer.index);
+                            window.parent.location.reload();
+                        });
+					parent.layer.closeAll('iframe'); //关闭弹框
+                    }else if(data.code == 502){
+                        parent.layer.msg(data.msg, {
+						icon : 5
+					});
+                    }
+
+				},
+				error : function(data) {
+					// 异常提示
+					parent.layer.msg('出现网络故障', {
+						icon : 5
+					});
+					parent.layer.closeAll('iframe'); //关闭弹框
+				}
+			});
+			return false;
+            });
+    });
+</script>
+</body>
+</html>

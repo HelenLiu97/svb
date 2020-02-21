@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <link rel="stylesheet" href="/static/layui/css/layui.css" media="all">
+    <script src="/static/layui/layui.js"></script>
+</head>
+<body>
+<blockquote class="layui-elem-quote quoteBox">
+<form class="layui-form" onsubmit="return false">
+<div class="layui-inline">
+    <input type="number" class="layui-input" name="card_no" id="card_no" autocomplete="off" placeholder="请输入卡号">
+</div>
+<div class="layui-inline">
+<input type="text" class="layui-input" id="test10" autocomplete="off" placeholder="客户">
+</div>
+<button class="layui-btn" lay-submit="" lay-filter="trans_sear" type="submit">搜索</button>
+<button type="reset" class="layui-btn layui-btn-primary" id="">重置</button>
+    </form>
+</blockquote>
+<table class="layui-hide" id="trans_log" lay-filter=""></table>
+<script>
+    layui.use(['table','laydate','form','jquery'], function () {
+        var table=layui.table,
+            date=layui.laydate,
+            form=layui.form,
+            $=layui.jquery;
+
+
+        //执行一个 table 实例
+        table.render({
+            elem: '#trans_log'
+            , height: 'full-90'
+            , cellMinWidth: '80'
+            , url: '/admin/push_log/' //数据接口
+            , title: '卡交易记录信息'
+            , toolbar: true
+            , skin: 'line'
+            , limit:100
+            , limits:[100,200,300,400,500,600,700,800,900,1000]
+            {#, toolbar: "r" //开启工具栏，此处显示默认图标，可以自定义模板，详见文档#}
+            , totalRow: true //开启合计行
+            , cols: [[ //表头
+                {type:'numbers'}
+                , {field: 'card_number', title: 'card_number',width:'10%', align: 'center'}
+                , {field: 'acquirer_ica', title: 'acquirer_ica', align: 'center'}
+                , {field: 'approval_code', title: 'approval_code', align: 'center',}
+                , {field: 'billing_amount', title: 'billing_amount',align: 'center', style: "color: #CD0000"}
+                , {field: 'billing_currency', title: 'billing_currency', align: 'center',}
+                , {field: 'issuer_response', title: 'issuer_response',width:'14%', align: 'center', style:"color: #8B0A50"}
+                , {field: 'mcc', title: 'mcc',align: 'center'}
+                , {field: 'mcc_description', title: 'mcc_description', width:'10%',align: 'center',}
+                , {field: 'merchant_amount', title: 'merchant_amount', align: 'center',style: "color: #CD0000"}
+                , {field: 'merchant_currency', title: 'merchant_currency',align: 'center',}
+                {#, {field: 'merchant_id', title: 'merchant_id', align: 'center',style:"color: #030303"}#}
+                , {field: 'merchant_name', title: 'merchant_name', align: 'center',width:'13%',style:"color: #030303"}
+                , {field: 'transaction_date_time', title: 'transaction_date_time',width:'12%', align: 'center',style:"color: #030303"}
+                , {field: 'name', title: '客户', align: 'center',style:"color: #030303"}
+                {#, {field: 'vcn_response', title: 'vcn_response', align: 'center',style:"color: #030303"}#}
+            ]]
+            , id: 'push_log'
+            , page: true
+        });
+
+        form.on('submit(trans_sear)', function(data){
+             var card_no = $("#card_no").val(),
+                 time_range = $('#test10').val();
+             table.reload("push_log", {
+                 page: {
+                   curr: 1 //重新从第 1 页开始
+                 },where: {
+                     card_no:card_no,
+                     cus_name:time_range,
+                   }
+               }, '/user/push_log/');
+            return false;
+         });
+
+    })
+</script>
+</body>
+</html>

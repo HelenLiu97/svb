@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <link rel="stylesheet" href="/static/layui/css/layui.css" media="all">
+    <script src="/static/layui/layui.js"></script>
+</head>
+<body>
+<blockquote class="layui-elem-quote quoteBox">
+<form class="layui-form" action="" lay-filter="example" id="example">
+<div class="layui-inline">
+    <input class="layui-input" name="cus_name" id="cus_name" autocomplete="off" placeholder="请输入用户名" >
+</div>
+<div class="layui-inline">
+    <input type="number" class="layui-input" name="trans_card" id="trans_card" autocomplete="off" placeholder="卡号">
+</div>
+<div class="layui-inline">
+    <input type="text" class="layui-input" name="do_type" id="do_type" autocomplete="off" placeholder="操作类型">
+</div>
+<div class="layui-inline">
+<input type="text" class="layui-input" id="test8" autocomplete="off" placeholder="时间范围">
+</div>
+<button class="layui-btn" lay-submit="" lay-filter="cus_trans" type="submit">搜索</button>
+<button type="reset" class="layui-btn layui-btn-primary" id="">重置</button>
+    </form>
+</blockquote>
+<table class="layui-table" id="cus_trans_log" lay-filter="cus_trans_log"></table>
+<script>
+    layui.use(['table','laydate','form','jquery'], function () {
+        var table = layui.table,
+            laydate = layui.laydate,
+            form = layui.form,
+            $ = layui.jquery;
+
+        table.render({
+            elem: '#cus_trans_log'
+            , height: 'full-90'
+            , cellMinWidth: '80'
+            , url: '/admin/account_trans/?trans_type=收入' //数据接口
+            , title: '客户交易记录'
+            , limit:50
+            , limits:[50,100,150,200,250,300,350,400,450,500]
+            , toolbar: "true" //开启工具栏，此处显示默认图标，可以自定义模板，详见文档
+            , totalRow: true //开启合计行
+            , cols: [[ //表头
+                {type:'numbers'}
+                , {field: 'cus_name', title: '客户', align: 'center',  totalRowText: '合计：'}
+                , {field: 'date', title: '操作日期', align: 'center', }
+                , {field: 'trans_type', title: '交易类型', align: 'center',style: "color: green"}
+                , {field: 'do_type', title: '操作类型', align: 'center', }
+                , {field: 'card_no', title: '卡号', align: 'center', }
+                , {field: 'do_money', title: '操作金额', align: 'center', totalRow: true, style: "color: red"}
+                , {field: 'before_balance', title: '之前余额', align: 'center', }
+                , {field: 'balance', title: '之后余额', align: 'center', }
+            ]]
+            , id: 'cus_trans_log'
+            , page: true
+        });
+
+        form.on('submit(cus_trans)', function(data){
+             var cus_name = $("#cus_name").val(),
+                 trans_card = $('#trans_card').val(),
+                 do_type = $('#do_type').val(),
+                 time_range = $('#test8').val();
+             table.reload("cus_trans_log", {
+                 page: {
+                   curr: 1 //重新从第 1 页开始
+                 },where: {
+                     cus_name:cus_name,
+                     trans_card: trans_card,
+                     time_range:time_range,
+                     trans_type:'收入',
+                     do_type:do_type,
+                   }
+               }, '/admin/account_trans/');
+            return false;
+         });
+
+    })
+</script>
+</body>
+</html>

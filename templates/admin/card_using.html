@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <link rel="stylesheet" href="/static/layui/css/layui.css" media="all">
+    <script src="/static/layui/layui.js"></script>
+</head>
+<body>
+<blockquote class="layui-elem-quote quoteBox">
+    <form class="layui-form" onsubmit="return false">
+            <div class="demoTable">
+                 <div class="layui-form-item">
+                     <div class="layui-inline">
+                      <label class="layui-form-label">搜索选择框</label>
+                      <div class="layui-input-inline">
+                        <select name="modules" lay-verify="required" lay-search="" id="field">
+                          <option value="">直接选择或搜索选择</option>
+                          <option value="card_cus">持有人</option>
+                          <option value="card_number">卡号</option>
+                          <option value="label">标签</option>
+                        </select>
+                      </div>
+                     </div>
+                 <div class="layui-inline">
+
+                     <input type="text" id="value" name="value" placeholder="搜索条件对应的值" autocomplete="off"
+                           class="layui-input">
+
+                 </div>
+                 <div class="layui-inline">
+                     <button class="layui-btn" id="sea_card" type="submit">搜索</button>
+                     <button type="reset"  class="layui-btn layui-btn-primary">重置</button>
+                 </div>
+                 </div>
+            </div>
+          </form>
+</blockquote>
+<table class="layui-show" id="card_all" lay-filter="card_all"></table>
+<script>
+    layui.use(['table','laydate','form','jquery'], function () {
+        var table=layui.table,
+            date=layui.laydate,
+            form=layui.form,
+            $=layui.jquery;
+
+        //执行一个 table 实例
+        table.render({
+            elem: '#card_all'
+            , height: 'full-90'
+            , cellMinWidth: '80'
+            , url: '/admin/card_all' //数据接口
+            , title: '卡信息'
+            , toolbar: '#toolbarDemo'
+            , limit:50
+            , limits:[50,100,150,200,250,300,350,400,450,500]
+            {#, toolbar: "r" //开启工具栏，此处显示默认图标，可以自定义模板，详见文档#}
+            , totalRow: true //开启合计行
+            , cols: [[ //表头
+                {type:'numbers'}
+                , {field: 'card_no', title: '卡号', align: 'center', }
+                , {field: 'card_id', title: '卡ID', align: 'center', }
+                , {field: 'label', title: '标签', align: 'center', }
+                , {field: 'expire', title: '有效期', align: 'center',}
+                , {field: 'cvv', title: '安全码', align: 'center', }
+                , {field: 'valid_start_on', title: '激活时间', align: 'center',}
+                , {field: 'valid_end_on', title: '到期时间', align: 'center',}
+                , {field: 'status', title: '状态', align: 'center',}
+                , {field: 'user_name', title: '持有人', align: 'center',}
+            ]]
+            , id: 'card_all'
+            , page: true
+        });
+
+        table.on('rowDouble(card_all)', function(obj){
+        var data = obj.data;
+            layer.open({
+                type: 2
+                ,offset: 'r' //具体配置参考：http://www.layui.com/doc/modules/layer.html#offset
+                ,skin:'layui-layer-demo'
+                ,id: 'layerUser'//防止重复弹出
+                ,title: '卡号为 ' + data.card_no + ' 的详细信息'
+                ,area: ['80%','80%']
+                ,anim: 2
+                ,shadeClose:true
+                ,content: '/user/one_card_detail?card_number=' + data.card_no
+                ,btn: '关闭全部'
+                ,btnAlign: 'c' //按钮居中a
+                ,shade:  [0.8, '#393D49'] //弹框背景选项
+                ,success: function(layero, index) {
+                        var body = layer.getChildFrame('body', index);
+                        body.contents().find("#card_num").html(data.card_no);
+                    }
+              });
+
+            //标注选中样式
+            obj.tr.addClass('layui-table-click').siblings().removeClass('layui-table-click');
+        });
+
+        $('#sea_card').on('click', function(data){
+
+         var $ = layui.jquery;
+         var field = $('#field').val(),
+             value = $('#value').val();
+         table.reload("card_all", {
+             page: {
+               curr: 1 //重新从第 1 页开始
+             },where: {
+                 field: field,
+                 value: value,
+               }
+           }, '/admin/card_all');
+        return false;
+     });
+
+
+    })
+</script>
+</body>
+</html>

@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html class="loginHtml">
+<head>
+	<meta charset="utf-8">
+	<title>556338后台登录</title>
+	<meta name="renderer" content="webkit">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+	<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+	<meta name="apple-mobile-web-app-status-bar-style" content="black">
+	<meta name="apple-mobile-web-app-capable" content="yes">
+	<meta name="format-detection" content="telephone=no">
+	<link rel="icon" href="/static/images/svb.ico">
+	<link rel="stylesheet" href="../../static/layui/css/layui.css" media="all" />
+	<link rel="stylesheet" href="../../static/css/public.css" media="all" />
+</head>
+<body class="loginBody">
+	<form class="layui-form" style="height: 300px">
+		<div class="login_face"><img src="../../static/images/master.png" style="padding-top: 10px" class="userAvatar"></div>
+        <div style="display: none">
+            <input type="text" name="image_real" id="image_real" value="{{ code }}">
+        </div>
+		<div class="layui-form-item input-item">
+			<label for="userName">账号</label>
+			<input type="text" placeholder="请输入账号" autocomplete="off" name="userName" class="layui-input" lay-verify="required">
+		</div>
+		<div class="layui-form-item input-item">
+			<label for="password">密码</label>
+			<input type="password" placeholder="请输入密码" autocomplete="off" name="password" class="layui-input" lay-verify="required">
+		</div>
+        <div class="layui-form-item input-item">
+			<label for="password">图片验证码</label>
+			<input type="text" placeholder="图片验证码" autocomplete="off"  name="image_code" class="layui-input" lay-verify="required" maxlength="5" style="width: 98px;float: left">
+            <span style="float: right; border:1px #9400D3 solid ;">
+                <img src="{{ img }}" alt="验证码图片" title="点击再换一张" id="valid-img">
+            </span>
+		</div>
+		<div class="layui-form-item">
+			<button class="layui-btn layui-block" lay-filter="login" lay-submit="">登录</button>
+		</div>
+	</form>
+	<script type="text/javascript" src="../../static/layui/layui.js"></script>
+    <script type="text/javascript" src="../../static/js/cache.js"></script>
+	<script type="text/javascript">
+        layui.use(['form','layer','jquery'],function(){
+            var form = layui.form,
+                layer = parent.layer === undefined ? layui.layer : top.layer,
+                $ = layui.jquery;
+
+            $("#valid-img").click(function () {
+                $.ajax({
+                    type : 'GET',
+                    url : '/user/img_code/?height=36',
+                    beforeSend:function () {
+                    layer.load({shade: false})
+                    },
+                    success : function(data) {
+                        // 成功提示框
+                        if (data.code == 0){
+                            var src=data.data.src,
+                                strimg=data.data.string;
+                            $("#valid-img").attr('src', src);
+                            $("#image_real").val(strimg);
+
+                        }else if(data.code == 502){
+                           parent.layer.msg(data.msg, {
+                            icon : 5
+                        });
+                        }
+                    },
+                    error : function(data) {
+                        // 异常提示
+                        parent.layer.msg('出现网络故障', {
+                            icon : 5
+                        });
+                    },complete:function () {layer.closeAll();}
+                });
+            });
+
+            //登录按钮
+            form.on("submit(login)",function(data){
+                var data_info = {data:JSON.stringify(data.field)};
+                    $.ajax({
+                        type : 'POST',
+                        url : '/admin/login',
+                        data : data_info,
+                        dataType : 'json',
+                        success : function(data) {
+                            // 成功提示框
+                            if (data.code == 0){
+                                /*
+                                parent.layer.msg('登录成功!', {
+                                icon : 6,
+                            });*/
+                            location.href='/admin/'; //关闭弹框
+                            }else if(data.code == 502){
+                                parent.layer.msg(data.msg, {
+                                icon : 5
+                            });
+                            }
+
+                        },
+                        error : function(data) {
+                            // 异常提示
+                            parent.layer.msg('出现网络故障', {
+                                icon : 5
+                            });
+                        }
+                    });
+                return false;
+            });
+
+            //表单输入效果
+            $(".loginBody .input-item").click(function(e){
+                e.stopPropagation();
+                $(this).addClass("layui-input-focus").find(".layui-input").focus();
+            })
+            $(".loginBody .layui-form-item .layui-input").focus(function(){
+                $(this).parent().addClass("layui-input-focus");
+            })
+            $(".loginBody .layui-form-item .layui-input").blur(function(){
+                $(this).parent().removeClass("layui-input-focus");
+                if($(this).val() != ''){
+                    $(this).parent().addClass("layui-input-active");
+                }else{
+                    $(this).parent().removeClass("layui-input-active");
+                }
+            })
+        })
+
+    </script>
+</body>
+</html>

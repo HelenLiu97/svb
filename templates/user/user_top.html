@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <link rel="stylesheet" href="/static/layui/css/layui.css" media="all">
+    <script src="/static/layui/layui.js"></script>
+</head>
+<body>
+<table class="layui-table" id="top_up" lay-filter="top_up"></table>
+<script>
+    layui.use(['table', 'laydate', 'form','jquery'], function () {
+        var table=layui.table,
+            date=layui.laydate,
+            form=layui.form,
+            $=layui.jquery;
+
+        table.render({
+            elem: '#top_up'
+            , height: 'full-30'
+            , cellMinWidth: '80'
+            , url: '/user/top_history/' //数据接口
+            , title: '账号表'
+            , limit: 20
+            , totalRow: true //开启合计行
+            , cols: [[ //表头
+                {type: 'numbers'}
+                , {field: 'pay_num', title: '流水号', align: 'center', totalRowText: '合计：'}
+                , {field: 'time', title: '充值时间', align: 'center',}
+                , {field: 'money', title: '充值金额', align: 'center',totalRow: true, style: 'color: red'}
+                , {field: 'before_balance', title: '充值前余额', align: 'center',}
+                , {field: 'balance', title: '充值后余额', align: 'center', }
+            ]]
+            , id: 'top_history'
+            , page: true
+        });
+    })
+</script>
+</body>
+</html>

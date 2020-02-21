@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html>
+
+	<head>
+		<meta charset="UTF-8">
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<title>556338客户端登录</title>
+		<link rel="stylesheet" type="text/css" href="/static/layui/css/layui.css" />
+		<link rel="stylesheet" type="text/css" href="/static/css/login.css" />
+	</head>
+
+	<body>
+		<div class="m-login-bg">
+			<div class="m-login">
+				<h3>556338客户端登录</h3>
+				<div class="m-login-warp">
+					<form class="layui-form" onsubmit="return false">
+                        <div style="display: none">
+                            <input type="text" name="image_real" id="image_real" value="{{ code }}">
+                        </div>
+						<div class="layui-form-item">
+							<input type="text" name="user_name" id="user_name" required lay-verify="required" placeholder="用户名" autocomplete="off" class="layui-input">
+						</div>
+						<div class="layui-form-item">
+							<input type="password" name="pass_word" required lay-verify="required" placeholder="密码" autocomplete="off" class="layui-input">
+						</div>
+
+                        <div class="layui-form-item">
+                            <div>
+							<input type="text" name="image_code" required lay-verify="required" placeholder="图片密码" autocomplete="off" class="layui-input" maxlength="5" style="width: 178px;float: left">
+                            <span style="float: right; border:1px #9400D3 solid ;">
+                                <img src="{{ img }}" alt="验证码图片" title="点击再换一张" id="valid-img">
+                            </span>
+                            </div>
+						</div>
+
+                        <div class="layui-form-item" style="margin-right: 40px;">
+                            <div class="layui-input-block">
+                              <input type="radio" name="cus_status" value="main" title="主账号" checked="">
+                              <input type="radio" name="cus_status" value="vice" title="子账号">
+                            </div>
+                          </div>
+                        <!--
+						<div class="layui-form-item">
+							<div class="layui-inline">
+								<input type="text" name="verity" required lay-verify="required" placeholder="验证码" autocomplete="off" class="layui-input">
+							</div>
+							<div class="layui-inline">
+								<img class="verifyImg" onclick="this.src=this.src+'?c='+Math.random();" src="/static/images/yzm.jpg" />
+							</div>
+						</div>
+						-->
+						<div class="layui-form-item m-login-btn">
+							<div class="layui-inline">
+								<button class="layui-btn layui-btn-normal" lay-submit="" lay-filter="login">登录</button>
+							</div>
+							<div class="layui-inline">
+								<button type="reset" class="layui-btn layui-btn-primary">取消</button>
+							</div>
+						</div>
+					</form>
+				</div>
+				<p class="copyright">Copyright 2019-2020 by 4574</p>
+			</div>
+		</div>
+		<script src="/static/layui/layui.js" type="text/javascript" charset="utf-8"></script>
+		<script>
+			layui.use(['form', 'layedit', 'laydate'], function() {
+				var form = layui.form,
+					layer = layui.layer,
+                    $ = layui.jquery;
+
+				$("#valid-img").click(function () {
+                    $.ajax({
+                        type : 'GET',
+                        url : '/user/img_code/?height=38',
+                        beforeSend:function () {
+                        layer.load({shade: false})
+                        },
+                        success : function(data) {
+                            // 成功提示框
+                            if (data.code == 0){
+                                var src=data.data.src,
+                                    strimg=data.data.string;
+                                $("#valid-img").attr('src', src);
+                                $("#image_real").val(strimg);
+
+                            }else if(data.code == 502){
+                               parent.layer.msg(data.msg, {
+                                icon : 5
+                            });
+                            }
+                        },
+                        error : function(data) {
+                            // 异常提示
+                            parent.layer.msg('出现网络故障', {
+                                icon : 5
+                            });
+                        },complete:function () {layer.closeAll();}
+                    });
+                });
+
+
+				//自定义验证规则
+				form.verify({
+					title: function(value) {
+						if(value.length < 5) {
+							return '标题至少得5个字符啊';
+						}
+					},
+					password: [/(.+){6,12}$/, '密码必须6到12位'],
+					verity: [/(.+){6}$/, '验证码必须是6位'],
+					
+				});
+
+				
+				//监听提交
+				form.on('submit(login)', function(data) {
+					var data_info = {data:JSON.stringify(data.field)};
+					$.ajax({
+                        type : 'POST',
+                        url : '/user/login/',
+                        data : data_info,
+                        dataType : 'json',
+                        success : function(data) {
+                            // 成功提示框
+                            if (data.code == 0){
+                                /*
+                                parent.layer.msg('登录成功!', {
+                                icon : 6,
+                            });*/
+                            location.href='/user/'; //关闭弹框
+                            }else if(data.code == 502){
+                                layer.msg(data.msg, {
+                                icon : 5
+                            });
+                            }else if (data.code == 307){
+                                location.href = '/user/material/?name='+ $("#user_name").val()
+                            }
+                        },
+                        error : function(data) {
+                            // 异常提示
+                            parent.layer.msg('出现网络故障', {
+                                icon : 5
+                            });
+                        }
+                    });
+
+					return false;
+				});
+
+			});
+		</script>
+	</body>
+
+</html>

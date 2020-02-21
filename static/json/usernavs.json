@@ -1,0 +1,56 @@
+{
+	"contentManagement": [
+		{
+			"title": "创建卡",
+			"icon": "&#xe638;",
+			"href": "/user/create_card/",
+			"spread": false
+		},{
+			"title": "所有卡信息",
+			"icon": "&#xe62d;",
+			"href": "/user/card_table/",
+			"spread": false
+		},{
+			"title": "卡消费信息",
+			"icon": "&#xe657;",
+			"href": "/user/card_trans/",
+			"spread": false
+		},{
+			"title": "账户支出记录",
+			"icon": "&#xe63c;",
+			"href": "/user/pay_history/",
+			"spread": false
+		},{
+			"title": "账户充值记录",
+			"icon": "&#xe659;",
+			"href": "/user/user_top/",
+			"spread": false
+		},{
+			"title": "账号设置",
+			"icon": "&#xe614;",
+			"href": "",
+			"spread": false,
+			"children": [
+				{
+					"title": "账号密码设置",
+					"icon": "&#xe612;",
+					"href": "/user/change_pass/",
+					"spread": false
+				},{
+					"title": "子账号开户",
+					"icon": "&#xe613;",
+					"href": "/user/add_vice/",
+					"spread": false
+				},{
+					"title": "子账号权限",
+					"icon": "&#xe674;",
+					"href": "/user/update_vice/",
+					"spread": false
+				}
+			]
+		}
+	]
+
+}
+
+

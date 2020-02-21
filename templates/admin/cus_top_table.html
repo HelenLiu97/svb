@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <link rel="stylesheet" href="/static/layui/css/layui.css" media="all">
+    <script src="/static/layui/layui.js"></script>
+</head>
+<body>
+<blockquote class="layui-elem-quote quoteBox">
+		<form class="layui-form">
+			<div class="layui-inline">
+				<div class="layui-input-inline">
+					<input type="text" class="layui-input searchVal"  id="acc_name" placeholder="请输入用户名" />
+				</div>
+                <div class="layui-input-inline">
+					<input type="text" class="layui-input searchVal" id="order_num" placeholder="流水号" />
+				</div>
+                <div class="layui-input-inline">
+					<input type="text" class="layui-input searchVal" id="time_range" placeholder="时间范围" />
+				</div>
+				<a class="layui-btn search_btn" data-type="reload">搜索</a>
+			</div>
+		</form>
+	</blockquote>
+<tablse class="layui-hide" id="top_up" lay-filter="top_up"></tablse>
+<script>
+    layui.use(['table','laydate','form','jquery'], function () {
+        var table = layui.table,
+            laydate = layui.laydate,
+            form = layui.form,
+            $ = layui.jquery;
+
+        laydate.render({
+            elem: '#time_range'
+            , range: true
+        });
+
+        table.render({
+            elem: '#top_up'
+            , height: 'full-90'
+            , cellMinWidth: '80'
+            , url: '/admin/top_history/' //数据接口
+            , title: '客户充值记录'
+            , limit: 20
+            , toolbar: "true" //开启工具栏，此处显示默认图标，可以自定义模板，详见文档
+            , totalRow: true //开启合计行
+            , cols: [[ //表头
+                {type: 'numbers'}
+                , {field: 'name', title: '客户', align: 'center', totalRowText: '合计：'}
+                , {field: 'pay_num', title: '流水号', align: 'center', }
+                , {field: 'time', title: '充值时间', align: 'center',}
+                , {field: 'money', title: '充值金额', align: 'center', sort: true, totalRow: true, style: 'color: red'}
+                , {field: 'before_balance', title: '充值前余额', align: 'center', sort: true, totalRow: true}
+                , {field: 'balance', title: '充值后余额', align: 'center', sort: true, totalRow: true}
+            ]]
+            , id: 'top_history'
+            , page: true
+        });
+
+        $(".search_btn").on("click",function(){
+                var acc_name = $('#acc_name').val(),
+                    order_num = $('#order_num').val(),
+                    time_range = $('#time_range').val();
+                table.reload("top_history", {
+                    page: {
+                        curr: 1 //重新从第 1 页开始
+                    }, where: {
+                        acc_name: acc_name,
+                        order_num: order_num,
+                        time_range: time_range,
+                    }
+                }, '/admin/top_history/');
+                return false;
+        });
+
+
+
+    });
+
+</script>
+</body>
+</html>

@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <link rel="stylesheet" href="/static/layui/css/layui.css" media="all">
+    <script src="/static/layui/layui.js"></script>
+</head>
+<body>
+<blockquote class="layui-elem-quote quoteBox">
+<form class="layui-form" action="" lay-filter="example" id="example">
+    <div class="layui-inline">
+        <input type="number" class="layui-input" name="trans_card" id="trans_card" autocomplete="off" placeholder="操作卡号">
+    </div>
+    <div class="layui-inline">
+        <select name="quiz" id="trans_type">
+          <option value="">请选择</option>
+        <option value="支出">支出</option>
+        <option value="收入">收入</option>
+        </select>
+    </div>
+    <div class="layui-inline">
+        <select name="quiz" id="do_type">
+          <option value="">请选择</option>
+        <option value="开卡">开卡</option>
+        <option value="充值">充值</option>
+        <option value="注销">注销</option>
+        <option value="转移退款">转移退款</option>
+        <option value="系统扣费">系统扣费</option>
+        </select>
+    </div>
+    <div class="layui-inline">
+    <input type="text" class="layui-input" id="test7" placeholder="操作时间">
+</div>
+<button class="layui-btn" data-type="reload" id="sub_trans">搜索</button>
+<button type="reset"  class="layui-btn layui-btn-primary" id="">重置</button>
+</form>
+</blockquote>
+<table class="layui-table" id="pay_history" lay-filter="pay_history"></table>
+<script>
+    layui.use(['table', 'laydate', 'form','jquery'], function () {
+        var table=layui.table,
+            date=layui.laydate,
+            form=layui.form,
+            $=layui.jquery;
+
+        date.render({
+            elem: '#test7'
+            ,range: true
+          });
+
+        //执行一个 table 实例
+        table.render({
+            elem: '#pay_history'
+            , height: 'full-90'
+            , cellMinWidth: '80'
+            , url: '/user/account_trans/' //数据接口
+            , title: '交易记录表'
+            , limit:100
+            , limits:[100, 200, 300, 400, 500, 600, 700, 800, 900, 1000]
+            , toolbar: "true" //开启工具栏，此处显示默认图标，可以自定义模板，详见文档
+            , totalRow: true //开启合计行
+            , cols: [[ //表头
+                {type:'numbers'}
+                , {field: 'date', title: '操作日期', align: 'center', totalRowText: '合计：'}
+                , {field: 'trans_type', title: '交易类型', align: 'center', style:'color: green'}
+                , {field: 'do_type', title: '操作类型', align: 'center',}
+                , {field: 'card_no', title: '卡号', align: 'center',}
+                , {field: 'do_money', title: '操作金额', align: 'center', totalRow: true, style:'color: red'}
+                , {field: 'before_balance', title: '之前余额', align: 'center',}
+                , {field: 'balance', title: '之后余额', align: 'center',}
+            ]]
+            , id: 'pay_history'
+            , page: true
+
+        });
+
+        var trans = $('#sub_trans');
+        trans.on('click',function () {
+            var trans_card = $('#trans_card').val(),
+                time_range = $('#test7').val(),
+                trans_type = $('#trans_type').val(),
+                do_type = $('#do_type').val();
+            table.reload('pay_history', {
+                page: {
+                  curr: 1 //重新从第 1 页开始
+                },where: {
+                    time_range: time_range,
+                    card_num: trans_card,
+                    trans_type: trans_type,
+                    do_type: do_type,
+                  }
+              }, '/user/account_trans/');
+            return false
+        });
+    })
+</script>
+</body>
+</html>

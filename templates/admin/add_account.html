@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<title>4754添加客户</title>
+	<meta name="renderer" content="webkit">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+	<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+	<meta name="apple-mobile-web-app-status-bar-style" content="black">
+	<meta name="apple-mobile-web-app-capable" content="yes">
+	<meta name="format-detection" content="telephone=no">
+	<link rel="stylesheet" href="../../static/layui/css/layui.css" media="all" />
+	<link rel="stylesheet" href="../../static/css/public.css" media="all" />
+    <style>
+        .divForm{
+            width: 500px;
+            height: 400px;
+            top: 50%;
+            left: 50%;
+            margin-bottom: 300px;
+            margin-top: 100px;
+            margin-left: 36%;
+        }
+    </style>
+</head>
+<body class="childrenBody">
+<div class="divForm">
+    <form class="layui-form layui-form-pane">
+        <div class="layui-form-item">
+            <label class="layui-form-label">姓   名</label>
+            <div class="layui-input-inline">
+                <input type="text" name="name" required lay-verify="required" placeholder="客户姓名" autocomplete="off"
+                       class="layui-input"  id="name">
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">账   号</label>
+            <div class="layui-input-inline">
+                <input type="text" id="account" name="account" required lay-verify="required" placeholder="客户登录账号" autocomplete="off"
+                       class="layui-input">
+            </div>
+        </div>
+
+        <div class="layui-form-item">
+            <label class="layui-form-label">密   码</label>
+            <div class="layui-input-inline">
+                <input type="text" id="password" name="password" placeholder="客户登录密码" required lay-verify="required" autocomplete="off"
+                       class="layui-input">
+            </div>
+        </div>
+
+        <div class="layui-form-item">
+            <label class="layui-form-label">电   话</label>
+            <div class="layui-input-inline">
+                <input type="number" id="phone_num" name="phone_num" placeholder="接收短息通知号码"  autocomplete="off"
+                       class="layui-input">
+            </div>
+        </div>
+
+        <div class="layui-form-item">
+            <label class="layui-form-label">开 卡 费</label>
+            <div class="layui-input-inline">
+                <input type="number" id="create_price" name="create_price" placeholder="开卡费" required lay-verify="required" autocomplete="off"
+                       class="layui-input">
+            </div>
+        </div>
+
+
+        <div class="layui-form-item">
+            <label class="layui-form-label">最低充值</label>
+            <div class="layui-input-inline">
+                <input type="number" id="min_top" name="min_top" placeholder="最低充值到卡的金额" required lay-verify="required" autocomplete="off"
+                       class="layui-input">
+            </div>
+        </div>
+
+
+        <div class="layui-form-item">
+            <div class="layui-input-block">
+                <button  class="layui-btn layui-btn-lg" lay-submit="" lay-filter="add_acc" type="submit">确认</button>
+            </div>
+        </div>
+    </form>
+</div>
+<script type="text/javascript" src="../../static/layui/layui.js"></script>
+<script type="text/javascript">
+    layui.use(['form','layer','layedit','laydate','upload'],function(){
+    var form = layui.form,
+        layer = parent.layer === undefined ? layui.layer : top.layer,
+        laypage = layui.laypage,
+        upload = layui.upload,
+        layedit = layui.layedit,
+        laydate = layui.laydate,
+        $ = layui.jquery;
+
+        form.on('submit(add_acc)', function (data) {
+            var data_info = {data: JSON.stringify(data.field)};
+            $.ajax({
+                type: 'POST',
+                url: '/admin/add_account/',
+                data: data_info,
+                dataType: 'json',
+                success: function (data) {
+                    // 成功提示框
+                    if (data.code == 0) {
+                        parent.layer.msg(data.msg, {
+                            icon: 6,
+                        });
+
+                    } else if (data.code == 502) {
+                        parent.layer.msg(data.msg, {
+                            icon: 5
+                        });
+                    }
+
+                },
+                error: function (data) {
+                    // 异常提示
+                    parent.layer.msg('出现网络故障', {
+                        icon: 5
+                    });
+                    parent.layer.closeAll('iframe'); //关闭弹框
+                }
+            });
+            return false;
+        });
+
+})
+</script>
+</body>
+</html>

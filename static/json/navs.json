@@ -1,0 +1,89 @@
+{
+	"contentManagement": [
+		{
+			"title": "用户中心",
+			"icon": "&#xe613;",
+			"href": "",
+			"spread": false ,
+			"children": [
+				{
+					"title": "用户信息",
+					"icon": "&#xe612;",
+					"href": "/static/page/AdminPage/cus_list.html",
+					"spread": false
+				},{
+					"title": "用户充值",
+					"icon": "&#xe659;",
+					"href": "/admin/cus_top_list/",
+					"spread": false
+				},{
+					"title": "用户消费",
+					"icon": "&#xe657;",
+					"href": "/admin/cus_trans/",
+					"spread": false
+				},{
+					"title": "卡退款充值",
+					"icon": "&#xe698;",
+					"href": "/admin/cus_refund/",
+					"spread": false
+				},{
+					"title": "添加客户",
+					"icon": "&#xe654;",
+					"href": "/admin/add_account/",
+					"spread": false
+				}
+			]
+		},
+		{
+			"title": "卡信息",
+			"icon": "&#xe638;",
+			"spread": false,
+			"children" : [
+				{
+					"title": "所有卡",
+					"icon": "&#xe66e;",
+					"href": "/admin/card_table/",
+					"spread": false
+				},{
+					"title": "卡交易记录",
+					"icon": "&#xe63c;",
+					"href": "/admin/card_trans_table/",
+					"spread": false
+				}
+			]
+		},
+		{
+			"title": "系统设置",
+			"icon": "&#xe614;",
+			"spread": false,
+			"children": [
+				{
+					"title": "充值通知",
+					"icon": "&#xe626;",
+					"href": "/admin/top_msg/",
+					"spread": false
+				},
+				{
+					"title": "汇率设置",
+					"icon": "&#xe659;",
+					"href": "/admin/ex_change/",
+					"spread": false
+				},
+				{
+					"title": "支付宝收款码",
+					"icon": "&#xe610;",
+					"href": "/admin/qr_code/",
+					"spread": false
+				},
+				{
+					"title": "银行卡信息",
+					"icon": "&#xe630;",
+					"href": "/admin/bank_msg/",
+					"spread": false
+				}
+			]
+		}
+	]
+}
+
+
