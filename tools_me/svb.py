@@ -181,6 +181,6 @@ svb = SVB()
 
 if __name__ == '__main__':
     print(time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(time.time())))
-    res = svb.card_detail(38126156,)
+    res = svb.card_detail(38126156)
     print(res)
     print(time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(time.time())))

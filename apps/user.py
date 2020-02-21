@@ -872,7 +872,6 @@ def user_info():
 
 @user_blueprint.route('/line_chart/')
 @login_required
-@cache.cached(timeout=21600, key_prefix='svb_line_chart')
 def line_chart():
     # 展示近三十天开卡数量
     day_num = 30
