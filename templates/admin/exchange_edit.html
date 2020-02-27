@@ -23,35 +23,39 @@
     <form class="layui-form layui-form-pane" lay-filter="example" id="example" enctype="multipart/form-data">
         <div class="layui-form-item">
             <label class="layui-form-label">汇  率:</label>
-            <div class="layui-input-block">
+            <div class="layui-input-inline">
                 <input type="number" name="exchange"  placeholder="设置的汇率" autocomplete="off"
                        class="layui-input" id="exchange">
             </div>
+            <div class="layui-form-mid layui-word-aux">当前汇率:{{ ex_change }}</div>
         </div>
         <div class="layui-form-item">
             <label class="layui-form-label">波动溢价:</label>
-            <div class="layui-input-block">
+            <div class="layui-input-inline">
                 <input type="number" name="ex_range" placeholder="汇率波动溢价" autocomplete="off"
                        class="layui-input" id="ex_range">
             </div>
+            <div class="layui-form-mid layui-word-aux">当前波动溢价:{{ ex_range }}</div>
         </div>
 
         <div class="layui-form-item">
             <label class="layui-form-label">手续费:</label>
-            <div class="layui-input-block">
+            <div class="layui-input-inline">
                 <input type="number" name="hand"  placeholder="手续费(例: 0.03)" autocomplete="off"
                        class="layui-input" id="hand">
             </div>
+            <div class="layui-form-mid layui-word-aux">当前手续费:{{ hand }}</div>
         </div>
 
         <hr class="layui-bg-black">
 
         <div class="layui-form-item">
             <label class="layui-form-label">美元充值手续费:</label>
-            <div class="layui-input-block">
+            <div class="layui-input-inline">
                 <input type="number" name="dollar_hand"  placeholder="手续费(例: 0.04)" autocomplete="off"
                        class="layui-input" id="dollar_hand">
             </div>
+            <div class="layui-form-mid layui-word-aux">当前美元手续费:{{ dollar_hand }}</div>
         </div>
 
         <div class="layui-form-item">

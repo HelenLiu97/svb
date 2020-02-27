@@ -5,7 +5,8 @@ import operator
 import re
 import time
 import os
-from flask import request, render_template, jsonify, session, g
+from flask import request, render_template, jsonify, session, g, redirect
+from tools_me.svb import svb
 from tools_me.des_code import ImgCode
 from tools_me.img_code import createCodeImage
 from tools_me.mysql_tools import SqlData
@@ -177,7 +178,8 @@ def edit_code():
 @admin_required
 def ex_change():
     if request.method == 'GET':
-        return render_template('admin/exchange_edit.html')
+        admin_info = SqlData.search_admin_exchange()
+        return render_template('admin/exchange_edit.html', **admin_info)
     if request.method == 'POST':
         try:
             results = {"code": RET.OK, "msg": MSG.OK}
@@ -669,6 +671,8 @@ def card_info_all():
         if field == "card_cus":
             account_id = SqlData.search_user_field_name('id', value)
             sql = "WHERE user_id=" + str(account_id)
+        elif field == "card_end":
+            sql = "WHERE card_number LIKE '%" + value + "'"
         elif field:
             sql = "WHERE " + field + " LIKE '%" + value + "%'"
         else:
@@ -689,6 +693,48 @@ def card_info_all():
     except Exception as e:
         logging.error(str(e))
         return jsonify({'code': RET.SERVERERROR, 'msg': MSG.SERVERERROR})
+
+
+# 卡的交易记录
+@admin_blueprint.route('/one_card_detail', methods=['GET'])
+@admin_required
+def one_detail():
+    try:
+        context = dict()
+        card_number = request.args.get('card_number')
+        card_status = SqlData.search_one_card_status(card_number)
+        card_id = SqlData.search_card_field('card_id', card_number)
+        card_detail = svb.card_detail(card_id)
+        if card_status:
+            available_balance = card_detail.get('data').get('available_balance')
+            context['available_balance'] = available_balance/100
+            context['card_status'] = "正常"
+        else:
+            context['available_balance'] = 0
+            context['card_status'] = "已注销"
+        info_list = list()
+        authorizations = card_detail.get('data').get('authorizations')
+        for td in authorizations:
+            info_list.append({
+                "acquirer_ica": td.get("acquirer_ica"),
+                "approval_code": td.get("approval_code"),
+                "billing_amount": float(td.get("billing_amount")/100),
+                "billing_currency": td.get("billing_currency"),
+                "issuer_response": td.get("issuer_response"),
+                "mcc": td.get("mcc"),
+                "mcc_description": td.get("mcc_description"),
+                "merchant_amount": float(td.get("merchant_amount")/100),
+                "merchant_currency": td.get("merchant_currency"),
+                "merchant_id": td.get("merchant_id"),
+                "merchant_name": td.get("merchant_name"),
+                "transaction_date_time": td.get("transaction_date_time"),
+                "vcn_response": td.get("vcn_response"),
+            })
+        context['pay_list'] = info_list
+        return render_template('user/card_detail.html', **context)
+    except Exception as e:
+        logging.error((str(e)))
+        return render_template('user/404.html')
 
 
 @admin_blueprint.route('/sub_middle_money', methods=['POST'])
@@ -969,7 +1015,7 @@ def cus_top_list():
     return render_template('admin/cus_top_table.html')
 
 
-@admin_blueprint.route('/cus_refund_top/', methods=['GET'])
+@admin_blueprint.route('/cus_refund/', methods=['GET'])
 @admin_required
 def cus_refund_top():
     return render_template('admin/cus_refund.html')
@@ -1228,7 +1274,7 @@ def test():
 def logout():
     session.pop('admin_id')
     session.pop('admin_name')
-    return render_template('admin/login.html')
+    return redirect('/admin/')
 
 
 @admin_blueprint.route('/login', methods=['GET', 'POST'])
@@ -1282,13 +1328,17 @@ def index():
 def index_main():
     cus_count = SqlData.search_value_count('user_info')
     card_using = SqlData.search_value_count('card_info', "WHERE user_id != ''")
-    card_none = SqlData.search_value_count('card_info', 'WHERE user_id is null')
+    card_none = SqlData.search_value_count('card_info', "WHERE status ='F'")
     sum_top = SqlData.search_table_sum('money', 'top_up', '')
     user_balance = SqlData.search_table_sum('balance', 'user_info', '')
+    card_remain = SqlData.search_sum_card_remain()
+    update_t = SqlData.search_admin_field("up_remain_time")
     context = dict()
     context['cus_count'] = cus_count
     context['card_using'] = card_using
     context['card_none'] = card_none
     context['sum_top'] = sum_top
     context['user_balance'] = user_balance
+    context['card_remain'] = card_remain
+    context['update_t'] = update_t
     return render_template('admin/main.html', **context)

@@ -18,6 +18,7 @@
                           <option value="">直接选择或搜索选择</option>
                           <option value="card_cus">持有人</option>
                           <option value="card_number">卡号</option>
+                          <option value="card_end">卡号后4位</option>
                           <option value="label">标签</option>
                         </select>
                       </div>
@@ -83,7 +84,7 @@
                 ,area: ['80%','80%']
                 ,anim: 2
                 ,shadeClose:true
-                ,content: '/user/one_card_detail?card_number=' + data.card_no
+                ,content: '/admin/one_card_detail?card_number=' + data.card_no
                 ,btn: '关闭全部'
                 ,btnAlign: 'c' //按钮居中a
                 ,shade:  [0.8, '#393D49'] //弹框背景选项

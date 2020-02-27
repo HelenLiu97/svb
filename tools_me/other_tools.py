@@ -252,8 +252,8 @@ def verify_required(view_func):
         """具体实现判断用户是否登录的逻辑"""
         verify_name = session.get('user_name')
         verify_id = session.get('user_id')
-        if not verify_name and not verify_id:
-            return render_template('verify_pay/login.html')
+        if not verify_name or not verify_id:
+            return redirect('/verify_pay/login/')
         else:
             # 执行被装饰的视图函数
             return view_func(*args, **kwargs)

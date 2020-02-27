@@ -186,6 +186,16 @@ class SqlData(object):
             return 0
         return rows[0]
 
+    def search_sum_card_remain(self):
+        sql = "SELECT SUM(balance) FROM card_info WHERE status='T'"
+        conn, cursor = self.connect()
+        cursor.execute(sql)
+        rows = cursor.fetchone()
+        self.close_connect(conn, cursor)
+        if not rows[0]:
+            return 0
+        return rows[0]
+
     def search_one_card_status(self, crad_no):
         sql = "SELECT status from card_info WHERE card_number='{}'".format(crad_no)
         conn, cursor = self.connect()
@@ -1622,6 +1632,19 @@ class SqlData(object):
             info_dict['name'] = i[18]
             info_list.append(info_dict)
         return info_list
+
+    def search_admin_exchange(self):
+        sql = "SELECT ex_change, ex_range, hand, dollar_hand FROM admin"
+        conn, cursor = self.connect()
+        cursor.execute(sql)
+        rows = cursor.fetchone()
+        self.close_connect(conn, cursor)
+        info_dict = dict()
+        info_dict['ex_change'] = rows[0]
+        info_dict['ex_range'] = rows[1]
+        info_dict['hand'] = rows[2]
+        info_dict['dollar_hand'] = rows[3]
+        return info_dict
 
 
 SqlData = SqlData()

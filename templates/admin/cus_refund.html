@@ -16,7 +16,11 @@
     <input type="number" class="layui-input" name="trans_card" id="trans_card" autocomplete="off" placeholder="卡号">
 </div>
 <div class="layui-inline">
-    <input type="text" class="layui-input" name="do_type" id="do_type" autocomplete="off" placeholder="操作类型">
+    <select name="interest" lay-filter="aihao" id="do_type">
+        <option value=""></option>
+        <option value="退款">退款</option>
+        <option value="注销">注销</option>
+      </select>
 </div>
 <div class="layui-inline">
 <input type="text" class="layui-input" id="test8" autocomplete="off" placeholder="时间范围">
