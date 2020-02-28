@@ -45,9 +45,19 @@
 					"href": "/admin/card_table/",
 					"spread": false
 				},{
-					"title": "卡交易记录",
+					"title": "卡全部交易记录",
 					"icon": "&#xe63c;",
 					"href": "/admin/card_trans_table/",
+					"spread": false
+				},{
+					"title": "卡DECLINE记录",
+					"icon": "&#xe664;",
+					"href": "/admin/card_decline_table/",
+					"spread": false
+				},{
+					"title": "DECLINE比例",
+					"icon": "&#xe6b2;",
+					"href": "/admin/card_decline_proportion/",
 					"spread": false
 				}
 			]

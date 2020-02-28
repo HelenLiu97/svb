@@ -296,6 +296,19 @@ class SqlData(object):
                 info_list.append(info_dict)
             return info_list
 
+    def search_logout_card(self, user_id):
+        sql = "SELECT card_number FROM card_info WHERE user_id={} AND status='F'".format(user_id)
+        conn, cursor = self.connect()
+        cursor.execute(sql)
+        rows = cursor.fetchall()
+        self.close_connect(conn, cursor)
+        info_list = list()
+        if not rows:
+            return info_list
+        for i in rows:
+            info_list.append(i[0])
+        return info_list
+
     def insert_card(self, card_number, cvc, expiry, card_id, last4, valid_start_on, valid_end_on, label, status,
                     balance, user_id):
         sql = "INSERT INTO card_info(card_number, cvc, expiry, card_id, last4, valid_start_on, valid_end_on, label, " \
@@ -871,7 +884,7 @@ class SqlData(object):
         return info_list
 
     def search_user_field_admin(self):
-        sql = "SELECT id, name FROM account".format()
+        sql = "SELECT id, `name` FROM user_info"
         conn, cursor = self.connect()
         cursor.execute(sql)
         rows = cursor.fetchall()
@@ -943,6 +956,7 @@ class SqlData(object):
             info_dict['label'] = i[8]
             info_dict['status'] = '正常' if i[9] == 'T' else '注销'
             info_dict['user_name'] = self.search_user_field('name', i[11])
+            info_dict['detail'] = '双击查看'
             info_list.append(info_dict)
         return info_list
 
@@ -1572,8 +1586,16 @@ class SqlData(object):
             conn.rollback()
         self.close_connect(conn, cursor)
 
+    def search_trans_count(self, user_id, sql_line):
+        sql = "SELECT DISTINCT COUNT(*) FROM card_trans JOIN card_info ON card_trans.card_id=card_info.card_id WHERE card_info.user_id={} {}".format(user_id, sql_line)
+        conn, cursor = self.connect()
+        cursor.execute(sql)
+        rows = cursor.fetchone()
+        self.close_connect(conn, cursor)
+        return rows[0]
+
     def search_card_trans(self, user_id, sql_line):
-        sql = "SELECT DISTINCT card_trans.* FROM card_trans JOIN card_info ON card_info.user_id={} {}".format(user_id, sql_line)
+        sql = "SELECT DISTINCT card_trans.* FROM card_trans JOIN card_info ON card_trans.card_id=card_info.card_id WHERE card_info.user_id={} {}".format(user_id, sql_line)
         conn, cursor = self.connect()
         cursor.execute(sql)
         rows = cursor.fetchall()
@@ -1603,7 +1625,7 @@ class SqlData(object):
         return info_list
 
     def search_admin_card_trans(self, sql_line):
-        sql = "SELECT DISTINCT card_trans.*,user_info.`name` FROM card_trans JOIN card_info JOIN user_info ON card_info.user_id=user_info.id {}".format(sql_line)
+        sql = "SELECT DISTINCT card_trans.*,user_info.`name` FROM card_trans JOIN card_info JOIN user_info ON card_trans.card_id=card_info.card_id WHERE card_info.user_id=user_info.id {}".format(sql_line)
         conn, cursor = self.connect()
         cursor.execute(sql)
         rows = cursor.fetchall()

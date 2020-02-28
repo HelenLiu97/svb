@@ -70,7 +70,7 @@ class SVB(object):
             "data": {
                 "total_card_amount": cents,
                 "emails": [],
-                # "transactions_max": 10, 卡的最大交易次数默认1000
+                "transactions_max": 0,  # 卡的最大交易次数默认1000
                 "valid_ending_on": self.valid_ending_on(),
                 "mastercard_data": {},
                 "metadata": {
@@ -181,6 +181,6 @@ svb = SVB()
 
 if __name__ == '__main__':
     print(time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(time.time())))
-    res = svb.card_detail(38126156)
+    res = svb.update_card(38152080, 200)
     print(res)
     print(time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(time.time())))

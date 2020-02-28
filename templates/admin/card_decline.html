@@ -33,7 +33,7 @@
             elem: '#trans_log'
             , height: 'full-90'
             , cellMinWidth: '80'
-            , url: '/admin/push_log/' //数据接口
+            , url: '/admin/push_log/?status=F' //数据接口
             , title: '卡交易记录信息'
             , toolbar: true
             , skin: 'line'
@@ -66,7 +66,7 @@
                      card_no:card_no,
                      cus_name:time_range,
                    }
-               }, '/user/push_log/');
+               }, '/user/push_log/?status=F');
             return false;
          });
 

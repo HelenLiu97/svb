@@ -12,6 +12,13 @@
 <div class="layui-inline">
     <input type="number" class="layui-input" name="card_no" id="card_no" autocomplete="off" placeholder="请输入卡号">
 </div>
+    <div class="layui-inline">
+        <select name="quiz" id="trans_status">
+          <option value="">请选择交易状态</option>
+        <option value="T">正常</option>
+        <option value="F">DECLINE</option>
+        </select>
+    </div>
 <button class="layui-btn" lay-submit="" lay-filter="trans_sear" type="submit">搜索</button>
 <button type="reset" class="layui-btn layui-btn-primary" id="">重置</button>
     </form>
@@ -44,19 +51,19 @@
             , totalRow: true //开启合计行
             , cols: [[ //表头
                 {type:'numbers'}
-                , {field: 'card_number', title: 'card_number',width:'10%', align: 'center'}
-                , {field: 'acquirer_ica', title: 'acquirer_ica', align: 'center'}
-                , {field: 'approval_code', title: 'approval_code', align: 'center',}
-                , {field: 'billing_amount', title: 'billing_amount',align: 'center', style: "color: #CD0000"}
-                , {field: 'billing_currency', title: 'billing_currency', align: 'center',}
-                , {field: 'issuer_response', title: 'issuer_response',width:'17%', align: 'center', style:"color: #8B0A50"}
-                , {field: 'mcc', title: 'mcc',align: 'center'}
-                , {field: 'mcc_description', title: 'mcc_description', width:'10%',align: 'center',}
-                , {field: 'merchant_amount', title: 'merchant_amount', align: 'center',style: "color: #CD0000"}
-                , {field: 'merchant_currency', title: 'merchant_currency',align: 'center',}
-                , {field: 'merchant_id', title: 'merchant_id', align: 'center',style:"color: #030303"}
-                , {field: 'merchant_name', title: 'merchant_name', align: 'center',width:'13%',style:"color: #030303"}
-                , {field: 'transaction_date_time', title: 'transaction_date_time',width:'12%', align: 'center',style:"color: #030303"}
+                , {field: 'card_number', title: '卡号',width:'10%', align: 'center'}
+                {#, {field: 'acquirer_ica', title: 'acquirer_ica', align: 'center'}#}
+                {#, {field: 'approval_code', title: 'approval_code', align: 'center',}#}
+                , {field: 'billing_amount', title: '冻结金额',align: 'center', style: "color: #CD0000"}
+                , {field: 'billing_currency', title: '冻结币种', align: 'center',}
+                , {field: 'issuer_response', title: '发行商回应',width:'28%', align: 'center', style:"color: #8B0A50"}
+                {#, {field: 'mcc', title: 'mcc',align: 'center'}#}
+                , {field: 'mcc_description', title: 'mcc描述', width:'10%',align: 'center',}
+                {#, {field: 'merchant_amount', title: 'merchant_amount', align: 'center',style: "color: #CD0000"}#}
+                {#, {field: 'merchant_currency', title: 'merchant_currency',align: 'center',}#}
+                {#, {field: 'merchant_id', title: 'merchant_id', align: 'center',style:"color: #030303"}#}
+                , {field: 'merchant_name', title: '商户名称', align: 'center',width:'20%',style:"color: #030303"}
+                , {field: 'transaction_date_time', title: '交易时间',width:'12%', align: 'center',style:"color: #030303"}
                 {#, {field: 'transaction_type', title: 'transaction_type', align: 'center',style:"color: #030303"}#}
                 {#, {field: 'vcn_response', title: 'vcn_response', align: 'center',style:"color: #030303"}#}
             ]]
@@ -65,12 +72,14 @@
         });
 
         form.on('submit(trans_sear)', function(data){
-             var card_no = $("#card_no").val();
+             var card_no = $("#card_no").val(),
+                 trans_status = $("#trans_status").val();
              table.reload("push_log", {
                  page: {
                    curr: 1 //重新从第 1 页开始
                  },where: {
                      card_no:card_no,
+                     trans_status: trans_status
                    }
                }, '/user/push_log/');
             return false;

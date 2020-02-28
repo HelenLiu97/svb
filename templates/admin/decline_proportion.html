@@ -8,6 +8,7 @@
 </head>
 <body>
 <blockquote class="layui-elem-quote quoteBox">
+    <!--
 <form class="layui-form" onsubmit="return false">
 <div class="layui-inline">
     <input type="number" class="layui-input" name="card_no" id="card_no" autocomplete="off" placeholder="请输入卡号">
@@ -18,6 +19,7 @@
 <button class="layui-btn" lay-submit="" lay-filter="trans_sear" type="submit">搜索</button>
 <button type="reset" class="layui-btn layui-btn-primary" id="">重置</button>
     </form>
+    -->
 </blockquote>
 <table class="layui-hide" id="trans_log" lay-filter=""></table>
 <script>
@@ -33,7 +35,7 @@
             elem: '#trans_log'
             , height: 'full-90'
             , cellMinWidth: '80'
-            , url: '/admin/push_log/' //数据接口
+            , url: '/admin/user_decline_proportion/' //数据接口
             , title: '卡交易记录信息'
             , toolbar: true
             , skin: 'line'
@@ -43,14 +45,13 @@
             , totalRow: true //开启合计行
             , cols: [[ //表头
                 {type:'numbers'}
-                , {field: 'card_number', title: '卡号',width:'10%', align: 'center'}
-                , {field: 'billing_amount', title: '冻结金额',align: 'center', style: "color: #CD0000"}
-                , {field: 'billing_currency', title: '冻结币种', align: 'center',}
-                , {field: 'issuer_response', title: '发行商回应',width:'28%', align: 'center', style:"color: #8B0A50"}
-                , {field: 'mcc_description', title: 'mcc描述', width:'10%',align: 'center',}
-                , {field: 'merchant_name', title: '商户名称', align: 'center',width:'20%',style:"color: #030303"}
-                , {field: 'transaction_date_time', title: '交易时间',width:'12%', align: 'center',style:"color: #030303"}
-                , {field: 'name', title: '客户', align: 'center',style:"color: #030303"}
+                , {field: 'name', title: '客户',width:'10%', align: 'center'}
+                , {field: 'sum_decline', title: 'decline数量',align: 'center', style: "color: #CD0000"}
+                , {field: 'sum_trans', title: '总交易数量', align: 'center',}
+                , {field: 'sum_bili', title: '总decline比例(%)',width:'28%', align: 'center', style:"color: #8B0A50"}
+                , {field: 'decline_num', title: '三天decline数量', width:'10%',align: 'center',}
+                , {field: 'trans_num', title: '三天交易量', align: 'center',width:'20%',style:"color: #030303"}
+                , {field: 'three_bili', title: '三天decline比例(%)',width:'12%', align: 'center',style:"color: #030303"}
             ]]
             , id: 'push_log'
             , page: true

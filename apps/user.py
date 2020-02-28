@@ -413,6 +413,73 @@ def card_delete():
             return jsonify({'code': RET.SERVERERROR, 'msg': '该卡已注销！'})
 
 
+# 批量充值
+@user_blueprint.route('/batch/', methods=['POST'])
+@login_required
+@account_lock
+def card_batch():
+    if request.method == 'POST':
+        try:
+            user_id = g.user_id
+            money = request.form.get('money')
+            card_info = json.loads(request.form.get('card_info'))
+            # 校验充值金额是否为小数
+            if not check_float(money):
+                results = {"code": RET.SERVERERROR, "msg": "充值金额不能为小数!"}
+                return jsonify(results)
+            sum_out_money = len(card_info) * int(money)
+            user_data = SqlData.search_user_index(user_id)
+            before_balance = user_data.get('balance')
+
+            # 校验账户余额是否充足
+            if sum_out_money > before_balance:
+                results = {"code": RET.SERVERERROR, "msg": "本次消费金额:" + str(sum_out_money) + ",账号余额不足!"}
+                return jsonify(results)
+
+            # 判断充值的卡中是否包含注销的卡
+            logout_cards = SqlData.search_logout_card(user_id)
+            card_list = list(card_info.keys())
+            for i in card_list:
+                if i.strip() in logout_cards:
+                    results = {"code": RET.SERVERERROR, "msg": "本次充值中卡号:" + i + "。为注销卡,请排除注销卡后重试。"}
+                    return jsonify(results)
+
+            success_list = list()
+            fail_list = list()
+            for card in card_list:
+                card_number = card.strip()
+                card_id = SqlData.search_card_field('card_id', card_number)
+                card_detail = svb.card_detail(card_id)
+                if card_detail:
+                    available_balance = card_detail.get('data').get('total_card_amount')
+                    now_balance = available_balance + int(money) * 100
+                    res, card_balance = svb.update_card(card_id, now_balance)
+                    if res:
+                        top_money = int(money)
+                        top_money_do_money = top_money - top_money * 2
+                        SqlData.update_balance(top_money_do_money, user_id)
+                        n_time = xianzai_time()
+                        balance = SqlData.search_user_field('balance', user_id)
+                        SqlData.insert_account_trans(n_time, TRANS_TYPE.OUT, DO_TYPE.TOP_UP, card_number,
+                                                     top_money, before_balance, balance, user_id)
+                        success_list.append(card_number)
+                    fail_list.append(card_number)
+                else:
+                    fail_list.append(card_number)
+            balance = SqlData.search_user_field('balance', user_id)
+            if len(success_list) == len(card_list):
+                msg = "批量充值成功！当前账户余额：" + str(balance)
+            else:
+                s = ""
+                for card_number in fail_list:
+                    s += card_number + ", "
+                msg = "部分充值成功！以下卡号充值失败：" + s + " 请重试！当前账户余额：" + str(balance)
+            return jsonify({'code': RET.OK, 'msg': msg})
+        except Exception as e:
+            logging.error("批量充值异常：" + str(e))
+            return jsonify({'code': RET.SERVERERROR, "msg": '网络超时，请稍后重试！'})
+
+
 # 充值
 @user_blueprint.route('/card_top/', methods=['GET', 'POST'])
 @login_required
@@ -658,6 +725,8 @@ def one_detail():
         card_status = SqlData.search_one_card_status(card_number)
         card_id = SqlData.search_card_field('card_id', card_number)
         card_detail = svb.card_detail(card_id)
+        if not card_detail:
+            return render_template('user/404.html')
         if card_status:
             available_balance = card_detail.get('data').get('available_balance')
             context['available_balance'] = available_balance/100
@@ -703,9 +772,14 @@ def push_log():
         page = request.args.get('page')
         limit = request.args.get('limit')
         card_number = request.args.get('card_no')
-        if card_number:
-            card_sql = " WHERE card_trans.card_number LIKE '%" + card_number + "%'"
-            sql = card_sql
+        trans_status = request.args.get('trans_status')
+
+        if trans_status and card_number:
+            sql = " AND card_trans.card_number LIKE '%{}%' AND card_trans.status = '{}'".format(card_number, trans_status)
+        elif card_number:
+            sql = " AND card_trans.card_number LIKE '%{}%'".format(card_number)
+        elif trans_status:
+            sql = " AND card_trans.status ='{}'".format(trans_status)
         else:
             sql = ''
         results = dict()
@@ -776,7 +850,7 @@ def card_info():
             label_sql = ''
             if label:
                 label_sql = "AND label LIKE '%" + label + "%'"
-            data = SqlData.search_card_info(user_id,status, card_sql, label_sql)
+            data = SqlData.search_card_info(user_id, status, card_sql, label_sql)
             if len(data) == 0:
                 results['code'] = RET.SERVERERROR
                 results['msg'] = MSG.NODATA

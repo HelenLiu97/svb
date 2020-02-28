@@ -10,13 +10,88 @@ from tools_me.svb import svb
 from tools_me.des_code import ImgCode
 from tools_me.img_code import createCodeImage
 from tools_me.mysql_tools import SqlData
-from tools_me.other_tools import admin_required, sum_code, xianzai_time, get_nday_list
+from tools_me.other_tools import admin_required, sum_code, xianzai_time, get_nday_list, verify_login_time
 from tools_me.parameter import RET, MSG, DIR_PATH
 from tools_me.redis_tools import RedisTool
 from tools_me.send_sms.send_sms import CCP
 from tools_me.sm_photo import sm_photo
 from . import admin_blueprint
 from config import cache
+
+
+@admin_blueprint.route('/user_decline_proportion/', methods=['GET'])
+@admin_required
+def user_decline_proportion():
+    '''
+    本接口是根据card的交易记录时时计算获取的，后期数量太大，可以采取缓存措施
+    1：查出所有的用户
+    2:查出所有的消费记录
+    3：匹配计算数量以及比例
+    :return:
+    '''
+
+    # user_info 数据格式：[{'id': 1, 'name': 'Helen'}]
+    user_info = SqlData.search_user_field_admin()
+
+    # 卡的全部交易记录数据(从中筛选三天内交易数量和decline数量)
+    card_trans = SqlData.search_admin_card_trans('')
+
+    # 获取三天前的时间
+    three_before = (datetime.datetime.now() - datetime.timedelta(days=3)).strftime("%Y-%m-%d")
+
+    info_list = list()
+    # 开始遍历每个客户进行删选
+    for user in user_info:
+        trans_num = 0
+        decline_num = 0
+        name = user.get('name')
+        u_id = user.get('id')
+        sum_decline = SqlData.search_trans_count(u_id, "AND card_trans.status='F'")
+        sum_trans = SqlData.search_trans_count(u_id, "")
+        for tran in card_trans:
+            status = tran.get('status')  # 根据状态来判断给订单是否decline
+            u_name = tran.get('name')
+            trans_time = tran.get('transaction_date_time')
+            mat = re.search(r"(\d{4}-\d{1,2}-\d{1,2})", trans_time)
+            # 如果匹配时间失败则时间调为4天前(不计数)
+            try:
+                trans_t = mat.group(0)
+            except:
+                trans_t = (datetime.datetime.now() - datetime.timedelta(days=4)).strftime("%Y-%m-%d")
+            result = verify_login_time(three_before + " 00:00:00", trans_t + " 00:00:00")
+            if result and status == 'F' and u_name == name:
+                decline_num += 1
+            if result and u_name == name:
+                trans_num += 1
+        three_bili = float("%.4f" % (decline_num / trans_num * 100)) if trans_num != 0 else 0
+        sum_bili = float("%.4f" % (sum_decline / sum_trans * 100)) if sum_trans != 0 else 0
+        user_dict = dict()
+        user_dict['name'] = name
+        user_dict['sum_decline'] = sum_decline
+        user_dict['sum_trans'] = sum_trans
+        user_dict['sum_bili'] = sum_bili
+        user_dict['decline_num'] = decline_num
+        user_dict['trans_num'] = trans_num
+        user_dict['three_bili'] = three_bili
+        info_list.append(user_dict)
+    results = dict()
+    results['msg'] = MSG.OK
+    results['code'] = RET.OK
+    results['data'] = info_list
+    results['count'] = len(user_info)
+    return jsonify(results)
+
+
+@admin_blueprint.route('/card_decline_proportion/', methods=['GET'])
+@admin_required
+def card_decline_proportion():
+    return render_template('admin/decline_proportion.html')
+
+
+@admin_blueprint.route('/card_decline_table/', methods=['GET'])
+@admin_required
+def card_decline_table():
+    return render_template('admin/card_decline.html')
 
 
 @admin_blueprint.route('/card_trans_table/', methods=['GET'])
@@ -28,7 +103,6 @@ def card_trans_table():
 @admin_blueprint.route('/push_log/', methods=['GET'])
 @admin_required
 def push_log():
-
     '''
     卡交易记录接口
     '''
@@ -38,6 +112,8 @@ def push_log():
         limit = request.args.get('limit')
         card_number = request.args.get('card_no')
         cus_name = request.args.get('cus_name')
+        status = request.args.get('status')
+        # 这是所有消费记录的sql
         if card_number or cus_name:
             card_sql = ""
             cus_sql = ""
@@ -46,11 +122,15 @@ def push_log():
             if cus_name:
                 cus_sql = " user_info.`name` LIKE '%" + cus_name + "%'"
             if card_number and cus_name:
-                sql = "WHERE" + card_sql + " AND " + cus_sql
+                sql = "AND" + card_sql + " AND " + cus_sql
             else:
-                sql = "WHERE" + card_sql + cus_sql
+                sql = "AND" + card_sql + cus_sql
         else:
             sql = ''
+        # 这是decline的sql
+        if status:
+            sql = sql + " AND card_trans.status='{}'".format(status)
+
         results = dict()
         results['msg'] = MSG.OK
         results['code'] = RET.OK
@@ -287,198 +367,6 @@ def qr_code():
         return render_template('admin/qr_code.html')
 
 
-@admin_blueprint.route('/all_trans', methods=['GET'])
-@admin_required
-def all_trans():
-    page = request.args.get("page")
-    limit = request.args.get("limit")
-    # 客户名
-    acc_name = request.args.get("acc_name")
-    # 卡的名字
-    order_num = request.args.get("order_num")
-    # 时间范围
-    time_range = request.args.get("time_range")
-    # 操作状态
-    trans_status = request.args.get("trans_status")
-    # 交易类型
-    trans_store = request.args.get("trans_store")
-
-    args_list = []
-    ca_data = cache.get('all_trans')
-    # 设置缓存处理查询到的大量数据(6小时)
-    if ca_data:
-        data = ca_data
-    else:
-        data = SqlDataNative.bento_alltrans()
-        cache.set('all_trans', data, timeout=60*60*6)
-    results = {"code": RET.OK, "msg": MSG.OK, "count": 0, "data": ""}
-    if len(data) == 0:
-        results["MSG"] = MSG.NODATA
-        return jsonify(results)
-
-    # 下列判断为判断是否有搜索条件根据条件过滤
-    acc_list = list()
-    if acc_name:
-        # args_list.append(acc_name)
-        for i in data:
-            cus = i.get('before_balance')
-            if acc_name == cus:
-                acc_list.append(i)
-    else:
-        acc_list = data
-
-    order_list = list()
-    if order_num:
-        # args_list.append(order_num)
-        for c in acc_list:
-            card_name = c.get('hand_money')
-            if order_num in card_name:
-                order_list.append(c)
-    else:
-        order_list = acc_list
-
-    trans_list = list()
-    if trans_status:
-        args_list.append(trans_status)
-        for i in order_list:
-            do_type = i.get('card_num')
-            if trans_status in do_type:
-                trans_list.append(i)
-    else:
-        trans_list = order_list
-
-    time_list = list()
-    if time_range:
-        min_time = time_range.split(' - ')[0] + ' 00:00:00'
-        max_time = time_range.split(' - ')[1] + ' 23:59:59'
-        min_tuple = datetime.datetime.strptime(min_time, '%Y-%m-%d %H:%M:%S')
-        max_tuple = datetime.datetime.strptime(max_time, '%Y-%m-%d %H:%M:%S')
-        for d in trans_list:
-            dat = datetime.datetime.strptime(d.get("date"), '%Y-%m-%d %H:%M:%S')
-            if min_tuple < dat < max_tuple:
-                time_list.append(d)
-    else:
-        time_list = trans_list
-
-    store_list = list()
-    if trans_store:
-        for i in time_list:
-            trans_type = i.get('trans_type')
-            if trans_store in trans_type:
-                store_list.append(i)
-    else:
-        store_list = time_list
-
-    if not store_list:
-        return jsonify({'code': RET.OK, 'msg': MSG.NODATA})
-    page_list = list()
-    data = sorted(store_list, key=operator.itemgetter("date"))
-    data = list(reversed(data))
-    for i in range(0, len(data), int(limit)):
-        page_list.append(data[i: i + int(limit)])
-    results["data"] = page_list[int(page) - 1]
-    results["count"] = len(data)
-    return jsonify(results)
-
-
-@admin_blueprint.route('/account_decline', methods=['GET'])
-@admin_required
-def account_decline():
-    # 当前用户较少不采取分页
-    page = request.args.get('page')
-    limit = request.args.get('limit')
-    alias_name = request.args.get("acc_name")
-    ca_data = cache.get('decline_data')
-    if not ca_data:
-        data = SqlDataNative.bento_alltrans()
-        acc_sum_trans = dict()
-        for i in data:
-            cus = i.get('before_balance')
-            if cus not in acc_sum_trans:
-                cus_dict = dict()
-                cus_dict[cus] = {'decl': 0, 't_data': 0, 'three_decl': 0, 'three_tran': 0}
-                acc_sum_trans.update(cus_dict)
-        for n in data:
-            date = n.get('date')
-            do_type = n.get('do_type')
-            cus = n.get('before_balance')
-            value = {'t_data': acc_sum_trans.get(cus).get('t_data') + 1}
-            acc_sum_trans.get(cus).update(value)
-            if do_type == 'DECLINED':
-                value = {'decl': acc_sum_trans.get(cus).get('decl') + 1}
-                acc_sum_trans.get(cus).update(value)
-            today_time = time.strftime('%Y-%m-%d', time.localtime(time.time()))
-            max_today = datetime.datetime.strptime("{} {}".format(change_today(today_time, 0), "23:59:59"),
-                                                   '%Y-%m-%d %H:%M:%S')
-            min_today = datetime.datetime.strptime("{} {}".format(change_today(today_time, -3), "23:59:59"),
-                                                   '%Y-%m-%d %H:%M:%S')
-            trans_t = datetime.datetime.strptime(date, '%Y-%m-%d %H:%M:%S')
-            if min_today <= trans_t <= max_today:
-                value = {'three_tran': acc_sum_trans.get(cus).get('three_tran') + 1}
-                acc_sum_trans.get(cus).update(value)
-            if min_today < trans_t < max_today and do_type == 'DECLINED':
-                value = {'three_decl': acc_sum_trans.get(cus).get('three_decl') + 1}
-                acc_sum_trans.get(cus).update(value)
-        res = list()
-        for n in acc_sum_trans:
-            value = acc_sum_trans.get(n)
-            value['alias'] = n
-            value['all_bili'] = "{} {}".format(float("%.4f" % (value.get('decl') / value.get('t_data') * 100)),
-                                      "%") if value.get('decl') != 0 else 0
-            value['bili'] = "{} {}".format(float("%.4f" % (value.get('three_decl') / value.get('three_tran') * 100)),
-                                      "%") if value.get('three_tran') != 0 else 0
-            if value.get('three_tran') != 0 and value.get('three_decl') / value.get('three_tran') > 0.1:
-                value['show'] = 'T'
-            else:
-                value['show'] = 'F'
-            res.append(value)
-            # 设置缓存
-        cache.set('decline_data', res, timeout=60 * 60 * 6)
-
-    else:
-        res = ca_data
-        if alias_name:
-            res_alias = list()
-            for i in res:
-                if alias_name in i.get('alias'):
-                    res_alias.append(i)
-            return jsonify({"code": 0, "count": len(res_alias), "data": res_alias, "msg": "SUCCESSFUL"})
-        return jsonify({"code": 0, "count": len(res), "data": res, "msg": "SUCCESSFUL"})
-
-
-@admin_blueprint.route('/decline_data', methods=['GET'])
-@admin_required
-def decline_data():
-    page = request.args.get('page')
-    limit = request.args.get('limit')
-
-    time_range = request.args.get('time_range')
-    card_num = request.args.get('order_num')
-    acc_name = request.args.get('acc_name')
-    time_sql = ""
-    card_sql = ""
-    accname_sql = ""
-    if time_range:
-        min_time = time_range.split(' - ')[0] + ' 00:00:00'
-        max_time = time_range.split(' - ')[1] + ' 23:59:59'
-        time_sql = "AND date BETWEEN " + "'" + min_time + "'" + " and " + "'" + max_time + "'"
-    if card_num:
-        card_sql = "AND last_four LIKE '%{}%'".format(card_num)
-    if acc_name:
-        accname_sql = "AND attribution LIKE '%{}%'".format(acc_name)
-    results = {"code": RET.OK, "msg": MSG.OK, "count": 0, "data": ""}
-    # task_info = SqlDataNative.search_decline_data("大龙", "", "")
-    task_info = SqlDataNative.admin_decline_data(accname_sql, card_sql, time_sql)
-    page_list = list()
-    task_info = sorted(task_info, key=operator.itemgetter("date"))
-    task_info = list(reversed(task_info))
-    for i in range(0, len(task_info), int(limit)):
-        page_list.append(task_info[i:i + int(limit)])
-    results["data"] = page_list[int(page) - 1]
-    results["count"] = len(task_info)
-    return jsonify(results)
-
-
 @admin_blueprint.route('/bento_refund', methods=['GET'])
 @admin_required
 def bento_refund():
@@ -707,7 +595,7 @@ def one_detail():
         card_detail = svb.card_detail(card_id)
         if card_status:
             available_balance = card_detail.get('data').get('available_balance')
-            context['available_balance'] = available_balance/100
+            context['available_balance'] = available_balance / 100
             context['card_status'] = "正常"
         else:
             context['available_balance'] = 0
@@ -718,12 +606,12 @@ def one_detail():
             info_list.append({
                 "acquirer_ica": td.get("acquirer_ica"),
                 "approval_code": td.get("approval_code"),
-                "billing_amount": float(td.get("billing_amount")/100),
+                "billing_amount": float(td.get("billing_amount") / 100),
                 "billing_currency": td.get("billing_currency"),
                 "issuer_response": td.get("issuer_response"),
                 "mcc": td.get("mcc"),
                 "mcc_description": td.get("mcc_description"),
-                "merchant_amount": float(td.get("merchant_amount")/100),
+                "merchant_amount": float(td.get("merchant_amount") / 100),
                 "merchant_currency": td.get("merchant_currency"),
                 "merchant_id": td.get("merchant_id"),
                 "merchant_name": td.get("merchant_name"),
@@ -1054,7 +942,14 @@ def top_history():
     for i in range(0, len(task_info), int(limit)):
         page_list.append(task_info[i:i + int(limit)])
     data = page_list[int(page) - 1]
-    results['data'] = data
+    info_list = list()
+    for o in data:
+        x_time = o.get('time')
+        user_id = o.get('user_id')
+        sum_money = SqlData.search_time_sum_money(x_time, user_id)
+        o['sum_balance'] = round(sum_money, 2)
+        info_list.append(o)
+    results['data'] = info_list
     results['count'] = len(task_info)
     return jsonify(results)
 
