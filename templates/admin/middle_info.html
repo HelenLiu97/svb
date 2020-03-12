@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<meta name="renderer" content="webkit">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+	<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+	<meta name="apple-mobile-web-app-status-bar-style" content="black">
+	<meta name="apple-mobile-web-app-capable" content="yes">
+	<meta name="format-detection" content="telephone=no">
+	<link rel="stylesheet" href="../../static/layui/css/layui.css" media="all" />
+	<link rel="stylesheet" href="../../static/css/public.css" media="all" />
+</head>
+<tablse class="layui-hide" id="middle_info" lay-filter="middle_info"></tablse>
+<script type="text/html" id="middle_bar">
+    <a class="layui-btn layui-btn-normal layui-btn-xs" lay-event="mid_edit">编辑</a>
+{#    <a class="layui-btn layui-btn-warm layui-btn-xs" lay-event="del">提成</a>#}
+</script>
+
+
+<script type="text/javascript" src="../../static/layui/layui.js"></script>
+<script type="text/javascript">
+    layui.use(['form','layer','layedit','laydate','upload', 'table'],function(){
+        var table = layui.table;
+        table.render({
+                elem: '#middle_info'
+                , height: 'full-0'
+                , cellMinWidth: '80'
+                , url: '/admin/middle_info/' //数据接口
+                , title: '中介信息'
+                , limit: 20
+                , toolbar: "true" //开启工具栏，此处显示默认图标，可以自定义模板，详见文档
+                , totalRow: true //开启合计行
+                , cols: [[ //表头
+                    {type: 'numbers'}
+                    , {field: 'name', title: '中介名', align: 'center', sort: true, totalRowText: '合计：'}
+                    , {field: 'cus_num', title: '客户数量', align: 'center', sort: true,}
+                    , {field: 'account', title: '账号', align: 'center', sort: true,}
+                    , {field: 'password', title: '密码', align: 'center', sort: true,}
+                    , {field: 'phone_num', title: '电话', align: 'center', sort: true}
+                    , {field: 'price_one', title: '0-3客户量', align: 'center', sort: true}
+                    , {field: 'price_two', title: '4-6客户量', align: 'center', sort: true}
+                    , {field: 'price_three', title: '7以上客户量', align: 'center', sort: true}
+                    , {fixed: 'right', width: 100, align: 'center', toolbar: '#middle_bar'}
+                ]]
+                , id: 'pay_history'
+                , page: true
+            });
+
+        table.on('tool(middle_info)', function (obj) {
+            var data = obj.data
+                , layEvent = obj.event;
+
+            if (layEvent === 'mid_edit') {
+                layui.layer.open({
+                    title: '修改中介为 [ ' + data.name + ' ] 的相关信息',
+                    type: 2,
+                    anim: 3,
+                    area: ['40%', '70%'],//宽高
+                    shadeClose: true, //点击遮罩关闭
+                    content: '/admin/acc_to_middle/?middle_id='+data.middle_id,
+                    success: function (layero, index) {
+                        var body = layer.getChildFrame('body', index);
+                        body.contents().find("#name").val(data.name)
+                    }
+                });
+            } else if (layEvent === 'edit') {
+                layui.layer.open({
+                    title: '修改卡号为 [ ' + data.name + ' ] 的相关信息',
+                    type: 2,
+                    anim: 3,
+                    area: ['20%', '35%'],//宽高
+                    shadeClose: true, //点击遮罩关闭
+                    content: '/admin/edit_parameter/',
+                    success: function (layero, index) {
+                        var body = layer.getChildFrame('body', index);
+                        body.contents().find("#name_str").val(data.name)
+                    }
+                });
+                return false
+            }
+        });
+
+})
+</script>
+</body>
+</html>

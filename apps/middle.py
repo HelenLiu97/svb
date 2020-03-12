@@ -1,10 +1,9 @@
 import json
 import logging
 import operator
-
 from config import cache
 from tools_me.mysql_tools import SqlData
-from flask import request, render_template, jsonify, session, g
+from flask import request, render_template, jsonify, session, g, redirect
 from tools_me.other_tools import middle_required, get_nday_list, now_year, now_day, date_to_week, wed_to_tu
 from tools_me.parameter import RET, MSG
 from . import middle_blueprint
@@ -32,7 +31,7 @@ def change_phone():
 @middle_required
 def logout():
     session.pop('middle_id')
-    return render_template('middle/login_middle.html')
+    return redirect('/middle/')
 
 
 @middle_blueprint.route('/money_detail', methods=['GET'])
@@ -190,17 +189,17 @@ def middle_index():
         context['year'] = year
         name = SqlData.search_middle_field('name', middle_id)
         context['name'] = name
-        return render_template('middle/UserIndex.html', **context)
+        return render_template('middle/index.html', **context)
 
 
 @middle_blueprint.route('/login', methods=['GET', 'POST'])
 def middle_login():
     if request.method == 'GET':
-        return render_template('middle/login_middle.html')
+        return render_template('middle/login.html')
     if request.method == 'POST':
         data = json.loads(request.form.get('data'))
-        account = data.get('account')
-        pass_word = data.get('password')
+        account = data.get('name')
+        pass_word = data.get('pass_word')
         info = SqlData.search_middle_login(account)
         if not info:
             return jsonify({'code': RET.SERVERERROR, 'msg': MSG.PSWDERROR})

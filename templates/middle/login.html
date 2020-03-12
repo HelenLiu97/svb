@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>556338中介</title>
+    <link rel="icon" href="/static/images/middle.ico">
+  <meta name="description" content="particles.js is a lightweight JavaScript library for creating particles.">
+  <meta name="author" content="Vincent Garreau" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <link rel="stylesheet" media="screen" href="/static/css/middle_login.css">
+</head>
+<body>
+<!-- particles.js container -->
+<div id="particles-js" style="display: flex;align-items: center;justify-content: center">
+</div>
+<div class="login-page">
+   <div class="login-content">
+       <div class="login-tit"><span style="text-align: center;display:block;">556338中介登录</span></div>
+     <div class="login-input">
+       <input type="text" placeholder="用户名" id="user_name">
+     </div>
+     <div class="login-input">
+      <input type="password" placeholder="密码" id="pass_word">
+    </div>
+    <div class="login-btn" id="sub">
+      <div class="login-btn-left">
+        <span>登录</span>
+      </div>
+    </div>
+   </div>
+</div>
+
+
+<!-- scripts -->
+<script type="text/javascript" src="/static/layui/layui.all.js"></script>
+<script src="/static/js/particles.js"></script>
+<script src="/static/js/app.js"></script>
+<script>
+    var $ = layui.jquery;
+
+    $("#sub").on("click", function () {
+        var user_name = $("#user_name").val(),
+            pass_word = $("#pass_word").val();
+        if (user_name == "" || pass_word == ""){
+            layer.msg('请输入账号或密码！')
+        }else{
+            var data = JSON.stringify({name:user_name, pass_word: pass_word});
+            $.ajax({
+				type : 'POST',
+				url : '/middle/login',
+				data : {data:data},
+				dataType : 'json',
+				success : function(data) {
+			    	console.log(data.code);
+					// 成功提示框
+                    if (data.code == 0){
+                        location.href = '/middle/'
+                    }else if(data.code == 502){
+                        parent.layer.msg(data.msg, {
+						icon : 5
+					});
+                    }
+
+				},
+				error : function(data) {
+					// 异常提示
+					parent.layer.msg('出现网络故障', {
+						icon : 5
+					});
+					parent.layer.closeAll('iframe'); //关闭弹框
+				}
+			});
+        }
+    })
+
+</script>
+</body>
+</html>

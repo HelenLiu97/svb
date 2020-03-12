@@ -63,6 +63,31 @@
 			]
 		},
 		{
+			"title": "中介中心",
+			"icon": "&#xe770;",
+			"spread": false,
+			"children": [
+				{
+					"title": "添加中介",
+					"icon": "&#xe654;",
+					"href": "/admin/add_middle/",
+					"spread": false
+				},
+				{
+					"title": "中介管理",
+					"icon": "&#xe665;",
+					"href": "/admin/middle_info_html/",
+					"spread": false
+				},
+				{
+					"title": "中介提成",
+					"icon": "&#xe65e;",
+					"href": "/admin/middle_money_html/",
+					"spread": false
+				}
+			]
+		},
+		{
 			"title": "系统设置",
 			"icon": "&#xe614;",
 			"spread": false,

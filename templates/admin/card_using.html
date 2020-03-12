@@ -33,11 +33,18 @@
                      <button class="layui-btn" id="sea_card" type="submit">搜索</button>
                      <button type="reset"  class="layui-btn layui-btn-primary">重置</button>
                  </div>
+                     <div class="layui-inline">
+                         <input type="radio" name="card_status" value="show" lay-filter="card_status" title="显示全部卡">
+                         <input type="radio" name="card_status" value="hide" lay-filter="card_status" title="不显示注销卡" checked >
+                     </div>
                  </div>
             </div>
           </form>
 </blockquote>
 <table class="layui-show" id="card_all" lay-filter="card_all"></table>
+<script type="text/html" id="copy">
+    <a class="layui-btn layui-btn-primary layui-btn-xs" lay-event="copy" title="复制卡号"><i class="layui-icon">&#xe655;</i></a>
+</script>
 <script>
     layui.use(['table','laydate','form','jquery'], function () {
         var table=layui.table,
@@ -45,14 +52,18 @@
             form=layui.form,
             $=layui.jquery;
 
+        var card_status= $('input[name="card_status"]:checked').val();
+
         //执行一个 table 实例
         table.render({
             elem: '#card_all'
             , height: 'full-90'
             , cellMinWidth: '80'
-            , url: '/admin/card_all' //数据接口
+            , url: '/admin/card_all?card_status=' + card_status //数据接口
             , title: '卡信息'
             , toolbar: '#toolbarDemo'
+            , skin: 'line'
+            , even: true
             , limit:50
             , limits:[50,100,150,200,250,300,350,400,450,500]
             {#, toolbar: "r" //开启工具栏，此处显示默认图标，可以自定义模板，详见文档#}
@@ -60,6 +71,7 @@
             , cols: [[ //表头
                 {type:'numbers'}
                 , {field: 'card_no', title: '卡号', align: 'center', }
+                , {field: '', toolbar:"#copy", width:50}
                 , {field: 'card_id', title: '卡ID', align: 'center', }
                 , {field: 'label', title: '标签', align: 'center', }
                 , {field: 'expire', title: '有效期', align: 'center',}
@@ -73,6 +85,26 @@
             , id: 'card_all'
             , page: true
         });
+
+        form.on('radio(card_status)', function (data) {
+    　　　　if (data.value == 'show'){
+                table.reload("card_all", {
+                    url:'/admin/card_all?card_status=show',
+                    page: {
+                        curr: 1 //重新从第 1 页开始
+                    }
+                });
+                return false;
+            } else if (data.value == 'hide'){
+                table.reload("card_info", {
+                    url:'/admin/card_all?card_status=hide',
+                    page: {
+                        curr: 1 //重新从第 1 页开始
+                    }
+                });
+                return false;
+            }
+　　　  });
 
         table.on('rowDouble(card_all)', function(obj){
         var data = obj.data;
@@ -114,6 +146,27 @@
            }, '/admin/card_all');
         return false;
      });
+
+        function copyText(text, callback){ // text: 要复制的内容， callback: 回调
+            var tag = document.createElement('input');
+            tag.setAttribute('id', 'cp_hgz_input');
+            tag.value = text;
+            document.getElementsByTagName('body')[0].appendChild(tag);
+            document.getElementById('cp_hgz_input').select();
+            document.execCommand('copy');
+            document.getElementById('cp_hgz_input').remove();
+            if(callback) {callback(text)}
+        }
+
+        table.on('tool(card_all)', function (obj) {
+            var data = obj.data //获得当前行数据
+                , layEvent = obj.event; //获得 lay-event 对应的值
+            if (layEvent === 'copy'){
+                copyText(data.card_no.trim(), function () {
+                    layer.msg('复制卡号成功！')
+                })
+            }
+        })
 
 
     })

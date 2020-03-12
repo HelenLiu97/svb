@@ -16,7 +16,7 @@ class ConnMysql(object):
             user = "root"
             password = "admin"
             database = "svb"
-            self.__pool = PooledDB(pymysql, 6, host=host, port=port,
+            self.__pool = PooledDB(pymysql, 4, host=host, port=port,
                                  user=user, passwd=password, db=database,
                                  charset='utf8', setsession=['SET AUTOCOMMIT = 1']
                                  )

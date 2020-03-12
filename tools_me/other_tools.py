@@ -155,7 +155,7 @@ def login_required(view_func):
                 # 执行被装饰的视图函数
                 return view_func(*args, **kwargs)
         except:
-            return redirect('/user/login')
+            return redirect('/user/login/')
 
     return wraaper
 
@@ -194,7 +194,7 @@ def middle_required(view_func):
         """具体实现判断用户是否登录的逻辑"""
         middle_id = session.get('middle_id')
         if not middle_id:
-            return render_template('middle/login_middle.html')
+            return redirect('/middle/login')
         else:
             # 当用户已登录，使用g变量记录用户的user_id，方便被装饰是的视图函数中可以直接使用
             g.middle_id = middle_id

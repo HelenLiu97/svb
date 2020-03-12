@@ -176,11 +176,25 @@ class SVB(object):
         resp = requests.get(url, headers=self.create_header(method, path), timeout=5)
         print(resp.json())
 
+    def card_event(self):
+        path = '/v1/events/8904371'
+        method = 'GET'
+        url = self.base_url + path
+        resp = requests.get(url, headers=self.create_header(method, path), timeout=5)
+        print(resp.json())
+
+    def create_hook(self):
+        path = '/v1/webhooks'
+        method = 'POST'
+        url = self.base_url + path
+        resp = requests.post(url, headers=self.create_header(method, path), timeout=5)
+        print(resp.json())
+
 
 svb = SVB()
 
 if __name__ == '__main__':
     print(time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(time.time())))
-    res = svb.update_card(38152080, 200)
+    res = svb.card_detail(65377501)
     print(res)
     print(time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(time.time())))

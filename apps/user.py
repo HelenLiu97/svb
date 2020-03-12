@@ -6,7 +6,8 @@ import re
 import time
 
 from config import cache
-from tools_me.other_tools import xianzai_time, login_required, check_float, account_lock, get_nday_list
+from tools_me.other_tools import xianzai_time, login_required, check_float, account_lock, get_nday_list, \
+    verify_login_time
 from tools_me.parameter import RET, MSG, TRANS_TYPE, DO_TYPE
 from tools_me.redis_tools import RedisTool
 from tools_me.remain import get_card_remain
@@ -460,7 +461,7 @@ def card_batch():
                         SqlData.update_balance(top_money_do_money, user_id)
                         n_time = xianzai_time()
                         balance = SqlData.search_user_field('balance', user_id)
-                        SqlData.insert_account_trans(n_time, TRANS_TYPE.OUT, DO_TYPE.TOP_UP, card_number,
+                        SqlData.insert_account_trans(n_time, TRANS_TYPE.OUT, DO_TYPE.BATCH, card_number,
                                                      top_money, before_balance, balance, user_id)
                         success_list.append(card_number)
                     fail_list.append(card_number)
@@ -655,7 +656,14 @@ def top_history():
     task_info = list(reversed(task_info))
     for i in range(0, len(task_info), int(limit)):
         page_list.append(task_info[i:i + int(limit)])
-    results['data'] = page_list[int(page) - 1]
+    data = page_list[int(page) - 1]
+    info_list = list()
+    for o in data:
+        x_time = o.get('time')
+        sum_money = SqlData.search_time_sum_money(x_time, user_id)
+        o['sum_top'] = round(sum_money, 2)
+        info_list.append(o)
+    results['data'] = info_list
     results['count'] = len(task_info)
     return jsonify(results)
 
@@ -1016,6 +1024,34 @@ def user_main():
     notice = SqlData.search_admin_field('notice')
     up_remain_time = SqlData.search_admin_field('up_remain_time')
     card_remain = SqlData.search_sum_card_balance(user_id)
+
+    # 获取三天前的时间
+    three_before = (datetime.datetime.now() - datetime.timedelta(days=3)).strftime("%Y-%m-%d")
+
+    # 获取所有的交易数据
+    card_trans = SqlData.search_card_trans(user_id, '')
+    decline_num = 0
+    trans_num = 0
+    for tran in card_trans:
+        status = tran.get('status')  # 根据状态来判断给订单是否decline
+        u_name = tran.get('name')
+        trans_time = tran.get('transaction_date_time')
+        mat = re.search(r"(\d{4}-\d{1,2}-\d{1,2})", trans_time)
+        # 如果匹配时间失败则时间调为4天前(不计数)
+        try:
+            trans_t = mat.group(0)
+        except:
+            trans_t = (datetime.datetime.now() - datetime.timedelta(days=4)).strftime("%Y-%m-%d")
+        result = verify_login_time(three_before + " 00:00:00", trans_t + " 00:00:00")
+        if result and status == 'F':
+            decline_num += 1
+        if result:
+            trans_num += 1
+
+    sum_decline = SqlData.search_trans_count(user_id, "AND card_trans.status='F'")
+    three_bili = str(float("%.4f" % (decline_num / trans_num * 100)) if trans_num != 0 else 0) + "%"
+    sum_bili = str(float("%.4f" % (sum_decline / len(card_trans) * 100)) if len(card_trans) != 0 else 0) + "%"
+
     update_t = up_remain_time
     context = dict()
     context['balance'] = balance
@@ -1025,6 +1061,8 @@ def user_main():
     context['card_remain'] = card_remain
     context['update_t'] = update_t
     context['vice_num'] = vice_num
+    context['three_bili'] = three_bili
+    context['sum_bili'] = sum_bili
     context['notice'] = notice
     return render_template('user/main.html', **context)
 

@@ -521,7 +521,7 @@ class SqlData(object):
         self.close_connect(conn, cursor)
 
     def search_user_field_middle(self, middle_id):
-        sql = "SELECT id, name FROM account WHERE middle_id = {}".format(middle_id)
+        sql = "SELECT id, name FROM user_info WHERE middle_id = {}".format(middle_id)
         conn, cursor = self.connect()
         cursor.execute(sql)
         rows = cursor.fetchall()
@@ -537,7 +537,7 @@ class SqlData(object):
         return account_list
 
     def search_user_middle_info(self, middle_id):
-        sql = "SELECT id, name, sum_balance, balance FROM account WHERE middle_id = {}".format(middle_id)
+        sql = "SELECT id, name, sum_balance, balance FROM user_info WHERE middle_id = {}".format(middle_id)
         conn, cursor = self.connect()
         cursor.execute(sql)
         rows = cursor.fetchall()
@@ -555,7 +555,7 @@ class SqlData(object):
         return account_list
 
     def search_card_count(self, account_id, time_range):
-        sql = "SELECT COUNT(*) FROM account_trans WHERE account_id={} AND do_type='开卡' {}".format(account_id,
+        sql = "SELECT COUNT(*) FROM user_trans WHERE user_id={} AND do_type='开卡' {}".format(account_id,
                                                                                                   time_range)
         conn, cursor = self.connect()
         cursor.execute(sql)
@@ -923,7 +923,8 @@ class SqlData(object):
             else:
                 info_dict['pay_time'] = ""
             info_dict['name'] = i[12]
-            info_list.append(info_dict)
+            if i[6]:
+                info_list.append(info_dict)
         return info_list
 
     def update_middle_sub(self, pay_status, pay_time, info_id):
@@ -960,11 +961,9 @@ class SqlData(object):
             info_list.append(info_dict)
         return info_list
 
-    def search_trans_admin(self, cus_sql, card_sql, time_sql, do_sql, trans_type):
+    def search_trans_admin(self, cus_sql, card_sql, time_sql, do_sql):
         sql = "SELECT user_trans.*, user_info.name FROM user_trans LEFT JOIN user_info ON user_trans.user_id" \
-              " = user_info.id WHERE user_trans.do_date != ''  {} {} {} {} AND user_trans.trans_type='{}'".format(
-            cus_sql, card_sql, time_sql,
-            do_sql, trans_type)
+              " = user_info.id WHERE user_trans.do_date != ''  {} {} {} {}".format(cus_sql, card_sql, time_sql, do_sql)
         conn, cursor = self.connect()
         cursor.execute(sql)
         rows = cursor.fetchall()
@@ -1471,7 +1470,7 @@ class SqlData(object):
         self.close_connect(conn, cursor)
 
     def bento_chart_data(self, alias, time_range):
-        sql = "SELECT COUNT(*) FROM account_trans WHERE do_type='开卡' and account_id={} {}".format(alias, time_range)
+        sql = "SELECT COUNT(*) FROM user_trans WHERE do_type='开卡' and user_id={} {}".format(alias, time_range)
         conn, cursor = self.connect()
         cursor.execute(sql)
         rows = cursor.fetchall()

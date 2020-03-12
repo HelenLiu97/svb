@@ -37,11 +37,16 @@
             form = layui.form,
             $ = layui.jquery;
 
+        laydate.render({
+            elem: '#test8'
+            , range: true
+        });
+
         table.render({
             elem: '#cus_trans_log'
             , height: 'full-90'
             , cellMinWidth: '80'
-            , url: '/admin/account_trans/?trans_type=支出' //数据接口
+            , url: '/admin/account_trans/' //数据接口
             , title: '客户交易记录'
             , limit:50
             , limits:[50,100,150,200,250,300,350,400,450,500]
@@ -74,7 +79,6 @@
                      cus_name:cus_name,
                      trans_card: trans_card,
                      time_range:time_range,
-                     trans_type:'支出',
                      do_type:do_type,
                    }
                }, '/admin/account_trans/');

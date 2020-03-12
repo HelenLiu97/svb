@@ -320,22 +320,59 @@ def qr_info():
     return jsonify(results)
 
 
+@admin_blueprint.route('/edit_email/', methods=['POST'])
+@admin_required
+def edit_email():
+    user = request.form.get('user')
+    email = request.form.get('email')
+    push_json = SqlData.search_admin_field('top_push')
+    push_dict = json.loads(push_json)
+    push_dict[user] = email
+    json_info = json.dumps(push_dict, ensure_ascii=False)
+    SqlData.update_admin_field('top_push', json_info)
+    results = {"code": RET.OK, "msg": MSG.OK}
+    return jsonify(results)
+
+
+@admin_blueprint.route('/del_email/')
+@admin_required
+def del_email():
+    try:
+        user = request.args.get('user')
+        push_json = SqlData.search_admin_field('top_push')
+        push_dict = json.loads(push_json)
+        del push_dict[user]
+        json_info = json.dumps(push_dict, ensure_ascii=False)
+        SqlData.update_admin_field('top_push', json_info)
+        results = {"code": RET.OK, "msg": MSG.OK}
+        return jsonify(results)
+    except Exception as e:
+        logging.error(e)
+        return jsonify({'code': RET.SERVERERROR, 'msg': MSG.SERVERERROR})
+
+
+@admin_blueprint.route('/top_msg_table/', methods=['GET'])
+@admin_required
+def email_table():
+    push_json = SqlData.search_admin_field('top_push')
+    if push_json:
+        push_dict = json.loads(push_json)
+        info_list = list()
+        for i in push_dict:
+            info_dict = dict()
+            info_dict['user'] = i
+            info_dict['email'] = push_dict.get(i)
+            info_list.append(info_dict)
+        return jsonify({'code': RET.OK, 'msg': MSG.OK, 'count': len(info_list), 'data': info_list})
+    else:
+        return jsonify({'code': RET.OK, 'msg': MSG.NODATA})
+
+
 @admin_blueprint.route('/top_msg/', methods=['GET', 'POST'])
 @admin_required
 def top_msg():
     if request.method == 'GET':
-        push_json = SqlData.search_admin_field('top_push')
-        info_list = list()
-        if push_json:
-            push_dict = json.loads(push_json)
-            for i in push_dict:
-                info_dict = dict()
-                info_dict['user'] = i
-                info_dict['email'] = push_dict.get(i)
-                info_list.append(info_dict)
-        context = dict()
-        context['info_list'] = info_list
-        return render_template('admin/top_msg.html', **context)
+        return render_template('admin/top_msg.html')
     if request.method == 'POST':
         try:
             results = {"code": RET.OK, "msg": MSG.OK}
@@ -348,8 +385,8 @@ def top_msg():
                 info_dict[top_people] = email
             else:
                 info_dict = json.loads(push_json)
-                if top_people in info_dict and email == '删除':
-                    info_dict.pop(top_people)
+                if top_people in info_dict:
+                    return jsonify({'code': RET.SERVERERROR, 'msg': '收件人已存在！'})
                 else:
                     info_dict[top_people] = email
             json_info = json.dumps(info_dict, ensure_ascii=False)
@@ -492,7 +529,6 @@ def account_trans():
     time_range = request.args.get('time_range')
     cus_name = request.args.get('cus_name')
     trans_card = request.args.get('trans_card')
-    trans_type = request.args.get('trans_type')
     do_type = request.args.get('do_type')
     time_sql = ""
     card_sql = ""
@@ -509,7 +545,7 @@ def account_trans():
     if do_type:
         do_sql = "AND user_trans.do_type LIKE '%{}%'".format(do_type)
 
-    task_info = SqlData.search_trans_admin(cus_sql, card_sql, time_sql, do_sql, trans_type)
+    task_info = SqlData.search_trans_admin(cus_sql, card_sql, time_sql, do_sql)
     results = {"code": RET.OK, "msg": MSG.OK, "count": 0, "data": ""}
     if len(task_info) == 0:
         results['MSG'] = MSG.NODATA
@@ -556,6 +592,7 @@ def card_info_all():
         page = request.args.get('page')
         field = request.args.get('field')
         value = request.args.get('value')
+        card_status = request.args.get('card_status')
         if field == "card_cus":
             account_id = SqlData.search_user_field_name('id', value)
             sql = "WHERE user_id=" + str(account_id)
@@ -564,9 +601,10 @@ def card_info_all():
         elif field:
             sql = "WHERE " + field + " LIKE '%" + value + "%'"
         else:
-            # 如果没有搜索条件,则分页查询MYSQL,加快速度
-            start_index = (int(page) - 1) * int(limit)
-            sql = 'limit ' + str(start_index) + ", " + limit + ';'
+            if card_status == "show":
+                sql = "WHERE status != ''"
+            else:
+                sql = "WHERE status = 'T'"
         results = dict()
         results['code'] = RET.OK
         results['msg'] = MSG.OK
@@ -575,10 +613,15 @@ def card_info_all():
             results['code'] = RET.OK
             results['msg'] = MSG.NODATA
             return jsonify(results)
-        results['data'] = list(reversed(info_list))
-        results['count'] = SqlData.search_table_count('card_info')
+        page_list = list()
+        info_list = list(reversed(info_list))
+        for i in range(0, len(info_list), int(limit)):
+            page_list.append(info_list[i:i + int(limit)])
+        results['data'] = page_list[int(page) - 1]
+        results['count'] = len(info_list)
         return jsonify(results)
     except Exception as e:
+        print(e)
         logging.error(str(e))
         return jsonify({'code': RET.SERVERERROR, 'msg': MSG.SERVERERROR})
 
@@ -632,6 +675,12 @@ def sub_middle_money():
     n_time = xianzai_time()
     SqlData.update_middle_sub('已确认', n_time, int(info_id))
     return jsonify({"code": RET.OK, "msg": MSG.OK})
+
+
+@admin_blueprint.route('/middle_money_html/', methods=['GET'])
+@admin_required
+def middle_html():
+    return render_template('admin/middle_money.html')
 
 
 @admin_blueprint.route('/middle_money', methods=['GET'])
@@ -760,37 +809,40 @@ def middle_info():
     return jsonify(results)
 
 
-@admin_blueprint.route('/add_middle/', methods=['POST'])
+@admin_blueprint.route('/add_middle/', methods=["GET",'POST'])
 @admin_required
 def add_middle():
-    results = {"code": RET.OK, "msg": MSG.OK}
-    try:
-        data = json.loads(request.form.get('data'))
-        name = data.get('name')
-        account = data.get('account')
-        password = data.get('password')
-        phone_num = data.get('phone_num')
-        price_one = float(data.get('price_one'))
-        price_two = float(data.get('price_two'))
-        price_three = float(data.get('price_three'))
-        ret = SqlData.search_middle_ed(name)
-        if ret:
-            results['code'] = RET.SERVERERROR
-            results['msg'] = '该中介名已存在!'
-            return jsonify(results)
-        if phone_num:
-            ret = re.match(r"^1[35789]\d{9}$", phone_num)
-            if not ret:
+    if request.method == "GET":
+        return render_template('admin/add_middle.html')
+    if request.method == "POST":
+        results = {"code": RET.OK, "msg": MSG.OK}
+        try:
+            data = json.loads(request.form.get('data'))
+            name = data.get('name')
+            account = data.get('account')
+            password = data.get('password')
+            phone_num = data.get('phone_num')
+            price_one = float(data.get('price_one'))
+            price_two = float(data.get('price_two'))
+            price_three = float(data.get('price_three'))
+            ret = SqlData.search_middle_ed(name)
+            if ret:
                 results['code'] = RET.SERVERERROR
-                results['msg'] = '请输入符合规范的电话号码!'
+                results['msg'] = '该中介名已存在!'
                 return jsonify(results)
-        SqlData.insert_middle(account, password, name, phone_num, price_one, price_two, price_three)
-        return jsonify(results)
-    except Exception as e:
-        logging.error(e)
-        results['code'] = RET.SERVERERROR
-        results['msg'] = RET.SERVERERROR
-        return jsonify(results)
+            if phone_num:
+                ret = re.match(r"^1[35789]\d{9}$", phone_num)
+                if not ret:
+                    results['code'] = RET.SERVERERROR
+                    results['msg'] = '请输入符合规范的电话号码!'
+                    return jsonify(results)
+            SqlData.insert_middle(account, password, name, phone_num, price_one, price_two, price_three)
+            return jsonify(results)
+        except Exception as e:
+            logging.error(e)
+            results['code'] = RET.SERVERERROR
+            results['msg'] = RET.SERVERERROR
+            return jsonify(results)
 
 
 @admin_blueprint.route('/add_account/', methods=['GET', 'POST'])
@@ -1107,15 +1159,11 @@ def account_card_list():
     return render_template('admin/card_list.html', **context)
 
 
-@admin_blueprint.route('/middle_info_html', methods=['GET'])
+@admin_blueprint.route('/middle_info_html/', methods=['GET'])
 @admin_required
 def middle_info_html():
     user_id = request.args.get('user_id')
-    middle_user_id = SqlData.middle_user_id(name=user_id)
-    middle_data = SqlData.middle_user_data(middle_id=middle_user_id)
-    context = dict()
-    context['pay_list'] = middle_data
-    return render_template('admin/middle_info.html', **context)
+    return render_template('admin/middle_info.html')
 
 
 @admin_blueprint.route('/line_chart', methods=['GET'])

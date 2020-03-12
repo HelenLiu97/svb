@@ -20,25 +20,7 @@
 </head>
 <body>
 
-       <div class="layui-form">
-          <table class="layui-table" lay-skin="nob" lay-size="sm">
-            <colgroup>
-            </colgroup>
-            <thead>
-              <tr>
-                <th>通知人</th>
-                <th>通知邮箱</th>
-              </tr>
-            </thead>
-            <tbody>
-            {% for i in info_list %}
-                <tr>
-                    <td>{{ i.user }}</td>
-                    <td>{{ i.email }}</td>
-                </tr>
-            {% endfor %}
-            </tbody>
-        </table>
+    <table class="layui-hide" id="top_msg" lay-filter="top_msg"></table>
     </div>
     <hr class="layui-bg-gray">
     <div id="details" style="padding: 20px;" lay-filter="detail">
@@ -67,9 +49,102 @@
         </div>
     </form>
 </div>
+    <script type="text/html" id="barDemo">
+    <a class="layui-btn layui-btn-xs" lay-event="edit">编辑</a>
+    <a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="del">删除</a>
+</script>
 <script>
-    layui.use('form', function(){
-        var form = layui.form;
+    layui.use(['form', 'table'], function(){
+        var form = layui.form,
+            table = layui.table,
+            $ = layui.jquery;
+
+
+        table.render({
+                elem: '#top_msg'
+                , height: 'full-250'
+                , cellMinWidth: '80'
+                , url: '/admin/top_msg_table/' //数据接口
+                , title: '收款码信息'
+                , skin: 'line'
+                , toolbar: false
+                , cols: [[ //表头
+                    {type:'numbers'}
+                    , {field: 'user', title: '收件人姓名', align: 'center',}
+                    , {field: 'email', title: '收件邮箱', align: 'center', }
+                    , {fixed: 'right', width: 250, align: 'center', toolbar: '#barDemo'}
+                ]]
+                , id: 'qr_code'
+            });
+
+        table.on('tool(top_msg)', function (obj) {
+            var data = obj.data
+                , layEvent = obj.event;
+
+            if (layEvent === 'del') {
+                layer.confirm('确认删除这个收件人?', function (index) {
+                $.ajax({
+                    type: 'GET',
+                    url: '/admin/del_email/?user=' + data.user,
+                    dataType: 'json',
+                    success: function (data) {
+                        // 成功提示框
+                        if (data.code == 0) {
+                            parent.layer.msg(data.msg, {
+                                icon: 6,time:1000
+                            });
+                            location.reload()
+                        } else if (data.code == 502) {
+                            parent.layer.msg(data.msg, {
+                                icon: 5
+                            });
+                        }
+
+                    },
+                    error: function (data) {
+                        // 异常提示
+                        parent.layer.msg('出现网络故障', {
+                            icon: 2
+                        });
+                    }
+                });
+                })
+            } else if (layEvent === 'edit'){
+                layer.prompt({title: '请输入新的邮箱', value:data.email}, function(num, index){
+
+                        $.ajax({
+                            type : 'POST',
+                            url : '/admin/edit_email/',
+                            data : {user:data.user,
+                                    email:num
+                            },
+                            dataType : 'json',
+                            beforeSend:function () {
+                            layer.load(2, {shade: false})
+                            },
+                            success : function(data) {
+                                // 成功提示框
+                                if (data.code == 0){
+                                    layer.closeAll();
+                                    parent.layer.msg(data.msg, {
+                                    icon : 6,
+                                });
+                                location.reload()
+                                }else if(data.code == 502){
+                                    layer.closeAll();
+                                    parent.layer.msg(data.msg, {
+                                    icon : 5
+                                });
+                                }
+
+                            }
+                        });
+                    layer.close(index);
+
+                });
+            }
+        });
+
       //监听提交
         form.on('submit(formDemo)', function(data){
             var data_info = {data:JSON.stringify(data.field)};
