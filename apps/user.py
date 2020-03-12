@@ -797,9 +797,9 @@ def push_log():
         if not info:
             results['msg'] = MSG.NODATA
             return jsonify(results)
-        task_info = info
+        task_info = task_info = sorted(info, key=operator.itemgetter('transaction_date_time'))
         page_list = list()
-        # task_info = list(reversed(task_info))
+        task_info = list(reversed(task_info))
         for i in range(0, len(task_info), int(limit)):
             page_list.append(task_info[i:i + int(limit)])
         results['data'] = page_list[int(page) - 1]

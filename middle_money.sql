@@ -8,7 +8,8 @@ Source Database       : svb
 
 Target Server Type    : MYSQL
 Target Server Version : 50643
-File Encoding         : 65001
+File Encoding         : 65001ls
+
 
 Date: 2020-03-12 16:33:29
 */

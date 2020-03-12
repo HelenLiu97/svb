@@ -138,9 +138,9 @@ def push_log():
         if not info:
             results['msg'] = MSG.NODATA
             return jsonify(results)
-        task_info = info
+        task_info = sorted(info, key=operator.itemgetter('transaction_date_time'))
         page_list = list()
-        # task_info = list(reversed(task_info))
+        task_info = list(reversed(task_info))
         for i in range(0, len(task_info), int(limit)):
             page_list.append(task_info[i:i + int(limit)])
         results['data'] = page_list[int(page) - 1]
@@ -525,7 +525,11 @@ def cus_log():
 def account_trans():
     page = request.args.get('page')
     limit = request.args.get('limit')
-
+    trans_type = request.args.get('trans_type')
+    if trans_type == "收入":
+        sql = "AND trans_type='收入'"
+    else:
+        sql = ""
     time_range = request.args.get('time_range')
     cus_name = request.args.get('cus_name')
     trans_card = request.args.get('trans_card')
@@ -545,7 +549,7 @@ def account_trans():
     if do_type:
         do_sql = "AND user_trans.do_type LIKE '%{}%'".format(do_type)
 
-    task_info = SqlData.search_trans_admin(cus_sql, card_sql, time_sql, do_sql)
+    task_info = SqlData.search_trans_admin(cus_sql, card_sql, time_sql, do_sql, sql)
     results = {"code": RET.OK, "msg": MSG.OK, "count": 0, "data": ""}
     if len(task_info) == 0:
         results['MSG'] = MSG.NODATA

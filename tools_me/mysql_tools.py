@@ -961,9 +961,9 @@ class SqlData(object):
             info_list.append(info_dict)
         return info_list
 
-    def search_trans_admin(self, cus_sql, card_sql, time_sql, do_sql):
+    def search_trans_admin(self, cus_sql, card_sql, time_sql, do_sql, sql):
         sql = "SELECT user_trans.*, user_info.name FROM user_trans LEFT JOIN user_info ON user_trans.user_id" \
-              " = user_info.id WHERE user_trans.do_date != ''  {} {} {} {}".format(cus_sql, card_sql, time_sql, do_sql)
+              " = user_info.id WHERE user_trans.do_date != ''  {} {} {} {} {}".format(cus_sql, card_sql, time_sql, do_sql, sql)
         conn, cursor = self.connect()
         cursor.execute(sql)
         rows = cursor.fetchall()
