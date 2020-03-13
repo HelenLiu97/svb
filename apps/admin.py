@@ -1275,7 +1275,7 @@ def index():
 def index_main():
     cus_count = SqlData.search_value_count('user_info')
     card_using = SqlData.search_value_count('card_info', "WHERE user_id != ''")
-    card_none = SqlData.search_value_count('card_info', "WHERE status ='F'")
+    card_none = SqlData.search_value_count('card_info', "WHERE status ='T'")
     sum_top = SqlData.search_table_sum('money', 'top_up', '')
     user_balance = SqlData.search_table_sum('balance', 'user_info', '')
     card_remain = SqlData.search_sum_card_remain()
