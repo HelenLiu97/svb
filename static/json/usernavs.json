@@ -16,6 +16,11 @@
 			"href": "/user/card_trans/",
 			"spread": false
 		},{
+			"title": "DECLINE信息",
+			"icon": "&#x1006;",
+			"href": "/user/card_decline/",
+			"spread": false
+		},{
 			"title": "账户支出记录",
 			"icon": "&#xe63c;",
 			"href": "/user/pay_history/",

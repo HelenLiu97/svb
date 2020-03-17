@@ -15,7 +15,7 @@ cache = Cache(app, config={'CACHE_TYPE': 'redis',
 
 app.config['SECRET_KEY'] = 'Gute9878934'
 
-app.config['PERMANENT_SESSION_LIFETIME'] = timedelta(seconds=60*60*12)
+app.config['PERMANENT_SESSION_LIFETIME'] = timedelta(seconds=60*60*6)
 
 app.app_context().push()
 # CSRFProtect(app)

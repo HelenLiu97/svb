@@ -568,7 +568,10 @@ def account_trans():
 @admin_blueprint.route('/card_table/')
 @admin_required
 def card_table():
-    return render_template('admin/card_using.html')
+    if g.admin_id == 857:
+        return render_template('user/no_auth.html')
+    else:
+        return render_template('admin/card_using.html')
 
 
 @admin_blueprint.route('/notice/', methods=['GET', 'POST'])
@@ -714,30 +717,6 @@ def middle_money():
         return jsonify({'code': RET.SERVERERROR, 'msg': MSG.SERVERERROR})
 
 
-@admin_blueprint.route('/card_info/', methods=['GET'])
-@admin_required
-def card_info():
-    limit = request.args.get('limit')
-    page = request.args.get('page')
-    user_id = request.args.get('u_id')
-    results = dict()
-    results['code'] = RET.OK
-    results['msg'] = MSG.OK
-    data = SqlData.search_card_info(user_id)
-    if len(data) == 0:
-        results['code'] = RET.SERVERERROR
-        results['msg'] = MSG.NODATA
-        return results
-    data = sorted(data, key=operator.itemgetter('act_time'))
-    page_list = list()
-    data = list(reversed(data))
-    for i in range(0, len(data), int(limit)):
-        page_list.append(data[i:i + int(limit)])
-    results['data'] = page_list[int(page) - 1]
-    results['count'] = len(data)
-    return jsonify(results)
-
-
 @admin_blueprint.route('/acc_to_middle/', methods=['GET', 'POST'])
 @admin_required
 def acc_to_middle():
@@ -853,7 +832,10 @@ def add_middle():
 @admin_required
 def add_account():
     if request.method == 'GET':
-        return render_template('admin/add_account.html')
+        if g.admin_id == 857:
+            return render_template('user/no_auth.html')
+        else:
+            return render_template('admin/add_account.html')
     if request.method == 'POST':
         results = {"code": RET.OK, "msg": MSG.OK}
         try:
@@ -897,8 +879,11 @@ def add_account():
 @admin_blueprint.route('/password/', methods=['GET'])
 @admin_required
 def password():
-    password = SqlData.search_admin_field('password')
-    return jsonify({'code': RET.OK, 'msg': password})
+    if g.admin_id == 857:
+        return jsonify({'code': RET.OK, 'msg': 'finance1001'})
+    else:
+        password = SqlData.search_admin_field('password')
+        return jsonify({'code': RET.OK, 'msg': password})
 
 
 @admin_blueprint.route('/change_pass/', methods=['GET', 'POST'])
@@ -1154,20 +1139,28 @@ def account_info():
     return jsonify(results)
 
 
-@admin_blueprint.route('/account_card_list', methods=['GET'])
-@admin_required
-def account_card_list():
-    attribution = request.args.get('user_name')
-    context = dict()
-    context['user_name'] = attribution
-    return render_template('admin/card_list.html', **context)
+# @admin_blueprint.route('/account_card_list', methods=['GET'])
+# @admin_required
+# def account_card_list():
+#     attribution = request.args.get('user_name')
+#     context = dict()
+#     context['user_name'] = attribution
+#     return render_template('admin/card_list.html', **context)
 
 
 @admin_blueprint.route('/middle_info_html/', methods=['GET'])
 @admin_required
 def middle_info_html():
-    user_id = request.args.get('user_id')
     return render_template('admin/middle_info.html')
+
+
+@admin_blueprint.route('/cus_list/', methods=['GET'])
+@admin_required
+def cus_list():
+    if g.admin_id == 857:
+        return render_template('admin/vice_cus_list.html')
+    else:
+        return render_template('admin/cus_list.html')
 
 
 @admin_blueprint.route('/line_chart', methods=['GET'])
@@ -1248,6 +1241,11 @@ def admin_login():
                 results['code'] = RET.SERVERERROR
                 results['msg'] = '验证码错误！'
                 return jsonify(results)
+            elif account == 'finance' and password == "finance1001":
+                session['admin_id'] = 857
+                session['admin_name'] = 'finance'
+                session.permanent = True
+                return jsonify(results)
             else:
                 admin_id, name = SqlData.search_admin_login(account, password)
                 session['admin_id'] = admin_id
@@ -1267,7 +1265,10 @@ def index():
     admin_name = g.admin_name
     context = dict()
     context['admin_name'] = admin_name
-    return render_template('admin/AdminIndex.html', **context)
+    if g.admin_id == 857:
+        return render_template('admin/vice_AdminIndex.html', **context)
+    else:
+        return render_template('admin/AdminIndex.html', **context)
 
 
 @admin_blueprint.route('/main/', methods=['GET'])

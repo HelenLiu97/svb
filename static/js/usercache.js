@@ -107,11 +107,11 @@ layui.use(['form','jquery',"layer"],function() {
         $(".admin-header-lock-input").focus();
     }
     $(".lockcms").on("click",function(){
-        window.sessionStorage.setItem("lockcms",true);
+        window.localStorage.setItem("userlockcms",true);
         lockPage();
     })
     // 判断是否显示锁屏
-    if(window.sessionStorage.getItem("lockcms") == "true"){
+    if(window.localStorage.getItem("userlockcms") == "true"){
         lockPage();
     }
 
@@ -144,7 +144,7 @@ layui.use(['form','jquery',"layer"],function() {
             $(this).siblings(".admin-header-lock-input").focus();
         }else{
             if($(this).siblings(".admin-header-lock-input").val() == password){
-                window.sessionStorage.setItem("lockcms",false);
+                window.localStorage.setItem("userlockcms",false);
                 $(this).siblings(".admin-header-lock-input").val('');
                 layer.closeAll("page");
             }else{

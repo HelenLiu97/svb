@@ -26,11 +26,6 @@
 					"icon": "&#xe698;",
 					"href": "/admin/cus_refund/",
 					"spread": false
-				},{
-					"title": "添加客户",
-					"icon": "&#xe654;",
-					"href": "/admin/add_account/",
-					"spread": false
 				}
 			]
 		},
@@ -40,11 +35,6 @@
 			"spread": false,
 			"children" : [
 				{
-					"title": "所有卡",
-					"icon": "&#xe66e;",
-					"href": "/admin/card_table/",
-					"spread": false
-				},{
 					"title": "卡全部交易记录",
 					"icon": "&#xe63c;",
 					"href": "/admin/card_trans_table/",
@@ -68,12 +58,6 @@
 			"spread": false,
 			"children": [
 				{
-					"title": "添加中介",
-					"icon": "&#xe654;",
-					"href": "/admin/add_middle/",
-					"spread": false
-				},
-				{
 					"title": "中介管理",
 					"icon": "&#xe665;",
 					"href": "/admin/middle_info_html/",
@@ -83,37 +67,6 @@
 					"title": "中介提成",
 					"icon": "&#xe65e;",
 					"href": "/admin/middle_money_html/",
-					"spread": false
-				}
-			]
-		},
-		{
-			"title": "系统设置",
-			"icon": "&#xe614;",
-			"spread": false,
-			"children": [
-				{
-					"title": "充值通知",
-					"icon": "&#xe626;",
-					"href": "/admin/top_msg/",
-					"spread": false
-				},
-				{
-					"title": "汇率设置",
-					"icon": "&#xe659;",
-					"href": "/admin/ex_change/",
-					"spread": false
-				},
-				{
-					"title": "支付宝收款码",
-					"icon": "&#xe610;",
-					"href": "/admin/qr_code/",
-					"spread": false
-				},
-				{
-					"title": "银行卡信息",
-					"icon": "&#xe630;",
-					"href": "/admin/bank_msg/",
 					"spread": false
 				}
 			]

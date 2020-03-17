@@ -60,7 +60,7 @@
 						</div>
 					</form>
 				</div>
-				<p class="copyright">Copyright 2019-2020 by 4574</p>
+				<p class="copyright">Copyright 2020-20201 by 556338</p>
 			</div>
 		</div>
 		<script src="/static/layui/layui.js" type="text/javascript" charset="utf-8"></script>
@@ -129,7 +129,8 @@
                                 parent.layer.msg('登录成功!', {
                                 icon : 6,
                             });*/
-                            location.href='/user/'; //关闭弹框
+                                window.localStorage.setItem("userlockcms",false);
+                                location.href='/user/'; //关闭弹框
                             }else if(data.code == 502){
                                 layer.msg(data.msg, {
                                 icon : 5

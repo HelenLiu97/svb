@@ -32,7 +32,7 @@
 </script>
 
 <script type="text/html" id="barDemo">
-    <a class="layui-btn layui-btn-primary layui-btn-xs layui-btn-normal" lay-event="remain"><i class="layui-icon">&#xe659;余额</i></a>
+{#    <a class="layui-btn layui-btn-primary layui-btn-xs layui-btn-normal" lay-event="remain"><i class="layui-icon">&#xe659;余额</i></a>#}
     <a class="layui-btn layui-btn-primary layui-btn-xs" lay-event="detail"><i class="layui-icon">&#xe642;编辑</i></a>
     <a class="layui-btn layui-btn-xs" lay-event="edit" id="top_btn"><i class="layui-icon">&#xe659;充值</i></a>
     <a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="refund" id="refund_btn"><i class="layui-icon">&#xe606;退款</i></a>
@@ -63,6 +63,7 @@
             , url: '/user/card_info/?card_status='+card_status //数据接口
             , title: '卡列表'
             , skin: 'line'
+            , even: true
             , parseData: function(res){ //res 即为原始返回的数据
                 if (res.count > 0) { //判断状态和是否有数据
                   for (var i = 0; i < res.data.length; i++) { //遍历该页数据
@@ -94,6 +95,7 @@
                 , {field: 'valid_start_on', title: '有效时间', align: 'center',}
                 , {field: 'valid_end_on', title: '失效时间', align: 'center',}
                 , {field: 'status', title: '卡状态', align: 'center',}
+                , {field: 'detail', title: '详情', align: 'center',style:'color:red'}
                 , {fixed: 'right', width: 390, align: 'center', toolbar: '#barDemo', id: 'tools'}
             ]]
             , id: 'card_info'
@@ -346,8 +348,12 @@
                 copyText(data.card_number.trim(), function () {
                     layer.msg('复制卡号成功！')
                 })
-            }else if (layEvent==="remain"){
-                layer.open({
+            }
+        });
+
+        table.on('rowDouble(card_info)', function(obj){
+          var  data = obj.data;
+          layer.open({
                 type: 2
                 ,offset: 'auto' //具体配置参考：http://www.layui.com/doc/modules/layer.html#offset
                 ,skin:'layui-layer-demo'
@@ -366,7 +372,6 @@
                     }
 
               });
-            }
         });
 
         function copyText(text, callback){ // text: 要复制的内容， callback: 回调

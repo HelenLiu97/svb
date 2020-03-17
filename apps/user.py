@@ -674,6 +674,12 @@ def card_table():
     return render_template('user/card_table.html')
 
 
+@user_blueprint.route('/card_decline/', methods=['GET'])
+@login_required
+def card_decline():
+    return render_template('user/card_decline.html')
+
+
 @user_blueprint.route('/password/', methods=['GET', 'POST'])
 @login_required
 def user_password():

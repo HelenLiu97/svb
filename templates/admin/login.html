@@ -91,7 +91,8 @@
                                 parent.layer.msg('登录成功!', {
                                 icon : 6,
                             });*/
-                            location.href='/admin/'; //关闭弹框
+                                window.localStorage.setItem("lockcms",false);
+                                location.href='/admin/'; //关闭弹框
                             }else if(data.code == 502){
                                 parent.layer.msg(data.msg, {
                                 icon : 5

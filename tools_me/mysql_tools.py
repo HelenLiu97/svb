@@ -266,6 +266,7 @@ class SqlData(object):
                 info_dict['valid_end_on'] = str(i[7])
                 info_dict['label'] = i[8]
                 info_dict['status'] = '正常' if i[9] == 'T' else '注销'
+                info_dict['detail'] = "双击查看"
                 info_list.append(info_dict)
             return info_list
 
@@ -1671,5 +1672,5 @@ class SqlData(object):
 SqlData = SqlData()
 
 if __name__ == "__main__":
-    res = SqlData.search_card_trans(292)
+    res = SqlData.search_card_trans(292, "")
     print(res)
