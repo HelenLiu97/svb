@@ -58,12 +58,6 @@
 			"spread": false,
 			"children": [
 				{
-					"title": "中介管理",
-					"icon": "&#xe665;",
-					"href": "/admin/middle_info_html/",
-					"spread": false
-				},
-				{
 					"title": "中介提成",
 					"icon": "&#xe65e;",
 					"href": "/admin/middle_money_html/",

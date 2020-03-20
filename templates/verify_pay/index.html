@@ -6,8 +6,6 @@
     <link rel="icon" href="/static/images/svb_top.ico">
     <meta http-equiv="refresh" content="600">
     <script src="/static/layui/layui.js" charset="utf-8"></script>
-    <script src="http://apps.bdimg.com/libs/jquery/2.1.4/jquery.min.js"></script>
-    <script src="http://code.highcharts.com/highcharts.js"></script>
 </head>
 <body>
 
@@ -29,8 +27,6 @@
     <li class="layui-this" lay-id="1">待确认充值</li>
     <li lay-id="2">已确认充值</li>
       <li lay-id="5">已删除充值</li>
-      <li lay-id="3">所有客户</li>
-      <li lay-id="4">添加新客户</li>
   </ul>
   <div class="layui-tab-content" style="height: 100px;">
     <div class="layui-tab-item layui-show">
@@ -47,51 +43,7 @@
       <div class="layui-tab-item">
           <table class="layui-hide" id="deled" lay-filter="deled"></table>
       </div>
-      <div class="layui-tab-item">
-        <table class="layui-hide" id="all_account" lay-filter="all_account"></table>
-          <script type="text/html" id="barDemo1">
-            <a class="layui-btn layui-btn-xs" lay-event="edit">编辑</a>
-            <a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="del">删除</a>
-          </script>
-    </div>
 
-      <div class="layui-tab-item">
-
-          <div class="divForm">
-        <form class="layui-form" lay-filter=""  enctype="multipart/form-data">
-            <div class="layui-form-item">
-                <label class="layui-form-label">姓   名</label>
-                <div class="layui-input-inline">
-                    <input type="text" name="name" required lay-verify="required" placeholder="客户姓名" autocomplete="off"
-                           class="layui-input"  id="name">
-                </div>
-            </div>
-            <div class="layui-form-item">
-                <label class="layui-form-label">账   号</label>
-                <div class="layui-input-inline">
-                    <input type="text" id="username" name="username" required lay-verify="required" placeholder="客户登录账号" autocomplete="off"
-                           class="layui-input">
-                </div>
-            </div>
-
-            <div class="layui-form-item">
-                <label class="layui-form-label">密   码</label>
-                <div class="layui-input-inline">
-                    <input type="text" id="password" name="password" placeholder="客户登录密码" required lay-verify="required" autocomplete="off"
-                           class="layui-input">
-                </div>
-            </div>
-
-
-            <div class="layui-form-item">
-                <div class="layui-input-block">
-                    <button  class="layui-btn layui-btn-lg" lay-submit="" lay-filter="add_account" type="submit">确认</button>
-                </div>
-            </div>
-        </form>
-    </div>
-
-  </div>
 </div>
     </div>
 

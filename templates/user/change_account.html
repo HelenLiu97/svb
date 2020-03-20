@@ -38,22 +38,22 @@
             <div class="layui-form-mid layui-word-aux"><span style="color:red;">用户名可联系管理员更换！</span></div>
 		</div>
 		<div class="layui-form-item">
-			<label class="layui-form-label">旧密码</label>
+			<label class="layui-form-label">旧账号</label>
 			<div class="layui-input-block">
-				<input type="text" value="" name="old_pass" placeholder="请输入旧密码" lay-verify="required"  class="layui-input pwd">
+				<input type="text" value="" name="old_account" placeholder="请输入旧账号" lay-verify="required"  class="layui-input pwd">
 			</div>
 		</div>
 		<div class="layui-form-item">
-			<label class="layui-form-label">新密码</label>
+			<label class="layui-form-label">新账号</label>
 			<div class="layui-input-block">
-				<input type="password" value="" name="new_pass_one" placeholder="请输入新密码" lay-verify="required" id="oldPwd" class="layui-input pwd">
+				<input type="password" value="" name="new_account_one" placeholder="请输入新账号" lay-verify="required" id="oldPwd" class="layui-input pwd">
 			</div>
-            <div class="layui-form-mid layui-word-aux"><span style="color:red;">长度范围8-16位，必须包含数字,字符,符号任意两种或以上！</span></div>
+            <div class="layui-form-mid layui-word-aux"><span style="color:red;">长度范围6-12位, 账号内不得含有空格！</span></div>
 		</div>
 		<div class="layui-form-item">
-			<label class="layui-form-label">确认密码</label>
+			<label class="layui-form-label">确认新账号</label>
 			<div class="layui-input-block">
-				<input type="password" value="" name="new_pass_two" placeholder="请确认密码" lay-verify="required" class="layui-input pwd">
+				<input type="password" value="" name="new_account_two" placeholder="请确认新账号" lay-verify="required" class="layui-input pwd">
 			</div>
 		</div>
 		<div class="layui-form-item">
@@ -76,13 +76,13 @@
 
             $.ajax({
 				type : 'POST',
-				url : '/user/change_pass/',
+				url : '/user/change_account/',
 				data : data_info,
 				dataType : 'json',
 				success : function(data) {
 					// 成功提示框
                     if (data.code == 0){
-                        layer.msg('修改密码成功!', {
+                        layer.msg('修改账号成功!', {
 						icon : 6,
                         time: 2500,
 					}, function () {

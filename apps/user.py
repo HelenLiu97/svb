@@ -610,13 +610,21 @@ def create_card():
                     SqlData.insert_card(card_number, cvc, expiry, card_id, last4, valid_starting_on, valid_ending_on, label, 'T', int(top_money), user_id)
 
                     # 扣去开卡费用
+                    free_number = SqlData.search_user_field('free_number', user_id)
                     before_balance = SqlData.search_user_field('balance', user_id)
-                    create_price_do_money = float(create_price) - float(create_price) * 2
-                    SqlData.update_balance(create_price_do_money, user_id)
-                    balance = SqlData.search_user_field("balance", user_id)
-                    # balance = before_balance - create_price
-                    SqlData.insert_account_trans(n_time, TRANS_TYPE.OUT, DO_TYPE.CREATE_CARD, card_number,
-                                                 create_price, before_balance, balance, user_id)
+
+                    # 判断是否有可用免费卡量
+                    if free_number > 0:
+                        SqlData.update_user_free_number(-1, user_id)
+                        SqlData.insert_account_trans(n_time, TRANS_TYPE.OUT, DO_TYPE.CREATE_CARD, card_number,
+                                                     0, before_balance, before_balance, user_id)
+                    else:
+                        create_price_do_money = float(create_price) - float(create_price) * 2
+                        SqlData.update_balance(create_price_do_money, user_id)
+                        balance = SqlData.search_user_field("balance", user_id)
+                        # balance = before_balance - create_price
+                        SqlData.insert_account_trans(n_time, TRANS_TYPE.OUT, DO_TYPE.CREATE_CARD, card_number,
+                                                     create_price, before_balance, balance, user_id)
 
                     # 扣去充值费用
                     before_balance = SqlData.search_user_field('balance', user_id)
@@ -766,11 +774,81 @@ def one_detail():
                 "transaction_date_time": td.get("transaction_date_time"),
                 "vcn_response": td.get("vcn_response"),
             })
+
+        settle = list()
+        clearings = card_detail.get('data').get('clearings')
+        for td in clearings:
+            settle.append({
+                "acquirer_ica": td.get("acquirer_ica"),
+                "approval_code": td.get("approval_code"),
+                "billing_amount": float(td.get("billing_amount") / 100),
+                "billing_currency": td.get("billing_currency"),
+                "issuer_response": td.get("issuer_response"),
+                "mcc": td.get("mcc"),
+                "mcc_description": td.get("mcc_description"),
+                "merchant_amount": float(td.get("merchant_amount") / 100),
+                "merchant_currency": td.get("merchant_currency"),
+                "merchant_id": td.get("merchant_id"),
+                "merchant_name": td.get("merchant_name"),
+                "transaction_date_time": td.get("settlement_date"),
+            })
         context['pay_list'] = info_list
+        context['settle'] = settle
         return render_template('user/card_detail.html', **context)
     except Exception as e:
         logging.error((str(e)))
         return render_template('user/404.html')
+
+
+@user_blueprint.route('/push_log_settle/', methods=['GET'])
+@login_required
+def push_log_settle():
+
+    '''
+    卡交易记录接口
+    '''
+
+    try:
+        user_id = g.user_id
+        page = request.args.get('page')
+        limit = request.args.get('limit')
+        card_number = request.args.get('card_no')
+        trans_status = request.args.get('trans_status')
+
+        if trans_status and card_number:
+            sql_1 = " AND card_trans_settle.card_number LIKE '%{}%'".format(card_number)
+            if trans_status == "T":
+                sql_2 = " AND card_trans_settle.handing_fee != 0"
+            else:
+                sql_2 = " AND card_trans_settle.handing_fee = 0"
+            sql = sql_1 + sql_2
+        elif card_number:
+            sql = " AND card_trans_settle.card_number LIKE '%{}%'".format(card_number)
+        elif trans_status:
+            if trans_status == "T":
+                sql = " AND card_trans_settle.handing_fee != 0"
+            else:
+                sql = " AND card_trans_settle.handing_fee = 0"
+        else:
+            sql = ''
+        results = dict()
+        results['msg'] = MSG.OK
+        results['code'] = RET.OK
+        info = SqlData.search_card_trans_settle(user_id, sql)
+        if not info:
+            results['msg'] = MSG.NODATA
+            return jsonify(results)
+        task_info = sorted(info, key=operator.itemgetter('authorization_date'))
+        page_list = list()
+        task_info = list(reversed(task_info))
+        for i in range(0, len(task_info), int(limit)):
+            page_list.append(task_info[i:i + int(limit)])
+        results['data'] = page_list[int(page) - 1]
+        results['count'] = len(task_info)
+        return jsonify(results)
+    except Exception as e:
+        logging.error('查询卡交易推送失败:' + str(e))
+        return jsonify({'code': RET.SERVERERROR, 'msg': MSG.SERVERERROR})
 
 
 @user_blueprint.route('/push_log/', methods=['GET'])
@@ -803,7 +881,7 @@ def push_log():
         if not info:
             results['msg'] = MSG.NODATA
             return jsonify(results)
-        task_info = task_info = sorted(info, key=operator.itemgetter('transaction_date_time'))
+        task_info = sorted(info, key=operator.itemgetter('transaction_date_time'))
         page_list = list()
         task_info = list(reversed(task_info))
         for i in range(0, len(task_info), int(limit)):
@@ -820,6 +898,12 @@ def push_log():
 @login_required
 def card_trans():
     return render_template('user/card_trans.html')
+
+
+@user_blueprint.route('/card_trans_settle/', methods=['GET'])
+@login_required
+def card_trans_settle():
+    return render_template('user/card_trans_settle.html')
 
 
 @user_blueprint.route('/change_detail', methods=['GET'])
@@ -890,6 +974,62 @@ def ch_pass_html():
     if vice_id:
         return render_template('user/no_auth.html')
     return render_template('user/edit_user.html')
+
+
+@user_blueprint.route('/change_account/', methods=["GET", "POST"])
+@login_required
+@account_lock
+def change_account():
+    # 判断是否是子账号用户
+    vice_id = g.vice_id
+    if vice_id:
+        return render_template('user/no_auth.html')
+
+    if request.method == 'GET':
+        user_name = g.user_name
+        context = dict()
+        context['user_name'] = user_name
+        return render_template('user/change_account.html', **context)
+    if request.method == 'POST':
+        data = json.loads(request.form.get('data'))
+        old_account = data.get('old_account')
+        new_account_one = data.get('new_account_one')
+        new_account_two = data.get('new_account_two')
+        user_id = g.user_id
+        account = SqlData.search_user_field('account', user_id)
+        results = {'code': RET.OK, 'msg': MSG.OK}
+        for i in new_account_one:
+            if i.isspace():
+                results['code'] = RET.SERVERERROR
+                results['msg'] = '账号内包含空格！'
+                return jsonify(results)
+        if not 6 <= len(new_account_one.strip()) <= 12:
+            results['code'] = RET.SERVERERROR
+            results['msg'] = '账号不符合要求！'
+            return jsonify(results)
+        if not (old_account == account):
+            results['code'] = RET.SERVERERROR
+            results['msg'] = '原账号错误！'
+            return jsonify(results)
+        if not (new_account_one == new_account_two):
+            results['code'] = RET.SERVERERROR
+            results['msg'] = '两次账号输入不一致！'
+            return jsonify(results)
+        ed_name = SqlData.search_user_field_name('account', new_account_one)
+        if ed_name:
+            results['code'] = RET.SERVERERROR
+            results['msg'] = '该用户名已存在!'
+            return jsonify(results)
+        try:
+            SqlData.update_user_field('account', new_account_one, g.user_id)
+            session.pop('user_id')
+            session.pop('name')
+            return jsonify(results)
+        except Exception as e:
+            logging.error(e)
+            results['code'] = RET.SERVERERROR
+            results['msg'] = MSG.SERVERERROR
+            return jsonify(results)
 
 
 @user_blueprint.route('/change_pass/', methods=["GET", "POST"])
@@ -1022,6 +1162,7 @@ def notice():
 def user_main():
     user_id = g.user_id
     balance = SqlData.search_user_field('balance', user_id)
+    free_number = SqlData.search_user_field('free_number', user_id)
     # 支出中有部分退款产生，所以所有支出减去退款才是真实支出
     sum_out_money = SqlData.search_trans_sum(user_id) - SqlData.search_income_money(user_id)
     sum_top_money = SqlData.search_user_field('sum_balance', user_id)
@@ -1070,6 +1211,7 @@ def user_main():
     context['three_bili'] = three_bili
     context['sum_bili'] = sum_bili
     context['notice'] = notice
+    context['free_number'] = free_number
     return render_template('user/main.html', **context)
 
 

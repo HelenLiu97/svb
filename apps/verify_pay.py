@@ -50,68 +50,6 @@ def logout():
     return redirect('/verify_pay/')
 
 
-@verify_pay_blueprint.route('/edit_acc/', methods=['GET', 'POST'])
-@verify_required
-def edit_acc():
-    if request.method == 'GET':
-        user_id = request.args.get('user_id')
-        context = dict()
-        context['user_id'] = user_id
-        return render_template('verify_pay/edit_acc.html', **context)
-    if request.method == 'POST':
-        data = json.loads(request.form.get('data'))
-        user_id = data.get('user_id')
-        account = data.get('account')
-        password = data.get('password')
-        if account:
-            res = SqlData.find_in_set('recharge_account', account, 'username')
-            if res:
-                return jsonify({'code': RET.SERVERERROR, 'msg': '账号已存在！请重新命名。'})
-            else:
-                SqlData.update_recharge_account('username', account, int(user_id))
-        if password:
-            SqlData.update_recharge_account('password', password, int(user_id))
-        return jsonify({'code': RET.OK, 'msg': MSG.OK})
-
-
-@verify_pay_blueprint.route('/del_account/', methods=['GET'])
-@verify_required
-def del_account():
-    user_id = request.args.get('user_id')
-    SqlData.del_recharge_acc(int(user_id))
-    return jsonify({'code': RET.OK, 'msg': MSG.OK})
-
-
-@verify_pay_blueprint.route('/all_account/', methods=['GET'])
-@verify_required
-def all_account():
-    data = SqlData.recharge_all_account()
-    return jsonify({
-        "code": RET.OK,
-        "msg": MSG.OK,
-        "count": len(data),
-        "data": data,
-    })
-
-
-@verify_pay_blueprint.route('/add_account/', methods=['POST'])
-@verify_required
-def add_account():
-    results = {"code": RET.OK, "msg": MSG.OK}
-    try:
-        data = json.loads(request.form.get('data'))
-        name = data.get('name')
-        account = data.get('username')
-        password = data.get('password')
-        SqlData.recharge_add_account(name=name, username=account, password=password)
-        return jsonify(results)
-    except Exception as e:
-        logging.error(e)
-        results['code'] = RET.SERVERERROR
-        results['msg'] = MSG.SERVERERROR
-        return jsonify(results)
-
-
 @verify_pay_blueprint.route('/login/', methods=['GET', 'POST'])
 def verify_login():
     if request.method == 'GET':

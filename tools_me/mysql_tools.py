@@ -557,7 +557,7 @@ class SqlData(object):
 
     def search_card_count(self, account_id, time_range):
         sql = "SELECT COUNT(*) FROM user_trans WHERE user_id={} AND do_type='开卡' {}".format(account_id,
-                                                                                                  time_range)
+                                                                                            time_range)
         conn, cursor = self.connect()
         cursor.execute(sql)
         rows = cursor.fetchall()
@@ -645,6 +645,7 @@ class SqlData(object):
                 account_dict['balance'] = i[8]
                 account_dict['sum_balance'] = i[9]
                 account_dict['last_login_time'] = str(i[10])
+                account_dict['free_number'] = str(i[12])
                 account_dict['create_card'] = self.search_value_count('card_info', 'WHERE user_id={}'.format(i[0]))
                 account_dict['card_true'] = self.search_value_count('card_info',
                                                                     "WHERE user_id={} AND status='T'".format(i[0]))
@@ -672,14 +673,25 @@ class SqlData(object):
             return False
         return rows[0][0]
 
-    def update_user_balance(self, money, id):
-        sql = "UPDATE user_info set sum_balance=sum_balance+{}, balance=balance+{} WHERE id={}".format(money, money, id)
+    def update_user_balance(self, money, user_id):
+        sql = "UPDATE user_info set sum_balance=sum_balance+{}, balance=balance+{} WHERE id={}".format(money, money, user_id)
         conn, cursor = self.connect()
         try:
             cursor.execute(sql)
             conn.commit()
         except Exception as e:
             logging.error("更新用户余额失败!" + str(e))
+            conn.rollback()
+        self.close_connect(conn, cursor)
+
+    def update_user_free_number(self, number, user_id):
+        sql = "UPDATE user_info set free_number=free_number+{} WHERE id={}".format(number, user_id)
+        conn, cursor = self.connect()
+        try:
+            cursor.execute(sql)
+            conn.commit()
+        except Exception as e:
+            logging.error("更新用户已付费卡量失败!" + str(e))
             conn.rollback()
         self.close_connect(conn, cursor)
 
@@ -964,7 +976,8 @@ class SqlData(object):
 
     def search_trans_admin(self, cus_sql, card_sql, time_sql, do_sql, sql):
         sql = "SELECT user_trans.*, user_info.name FROM user_trans LEFT JOIN user_info ON user_trans.user_id" \
-              " = user_info.id WHERE user_trans.do_date != ''  {} {} {} {} {}".format(cus_sql, card_sql, time_sql, do_sql, sql)
+              " = user_info.id WHERE user_trans.do_date != ''  {} {} {} {} {}".format(cus_sql, card_sql, time_sql,
+                                                                                      do_sql, sql)
         conn, cursor = self.connect()
         cursor.execute(sql)
         rows = cursor.fetchall()
@@ -1586,8 +1599,61 @@ class SqlData(object):
             conn.rollback()
         self.close_connect(conn, cursor)
 
+    def insert_card_trans_settle(self, card_number, acquirer_ica, approval_code, authorization_date, billing_amount,
+                                 billing_currency,
+                                 clearing_type, exchange_rate, mcc,
+                                 mcc_description, merchant_amount, merchant_currency, merchant_id, merchant_name,
+                                 settlement_date, card_id):
+        # 这么写sql是为了插入的交易数据重复，因为交易信息内没有唯一标识
+        sql = "Insert into card_trans_settle(`card_number`, `acquirer_ica`,`approval_code`, `authorization_date`,`billing_amount`,`billing_currency`," \
+              "`clearing_type`, `exchange_rate`,`mcc`,`mcc_description`,`merchant_amount`,`merchant_currency`,`merchant_id`," \
+              "`merchant_name`, `settlement_date`, `card_id`)select '{0}','{1}','{2}','{3}',{4},'{5}','{6}','{7}',{8},'{9}','{10}','{11}','{12}','{13}','{14}',{15} " \
+              "from DUAL where not exists (select * from card_trans_settle where `card_number`='{0}' and `acquirer_ica` = '{1}' and `approval_code`='{2}' and `authorization_date`='{3}' and `billing_amount`={4} and `billing_currency`='{5}' and " \
+              "`clearing_type`='{6}' and `exchange_rate`='{7}' and `mcc`='{8}' and `mcc_description` ='{9}' and `merchant_amount` = {10} and  `merchant_currency`= '{11}' and `merchant_id`='{12}' and " \
+              "`merchant_name`='{13}' and `settlement_date`='{14}' and `card_id`='{15}')".format(card_number, acquirer_ica, approval_code, authorization_date, billing_amount,
+                                 billing_currency,
+                                 clearing_type, exchange_rate, mcc,
+                                 mcc_description, merchant_amount, merchant_currency, merchant_id, merchant_name,
+                                 settlement_date, card_id)
+        conn, cursor = self.connect()
+        try:
+            cursor.execute(sql)
+            conn.commit()
+        except Exception as e:
+            logging.error("插入卡交易记录数据失败" + str(e))
+            conn.rollback()
+        self.close_connect(conn, cursor)
+
+    def search_settle_trans(self):
+        sql = "SELECT `id`, card_number, billing_amount, merchant_currency FROM card_trans_settle WHERE handing_fee is null;"
+        conn, cursor = self.connect()
+        cursor.execute(sql)
+        rows = cursor.fetchall()
+        self.close_connect(conn, cursor)
+        info_list = list()
+        for i in rows:
+            info_dict = dict()
+            info_dict['info_id'] = i[0]
+            info_dict['card_number'] = i[1]
+            info_dict['billing_amount'] = i[2]
+            info_dict['merchant_currency'] = i[3]
+            info_list.append(info_dict)
+        return info_list
+
+    def update_settle_handing(self, money, info_id):
+        sql = "UPDATE card_trans_settle SET handing_fee = {} WHERE id={}".format(money, info_id)
+        conn, cursor = self.connect()
+        try:
+            cursor.execute(sql)
+            conn.commit()
+        except Exception as e:
+            logging.error("更新卡跨币种消费手续费失败!" + str(e))
+            conn.rollback()
+        self.close_connect(conn, cursor)
+
     def search_trans_count(self, user_id, sql_line):
-        sql = "SELECT DISTINCT COUNT(*) FROM card_trans JOIN card_info ON card_trans.card_id=card_info.card_id WHERE card_info.user_id={} {}".format(user_id, sql_line)
+        sql = "SELECT DISTINCT COUNT(*) FROM card_trans JOIN card_info ON card_trans.card_id=card_info.card_id WHERE card_info.user_id={} {}".format(
+            user_id, sql_line)
         conn, cursor = self.connect()
         cursor.execute(sql)
         rows = cursor.fetchone()
@@ -1595,7 +1661,8 @@ class SqlData(object):
         return rows[0]
 
     def search_card_trans(self, user_id, sql_line):
-        sql = "SELECT DISTINCT card_trans.* FROM card_trans JOIN card_info ON card_trans.card_id=card_info.card_id WHERE card_info.user_id={} {}".format(user_id, sql_line)
+        sql = "SELECT DISTINCT card_trans.* FROM card_trans JOIN card_info ON card_trans.card_id=card_info.card_id WHERE card_info.user_id={} {}".format(
+            user_id, sql_line)
         conn, cursor = self.connect()
         cursor.execute(sql)
         rows = cursor.fetchall()
@@ -1624,8 +1691,33 @@ class SqlData(object):
             info_list.append(info_dict)
         return info_list
 
+    def search_card_trans_settle(self, user_id, sql_line):
+        sql = "SELECT DISTINCT card_trans_settle.* FROM card_trans_settle JOIN card_info ON card_trans_settle.card_id=card_info.card_id WHERE card_info.user_id={} {}".format(
+            user_id, sql_line)
+        conn, cursor = self.connect()
+        cursor.execute(sql)
+        rows = cursor.fetchall()
+        self.close_connect(conn, cursor)
+        info_list = list()
+        if not rows:
+            return info_list
+        for i in rows:
+            info_dict = dict()
+            info_dict['card_number'] = "\t" + i[1]
+            info_dict['authorization_date'] = i[4]
+            info_dict['billing_amount'] = i[5]
+            info_dict['billing_currency'] = i[6]
+            info_dict['merchant_amount'] = i[11]
+            info_dict['merchant_currency'] = i[12]
+            info_dict['merchant_name'] = i[14]
+            info_dict['settlement_date'] = i[15]
+            info_dict['handing_fee'] = i[17]
+            info_list.append(info_dict)
+        return info_list
+
     def search_admin_card_trans(self, sql_line):
-        sql = "SELECT DISTINCT card_trans.*,user_info.`name` FROM card_trans JOIN card_info JOIN user_info ON card_trans.card_id=card_info.card_id WHERE card_info.user_id=user_info.id {}".format(sql_line)
+        sql = "SELECT DISTINCT card_trans.*,user_info.`name` FROM card_trans JOIN card_info JOIN user_info ON card_trans.card_id=card_info.card_id WHERE card_info.user_id=user_info.id {}".format(
+            sql_line)
         conn, cursor = self.connect()
         cursor.execute(sql)
         rows = cursor.fetchall()
@@ -1651,6 +1743,32 @@ class SqlData(object):
             info_dict['transaction_type'] = i[14]
             info_dict['vcn_response'] = i[15]
             info_dict['status'] = i[17]
+            info_dict['name'] = i[18]
+            info_list.append(info_dict)
+        return info_list
+
+    def search_admin_card_trans_settle(self, sql_line):
+        sql = "SELECT DISTINCT card_trans_settle.*,user_info.`name` FROM card_trans_settle JOIN card_info JOIN " \
+              "user_info ON card_trans_settle.card_id=card_info.card_id WHERE card_info.user_id=user_info.id {}".format(
+               sql_line)
+        conn, cursor = self.connect()
+        cursor.execute(sql)
+        rows = cursor.fetchall()
+        self.close_connect(conn, cursor)
+        info_list = list()
+        if not rows:
+            return info_list
+        for i in rows:
+            info_dict = dict()
+            info_dict['card_number'] = "\t" + i[1]
+            info_dict['authorization_date'] = i[4]
+            info_dict['billing_amount'] = i[5]
+            info_dict['billing_currency'] = i[6]
+            info_dict['merchant_amount'] = i[11]
+            info_dict['merchant_currency'] = i[12]
+            info_dict['merchant_name'] = i[14]
+            info_dict['settlement_date'] = i[15]
+            info_dict['handing_fee'] = i[17]
             info_dict['name'] = i[18]
             info_list.append(info_dict)
         return info_list

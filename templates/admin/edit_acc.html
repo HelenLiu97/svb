@@ -13,13 +13,10 @@
     <script src="/static/layui/layui.all.js"></script>
 
     <style>
-        body {
-            margin: 10px;
-        }
     </style>
 </head>
 <body>
-    <div id="details" style="padding: 20px;" lay-filter="detail">
+    <div id="details" style="padding-top: 40px;padding-right: 40px" lay-filter="detail">
     <form class="layui-form" lay-filter="example" id="example" enctype="multipart/form-data">
         <div class="layui-form-item" style="display: none">
             <label class="layui-form-label">隐藏域</label>
@@ -71,7 +68,7 @@
 
             $.ajax({
 				type : 'POST',
-				url : '/verify_pay/edit_acc/',
+				url : '/admin/edit_acc/',
 				data : data_info,
 				dataType : 'json',
 				success : function(data) {

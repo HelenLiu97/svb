@@ -33,7 +33,7 @@
 	<script type="text/html" id="barDemo">
 		<a class="layui-btn layui-btn-xs layui-btn-radius" lay-event="top_up">充值</a>
 		<a class="layui-btn layui-btn-xs layui-btn-normal layui-btn-radius" lay-event="pay">消费</a>
-        <a class="layui-btn layui-btn-xs layui-btn-danger layui-btn-radius" lay-event="chart">查看</a>
+        <a class="layui-btn layui-btn-xs layui-btn-danger layui-btn-radius" lay-event="chart">免费卡量</a>
 	</script>
 
     <script type="text/html" id="barDemo_1">
@@ -66,6 +66,7 @@
                 , {field: 'name', title: '客户', align: 'center', totalRowText: '合计：'}
                 , {field: 'create_card', title: '开卡数量', align: 'center',  totalRow: true, style: "color: #000000"}
                 , {field: 'card_true', title: '可用卡数量', align: 'center',  totalRow: true, style: "color: #000000"}
+                , {field: 'free_number', title: '免费数量', align: 'center',  totalRow: true, style: "color: #000000"}
                 , {field: 'sum_out_money', title: '总消费金额', align: 'center',  totalRow: true, style: "color: red"}
                 , {field: 'card_remain', title: '卡的总余额', align: 'center',  totalRow: true, style: "color: red"}
                 , {field: 'balance', title: '账户余额', align: 'center',  totalRow: true, style: "color: purple"}
@@ -98,6 +99,7 @@
                 , {field: 'name', title: '客户', align: 'center', totalRowText: '合计：'}
                 , {field: 'create_card', title: '开卡数量', align: 'center',  totalRow: true, style: "color: #000000"}
                 , {field: 'card_true', title: '可用卡数量', align: 'center',  totalRow: true, style: "color: #000000"}
+                , {field: 'free_number', title: '免费数量', align: 'center',  totalRow: true, style: "color: #000000"}
                 , {field: 'sum_out_money', title: '总消费金额', align: 'center',  totalRow: true, style: "color: red"}
                 , {field: 'card_remain', title: '卡的总余额', align: 'center',  totalRow: true, style: "color: red"}
                 , {field: 'balance', title: '账户余额', align: 'center',  totalRow: true, style: "color: purple"}
@@ -293,24 +295,43 @@
 
                 });
         } else if (layEvent==='chart'){
-            layer.open({
-                type: 2
-                , offset: 'auto' //具体配置参考：http://www.layui.com/doc/modules/layer.html#offset
-                , skin: 'layui-layer-demo'
-                , id: 'account_info'//防止重复弹出
-                , title: '客户为 ' + data.name + ' 的消费信息'
-                , area: ['90%', '88%']
-                , anim: 2
-                , shadeClose: true
-                , content: '/admin/account_chart_line/?user_name=' + data.name
-                , btn: '关闭全部'
-                , btnAlign: 'c' //按钮居中a
-                , shade: [0.8, '#393D49'] //弹框背景选项
-                , success: function (layero, index) {
-                    var body = layer.getChildFrame('body', index);
-                    body.contents().find("#user_id").val(data.u_id);
-                }
-            });
+            layer.prompt({title: '请输入免费卡数量', value:data.free_number}, function(num, index){
+
+                    if (isNaN(num)){
+                        layer.msg('请输入数字!')
+                    }else{
+                        $.ajax({
+                            type : 'POST',
+                            url : '/admin/free_number/',
+                            data : {user_name:data.name,
+                                    free_number:num
+                            },
+                            dataType : 'json',
+                            beforeSend:function () {
+                                 top.layer.load(0, {shade: [0.8, '#393D49'],})
+                            },
+                            success : function(data) {
+                                // 成功提示框
+                                if (data.code == 0){
+                                    top.layer.closeAll();
+                                    parent.layer.msg(data.msg, {
+                                    icon : 6,
+                                });
+                                {#setTimeout(window.location.reload(), 2000)#}
+
+                                }else if(data.code == 502){
+                                    top.layer.closeAll();
+                                    parent.layer.msg(data.msg, {
+                                    icon : 5
+                                });
+                                }
+
+                            }
+                        });
+                    }
+                    layer.close(index);
+
+                });
         }
     });
 

@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <link rel="stylesheet" href="/static/layui/css/layui.css" media="all">
+    <script src="/static/layui/layui.js"></script>
+    <style>
+        .divForm{
+            width: 500px;
+            height: 400px;
+            top: 50%;
+            left: 50%;
+            margin-bottom: 300px;
+            margin-top: 100px;
+            margin-left: 36%;
+        }
+    </style>
+</head>
+<body>
+
+<table class="layui-hide" id="all_account" lay-filter="all_account"></table>
+          <script type="text/html" id="barDemo1">
+            <a class="layui-btn layui-btn-xs" lay-event="edit">编辑</a>
+            <a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="del">删除</a>
+          </script>
+
+</body>
+<script>
+    layui.use(['laydate', 'laypage', 'layer', 'table', 'carousel', 'upload', 'element', 'slider', 'form'], function () {
+
+
+        var laydate = layui.laydate //日期
+            , laypage = layui.laypage //分页
+            , layer = layui.layer //弹层
+            , table = layui.table //表格
+            , upload = layui.upload //上传
+            , element = layui.element //元素操作
+            , $ = layui.$
+            , form = layui.form;
+
+
+        table.render({
+            elem: '#all_account'
+            , height: 'full-0'
+            , cellMinWidth: ''
+            , url: '/admin/all_account/' //数据接口
+            , title: '已确认充值信息表'
+            , limit: 20
+            , toolbar: "r" //开启工具栏，此处显示默认图标，可以自定义模板，详见文档
+            , totalRow: true //开启合计行
+            , cols: [[ //表头
+                {type:'numbers'}
+                , {field: 'name', title: '用户名', align: 'center', totalRowText: '合计：'}
+                , {field: 'username', title: '登录账号', align: 'center',}
+                , {field: 'password', title: '登录密码', align: 'center', }
+                , {fixed: 'right', width: 220, align: 'center', toolbar: '#barDemo1'}
+            ]]
+            , id: 'all_account'
+            , page: true
+        });
+
+        table.on('tool(all_account)', function (obj) { //注：tool 是工具条事件名，test_all 是 table 原始容器的属性 lay-filter="对应的值"
+            var data = obj.data //获得当前行数据
+                , layEvent = obj.event; //获得 lay-event 对应的值
+
+            if (layEvent === 'del'){
+
+                layer.confirm('确认删除该用户信息?', function(index){
+                    $.ajax({
+                    type : 'GET',
+                    url : '/admin/del_account/?user_id='+data.user_id,
+                    success : function(data) {
+                        // 成功提示框
+                        if (data.code == 0){
+                            parent.layer.msg(data.msg, {
+                            icon : 6,
+                        },obj.del());
+
+                        }else if(data.code == 502){
+                            parent.layer.msg(data.msg, {
+                            icon : 5
+                        });
+                        }
+
+                    },
+                    error : function(data) {
+                        // 异常提示
+                        parent.layer.msg('出现网络故障', {
+                            icon : 5
+                        });
+                        parent.layer.closeAll('iframe'); //关闭弹框
+                    }
+                });
+                })
+            } else if (layEvent === 'edit') {
+                layui.layer.open({
+                    title: '确认客户为 [ ' + data.name + ' ] 的充值信息',
+                    type: 2,
+                    skin: "layui-layer-lan",
+                    anim: 3,
+                    area: ['340px', '340px'],//宽高
+                    shadeClose: true, //点击遮罩关闭
+                    content: '/admin/edit_acc/?user_id=' + data.user_id,
+                    success: function(layer, index) {
+                        var body = layer.getChildFrame('body', index);
+                    },
+                    end: function () {
+                        location.reload()
+                    }
+                });
+                return false
+            }
+        });
+    })
+</script>
+</html>

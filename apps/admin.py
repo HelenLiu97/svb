@@ -19,6 +19,77 @@ from . import admin_blueprint
 from config import cache
 
 
+@admin_blueprint.route('/del_account/', methods=['GET'])
+@admin_required
+def del_account():
+    user_id = request.args.get('user_id')
+    SqlData.del_recharge_acc(int(user_id))
+    return jsonify({'code': RET.OK, 'msg': MSG.OK})
+
+
+@admin_blueprint.route('/edit_acc/', methods=['GET', 'POST'])
+@admin_required
+def edit_acc():
+    if request.method == 'GET':
+        user_id = request.args.get('user_id')
+        context = dict()
+        context['user_id'] = user_id
+        return render_template('admin/edit_acc.html', **context)
+    if request.method == 'POST':
+        data = json.loads(request.form.get('data'))
+        user_id = data.get('user_id')
+        account = data.get('account')
+        password = data.get('password')
+        if account:
+            res = SqlData.find_in_set('recharge_account', account, 'username')
+            if res:
+                return jsonify({'code': RET.SERVERERROR, 'msg': '账号已存在！请重新命名。'})
+            else:
+                SqlData.update_recharge_account('username', account, int(user_id))
+        if password:
+            SqlData.update_recharge_account('password', password, int(user_id))
+        return jsonify({'code': RET.OK, 'msg': MSG.OK})
+
+
+@admin_blueprint.route('/all_account/', methods=['GET'])
+@admin_required
+def all_account():
+    data = SqlData.recharge_all_account()
+    return jsonify({
+        "code": RET.OK,
+        "msg": MSG.OK,
+        "count": len(data),
+        "data": data,
+    })
+
+
+@admin_blueprint.route('/recharge_account/', methods=['GET'])
+@admin_required
+def recharge_account():
+    return render_template('admin/recharge_account.html')
+
+
+@admin_blueprint.route('/add_recharge/', methods=['GET', 'POST'])
+@admin_required
+def add_recharge():
+    if request.method == "GET":
+        return render_template('admin/add_recharge.html')
+    if request.method == "POST":
+        results = {"code": RET.OK, "msg": MSG.OK}
+        try:
+            data = json.loads(request.form.get('data'))
+            name = data.get('name')
+            account = data.get('username')
+            password = data.get('password')
+            SqlData.recharge_add_account(name=name, username=account, password=password)
+            return jsonify(results)
+        except Exception as e:
+            logging.error(e)
+            results['code'] = RET.SERVERERROR
+            results['msg'] = MSG.SERVERERROR
+            return jsonify(results)
+
+
 @admin_blueprint.route('/user_decline_proportion/', methods=['GET'])
 @admin_required
 def user_decline_proportion():
@@ -75,9 +146,11 @@ def user_decline_proportion():
         user_dict['three_bili'] = three_bili
         info_list.append(user_dict)
     results = dict()
+    info_list = sorted(info_list, key=operator.itemgetter('three_bili'))
+    task_info = list(reversed(info_list))
     results['msg'] = MSG.OK
     results['code'] = RET.OK
-    results['data'] = info_list
+    results['data'] = task_info
     results['count'] = len(user_info)
     return jsonify(results)
 
@@ -98,6 +171,62 @@ def card_decline_table():
 @admin_required
 def card_trans_table():
     return render_template('admin/card_trans.html')
+
+
+@admin_blueprint.route('/card_trans_settle/', methods=['GET'])
+@admin_required
+def card_trans_settle():
+    return render_template('admin/card_trans_settle.html')
+
+
+@admin_blueprint.route('/push_log_settle/', methods=['GET'])
+@admin_required
+def push_log_settle():
+    '''
+    卡交易记录接口
+    '''
+
+    try:
+        page = request.args.get('page')
+        limit = request.args.get('limit')
+        card_number = request.args.get('card_no')
+        trans_status = request.args.get('trans_status')
+        # 这是所有消费记录的sql
+        if trans_status and card_number:
+            sql_1 = " AND card_trans_settle.card_number LIKE '%{}%'".format(card_number)
+            if trans_status == "T":
+                sql_2 = " AND card_trans_settle.handing_fee != 0"
+            else:
+                sql_2 = " AND card_trans_settle.handing_fee = 0"
+            sql = sql_1 + sql_2
+        elif card_number:
+            sql = " AND card_trans_settle.card_number LIKE '%{}%'".format(card_number)
+        elif trans_status:
+            if trans_status == "T":
+                sql = " AND card_trans_settle.handing_fee != 0"
+            else:
+                sql = " AND card_trans_settle.handing_fee = 0"
+        else:
+            sql = ''
+
+        results = dict()
+        results['msg'] = MSG.OK
+        results['code'] = RET.OK
+        info = SqlData.search_admin_card_trans_settle(sql)
+        if not info:
+            results['msg'] = MSG.NODATA
+            return jsonify(results)
+        task_info = sorted(info, key=operator.itemgetter('authorization_date'))
+        page_list = list()
+        task_info = list(reversed(task_info))
+        for i in range(0, len(task_info), int(limit)):
+            page_list.append(task_info[i:i + int(limit)])
+        results['data'] = page_list[int(page) - 1]
+        results['count'] = len(task_info)
+        return jsonify(results)
+    except Exception as e:
+        logging.error('查询卡交易推送失败:' + str(e))
+        return jsonify({'code': RET.SERVERERROR, 'msg': MSG.SERVERERROR})
 
 
 @admin_blueprint.route('/push_log/', methods=['GET'])
@@ -792,7 +921,7 @@ def middle_info():
     return jsonify(results)
 
 
-@admin_blueprint.route('/add_middle/', methods=["GET",'POST'])
+@admin_blueprint.route('/add_middle/', methods=["GET", 'POST'])
 @admin_required
 def add_middle():
     if request.method == "GET":
@@ -1067,6 +1196,7 @@ def edit_parameter():
             min_top = data.get('min_top')
             max_top = data.get('max_top')
             password = data.get('password')
+            account_name = data.get('account_name')
             if create_price:
                 SqlData.update_account_field('create_price', create_price, name)
             if min_top:
@@ -1075,6 +1205,14 @@ def edit_parameter():
                 SqlData.update_account_field('max_top', max_top, name)
             if password:
                 SqlData.update_account_field('password', password, name)
+            if account_name:
+                account_name = account_name.strip()
+                ed_name = SqlData.search_user_field_name('account', account_name)
+                if ed_name:
+                    results['code'] = RET.SERVERERROR
+                    results['msg'] = '该用户名已存在!'
+                    return jsonify(results)
+                SqlData.update_account_field('name', account_name, name)
             return jsonify(results)
         except Exception as e:
             logging.error(e)
@@ -1094,6 +1232,19 @@ def lock_acc():
     elif check == 'false':
         RedisTool.string_set(u_id, 'F')
     return jsonify({'code': RET.OK, 'msg': MSG.OK})
+
+
+@admin_blueprint.route('/free_number/', methods=['POST'])
+@admin_required
+def free_number():
+    user_name = request.form.get("user_name")
+    free_number = request.form.get("free_number").strip()
+    # 数量的校验
+    if "-" in str(free_number) or "." in str(free_number):
+        return jsonify({"code": RET.SERVERERROR, 'msg': "请输入正确数量!"})
+    user_id = SqlData.search_user_field_name('id', user_name)
+    SqlData.update_user_field('free_number', int(free_number), user_id)
+    return jsonify({"code": RET.OK, 'msg': MSG.OK})
 
 
 @admin_blueprint.route('/account_info/', methods=['GET'])

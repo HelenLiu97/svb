@@ -50,6 +50,11 @@
 					"href": "/admin/card_trans_table/",
 					"spread": false
 				},{
+					"title": "卡已结算记录",
+					"icon": "&#xe605;",
+					"href": "/admin/card_trans_settle/",
+					"spread": false
+				},{
 					"title": "卡DECLINE记录",
 					"icon": "&#xe664;",
 					"href": "/admin/card_decline_table/",
@@ -58,6 +63,58 @@
 					"title": "DECLINE比例",
 					"icon": "&#xe6b2;",
 					"href": "/admin/card_decline_proportion/",
+					"spread": false
+				}
+			]
+		},
+		{
+			"title": "卡信息",
+			"icon": "&#xe638;",
+			"spread": false,
+			"children" : [
+				{
+					"title": "所有卡",
+					"icon": "&#xe66e;",
+					"href": "/admin/card_table/",
+					"spread": false
+				},{
+					"title": "卡全部交易记录",
+					"icon": "&#xe63c;",
+					"href": "/admin/card_trans_table/",
+					"spread": false
+				},{
+					"title": "卡已结算记录",
+					"icon": "&#xe605;",
+					"href": "/admin/card_trans_settle/",
+					"spread": false
+				},{
+					"title": "卡DECLINE记录",
+					"icon": "&#xe664;",
+					"href": "/admin/card_decline_table/",
+					"spread": false
+				},{
+					"title": "DECLINE比例",
+					"icon": "&#xe6b2;",
+					"href": "/admin/card_decline_proportion/",
+					"spread": false
+				}
+			]
+		},
+		{
+			"title": "充值管理",
+			"icon": "&#xe659;",
+			"spread": false,
+			"children": [
+				{
+					"title": "添加充值用户",
+					"icon": "&#xe66f;",
+					"href": "/admin/add_recharge/",
+					"spread": false
+				},
+				{
+					"title": "充值用户管理",
+					"icon": "&#xe770;",
+					"href": "/admin/recharge_account/",
 					"spread": false
 				}
 			]
