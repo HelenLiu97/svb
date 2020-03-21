@@ -87,7 +87,7 @@
             , cols: [[ //表头
                 {type: 'checkbox'}
                 , {type: 'numbers'}
-                , {field: 'card_number', title: '卡号', align: 'center', style: "mso-number-format:'\@';",}
+                , {field: 'display', title: '卡号', align: 'center', style: "mso-number-format:'\@';",}
                 , {field: '', toolbar:"#copy", width:50}
                 , {field: 'expire', title: '有效期', align: 'center', }
                 , {field: 'cvc', title: '安全码', align: 'center', }
@@ -96,7 +96,7 @@
                 , {field: 'valid_end_on', title: '失效时间', align: 'center',}
                 , {field: 'status', title: '卡状态', align: 'center',}
                 , {field: 'detail', title: '详情', align: 'center',style:'color:red'}
-                , {fixed: 'right', width: 390, align: 'center', toolbar: '#barDemo', id: 'tools'}
+                , {fixed: 'right', width: 290, align: 'center', toolbar: '#barDemo', id: 'tools'}
             ]]
             , id: 'card_info'
             , page: true
@@ -274,7 +274,7 @@
                 });
 
             } else if (layEvent === 'lock') {
-                layer.confirm('确定注销卡号为:'+data.card_number+'的卡吗?注销后卡余额回退到账户余额。', {title:'注销卡信息提示!!!'}, function (index) {
+                layer.confirm('确定注销卡号为:'+data.display+'的卡吗?注销后卡余额回退到账户余额。', {title:'注销卡信息提示!!!'}, function (index) {
                     layer.close(index);
                     //向服务端发送删除指令
                     $.ajax({
@@ -311,7 +311,7 @@
                 });
             }else if (layEvent === 'detail'){
                 layui.layer.open({
-                    title: '编辑卡号为 [ ' + data.card_number + ' ] 的相关信息',
+                    title: '编辑卡号为 [ ' + data.display + ' ] 的相关信息',
                     type: 2,
                     anim: 1,
                     skin:'layui-layer-lan',
@@ -327,7 +327,7 @@
                 return false
             } else if (layEvent === 'edit') {
                 layer.open({
-                    title: '充值卡号为 [ ' + data.card_number + ' ]',
+                    title: '充值卡号为 [ ' + data.display + ' ]',
                     type: 2,
                     anim: 3,
                     skin:'layui-layer-molv',
@@ -345,7 +345,7 @@
                 });
                 return false
             }else if (layEvent === 'copy'){
-                copyText(data.card_number.trim(), function () {
+                copyText(data.display.trim(), function () {
                     layer.msg('复制卡号成功！')
                 })
             }

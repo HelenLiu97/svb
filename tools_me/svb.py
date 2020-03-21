@@ -19,6 +19,9 @@ class SVB(object):
         # 请求资源的基础地址(根据不同的资源拼接成不同的请求地址)
         self.base_url = 'https://api.svb.com'
 
+        self.requests = requests.session()
+        self.requests.keep_alive = False
+
     def create_header(self, method, path, params="", body=""):
         '''
         :param method: 请求资源的方法(POST, GET, DELETE, PATCH)
@@ -55,7 +58,7 @@ class SVB(object):
         path = '/v1/realcards'
         method = 'GET'
         url = self.base_url + path
-        resp = requests.get(url, headers=self.create_header(method, path), timeout=60)
+        resp = self.requests.get(url, headers=self.create_header(method, path), timeout=60)
         print(resp.json())
 
     def create_card(self, cents):
@@ -84,7 +87,7 @@ class SVB(object):
         }
         try:
             body = json.dumps(data)
-            resp = requests.post(url, headers=self.create_header(method, path, body=body), data=body, timeout=60)
+            resp = self.requests.post(url, headers=self.create_header(method, path, body=body), data=body, timeout=60)
             if resp.status_code == 200:
                 data = resp.json().get('data')
                 card_number = data.get('card_number')
@@ -112,7 +115,7 @@ class SVB(object):
         params = 'show_card_number=true&show_realtime_auths=true'
         url = self.base_url + path + "?" + params
         try:
-            resp = requests.get(url, headers=self.create_header(method, path, params=params), timeout=60)
+            resp = self.requests.get(url, headers=self.create_header(method, path, params=params), timeout=60)
             if resp.status_code == 200:
                 return resp.json()
             else:
@@ -125,7 +128,7 @@ class SVB(object):
         path = '/v1/virtualcards'
         method = 'GET'
         url = self.base_url + path
-        resp = requests.get(url, headers=self.create_header(method, path), timeout=60)
+        resp = self.requests.get(url, headers=self.create_header(method, path), timeout=60)
         return resp.json()
 
     def delete_card(self, card_id):
@@ -133,7 +136,7 @@ class SVB(object):
         method = 'DELETE'
         url = self.base_url + path
         try:
-            resp = requests.delete(url, headers=self.create_header(method, path), timeout=60)
+            resp = self.requests.delete(url, headers=self.create_header(method, path), timeout=60)
             status = resp.status_code
             if status == 204:
                 return True
@@ -155,7 +158,7 @@ class SVB(object):
         url = self.base_url + path
         body = json.dumps(data)
         try:
-            resp = requests.patch(url, data=body, headers=self.create_header(method, path, body=body), timeout=60)
+            resp = self.requests.patch(url, data=body, headers=self.create_header(method, path, body=body), timeout=60)
             status = resp.status_code
             if status == 200:
                 resp_data = resp.json()
@@ -173,21 +176,21 @@ class SVB(object):
         path = '/v1/admin/virtualcard'
         method = 'GET'
         url = self.base_url + path
-        resp = requests.get(url, headers=self.create_header(method, path), timeout=60)
+        resp = self.requests.get(url, headers=self.create_header(method, path), timeout=60)
         print(resp.json())
 
     def card_event(self):
         path = '/v1/events/8904371'
         method = 'GET'
         url = self.base_url + path
-        resp = requests.get(url, headers=self.create_header(method, path), timeout=60)
+        resp = self.requests.get(url, headers=self.create_header(method, path), timeout=60)
         print(resp.json())
 
     def create_hook(self):
         path = '/v1/webhooks'
         method = 'POST'
         url = self.base_url + path
-        resp = requests.post(url, headers=self.create_header(method, path), timeout=60)
+        resp = self.requests.post(url, headers=self.create_header(method, path), timeout=60)
         print(resp.json())
 
 

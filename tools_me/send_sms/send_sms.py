@@ -68,6 +68,6 @@ class CCP(object):
 if __name__ == "__main__":
     ccp = CCP()
     # 1代表模板ID，下载SDK的官网api文档有说明
-    ret = ccp.send_Template_sms("13590024395", ["123456", "2019-09-13", 10000], 485108)
+    ret = ccp.send_Template_sms("18902222484", ["123456", "2019-09-13", 10000], 485108)
     print(ret)
 

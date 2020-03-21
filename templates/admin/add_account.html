@@ -74,6 +74,18 @@
             </div>
         </div>
 
+        <div class="layui-form-item">
+            <label class="layui-form-label">中介名称</label>
+            <div class="layui-input-inline">
+                <select name="middle_name" lay-search="">
+                    <option value="">直接选择或搜索选择</option>
+                    {% for i in middle_name %}
+                    <option value="{{ i }}">{{ i }}</option>
+                    {% endfor %}
+                    </select>
+            </div>
+        </div>
+
 
         <div class="layui-form-item">
             <div class="layui-input-block">

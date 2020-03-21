@@ -757,7 +757,6 @@ def card_info_all():
         results['count'] = len(info_list)
         return jsonify(results)
     except Exception as e:
-        print(e)
         logging.error(str(e))
         return jsonify({'code': RET.SERVERERROR, 'msg': MSG.SERVERERROR})
 
@@ -797,6 +796,25 @@ def one_detail():
                 "transaction_date_time": td.get("transaction_date_time"),
                 "vcn_response": td.get("vcn_response"),
             })
+
+        settle = list()
+        clearings = card_detail.get('data').get('clearings')
+        for td in clearings:
+            settle.append({
+                "acquirer_ica": td.get("acquirer_ica"),
+                "approval_code": td.get("approval_code"),
+                "billing_amount": float(td.get("billing_amount") / 100),
+                "billing_currency": td.get("billing_currency"),
+                "issuer_response": td.get("issuer_response"),
+                "mcc": td.get("mcc"),
+                "mcc_description": td.get("mcc_description"),
+                "merchant_amount": float(td.get("merchant_amount") / 100),
+                "merchant_currency": td.get("merchant_currency"),
+                "merchant_id": td.get("merchant_id"),
+                "merchant_name": td.get("merchant_name"),
+                "transaction_date_time": td.get("settlement_date"),
+            })
+        context['settle'] = settle
         context['pay_list'] = info_list
         return render_template('user/card_detail.html', **context)
     except Exception as e:
@@ -964,7 +982,14 @@ def add_account():
         if g.admin_id == 857:
             return render_template('user/no_auth.html')
         else:
-            return render_template('admin/add_account.html')
+            middle_info = SqlData.search_middle_info()
+            middle_name = list()
+            for i in middle_info:
+                name = i.get('name')
+                middle_name.append(name)
+            context = dict()
+            context['middle_name'] = middle_name
+            return render_template('admin/add_account.html', **context)
     if request.method == 'POST':
         results = {"code": RET.OK, "msg": MSG.OK}
         try:
@@ -976,6 +1001,7 @@ def add_account():
             create_price = float(data.get('create_price'))
             min_top = float(data.get('min_top'))
             max_top = float(30000)
+            middle_name = data.get('middle_name')
             ed_name = SqlData.search_user_field_name('account', name)
             if ed_name:
                 results['code'] = RET.SERVERERROR
@@ -989,7 +1015,11 @@ def add_account():
                     return jsonify(results)
             else:
                 phone_num = ""
-            SqlData.insert_account(account, password, phone_num, name, create_price, min_top, max_top)
+            if middle_name:
+                middle_id = SqlData.search_middle_name('id', middle_name)
+            else:
+                middle_id = 'NULL'
+            SqlData.insert_account(account, password, phone_num, name, create_price, min_top, max_top, middle_id)
             # 创建用户后插入充值数据
             pay_num = sum_code()
             t = xianzai_time()
@@ -1000,6 +1030,7 @@ def add_account():
             return jsonify(results)
         except Exception as e:
             logging.error(e)
+            print(e)
             results['code'] = RET.SERVERERROR
             results['msg'] = MSG.SERVERERROR
             return jsonify(results)
@@ -1171,7 +1202,7 @@ def top_up():
         phone = SqlData.search_user_field_name('phone_num', name)
 
         if phone:
-            CCP().send_Template_sms(phone, [name, t, money], 478898)
+            CCP().send_Template_sms(phone, ["556338卡段用户, " + name, t, money], 485108)
 
         return jsonify(results)
 
@@ -1253,9 +1284,13 @@ def account_info():
     page = request.args.get('page')
     limit = request.args.get('limit')
     customer = request.args.get('customer')
+    middle = request.args.get('middle')
     results = {"code": RET.OK, "msg": MSG.OK, "count": 0, "data": ""}
     if customer:
         sql = "WHERE name LIKE '%" + customer + "%'"
+    elif middle:
+        middle_id = SqlData.search_middle_name('id', middle)
+        sql = "WHERE middle_id={}".format(middle_id)
     else:
         sql = ''
     task_one = SqlData.search_account_info(sql)
@@ -1311,7 +1346,14 @@ def cus_list():
     if g.admin_id == 857:
         return render_template('admin/vice_cus_list.html')
     else:
-        return render_template('admin/cus_list.html')
+        middle_info = SqlData.search_middle_info()
+        middle_name = list()
+        for i in middle_info:
+            name = i.get('name')
+            middle_name.append(name)
+        context = dict()
+        context['middle'] = middle_name
+        return render_template('admin/cus_list.html', **context)
 
 
 @admin_blueprint.route('/line_chart', methods=['GET'])

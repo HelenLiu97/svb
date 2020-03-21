@@ -46,15 +46,15 @@
             , totalRow: true //开启合计行
             , cols: [[ //表头
                 {type: 'numbers'}
-                , {field: 'name', title: '中介名称', align: 'center', sort: true, totalRowText: '合计：'}
-                , {field: 'start_time', title: '开始时间(周三)', align: 'center', sort: true,}
-                , {field: 'end_time', title: '结束时间(周二)', align: 'center', sort: true,}
+                , {field: 'name', title: '中介名称', align: 'center', totalRowText: '合计：'}
+                , {field: 'start_time', title: '开始时间(周三)', align: 'center',}
+                , {field: 'end_time', title: '结束时间(周二)', align: 'center',}
                 , {field: 'card_num', title: '开卡量', align: 'center', sort: true, totalRow: true}
                 , {field: 'create_price', title: '开卡费', align: 'center', sort: true, totalRow: true}
-                , {field: 'create_time', title: '系统统计时间', align: 'center', sort: true,}
+                , {field: 'create_time', title: '系统统计时间', align: 'center',}
                 , {field: 'sum_money', title: '提成总额', align: 'center', style: "color:red;", sort: true, totalRow: true}
-                , {field: 'pay_status', title: '是否支付提成', align: 'center', sort: true}
-                , {field: 'pay_time', title: '终端确认时间', align: 'center', sort: true}
+                , {field: 'pay_status', title: '是否支付提成', align: 'center'}
+                , {field: 'pay_time', title: '终端确认时间', align: 'center'}
                 , {fixed: 'right', width: 160, align: 'center', toolbar: '#middle_money_bar'}
             ]]
             , id: 'card_info'

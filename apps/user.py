@@ -958,7 +958,17 @@ def card_info():
         for i in range(0, len(info), int(limit)):
             page_list.append(info[i:i + int(limit)])
         data = page_list[int(page) - 1]
-        results['data'] = data
+        # 处理隐藏注销的卡号
+        info_list = list()
+        destroy_card = SqlData.search_card_destroy()
+        for card in data:
+            card_number = card.get('card_number')
+            if card_number.strip() in destroy_card:
+                card['display'] = '\t556338******' + card_number[-4:]
+            else:
+                card['display'] = card_number
+            info_list.append(card)
+        results['data'] = info_list
         results['count'] = len(info)
         return jsonify(results)
     except Exception as e:

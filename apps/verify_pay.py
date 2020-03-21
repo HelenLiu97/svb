@@ -198,15 +198,14 @@ def top_up():
             if phone:
                 phone_list = phone.split(",")
                 for p in phone_list:
-                    CCP().send_Template_sms(p, [cus_name, t, money_msg], 485108)
+                    CCP().send_Template_sms(p, ["556338卡段用户, " + cus_name, t, money_msg], 485108)
             if mid_phone:
-                CCP().send_Template_sms(mid_phone, [cus_name, t, money_msg], 485108)
+                CCP().send_Template_sms(mid_phone, ["556338卡段用户, " + cus_name, t, money_msg], 485108)
             results['code'] = RET.OK
             results['msg'] = MSG.OK
             return jsonify(results)
         except Exception as e:
             logging.error(str(e))
-            print(e)
             results = dict()
             results['code'] = RET.SERVERERROR
             results['msg'] = str(e)

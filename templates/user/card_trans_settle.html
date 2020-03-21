@@ -52,14 +52,14 @@
             , cols: [[ //表头
                 {type:'numbers'}
                 , {field: 'card_number', title: '卡号',width:'10%', align: 'center'}
-                , {field: 'billing_amount', title: '冻结金额',align: 'center', style: "color: #CD0000"}
+                , {field: 'billing_amount', title: '冻结金额',align: 'center', style: "color: #CD0000", sort: true}
                 , {field: 'billing_currency', title: '冻结币种', align: 'center', style: 'color: #436EEE'}
                 , {field: 'authorization_date', title: '授权时间',width:'12%', align: 'center', style:"color: #8B0A50"}
-                , {field: 'merchant_amount', title: '交易金额', align: 'center',style: "color: #CD0000"}
+                , {field: 'merchant_amount', title: '交易金额', align: 'center',style: "color: #CD0000", sort: true}
                 , {field: 'merchant_currency', title: '交易币种',align: 'center', style: 'color: #436EEE'}
                 , {field: 'merchant_name', title: '商户名称', align: 'center',width:'20%',style:"color: #030303"}
                 , {field: 'settlement_date', title: '结算时间',width:'12%', align: 'center', style:"color: #8B0A50"}
-                , {field: 'handing_fee', title: '手续费', align: 'center',style:"color: #EE5C42"}
+                , {field: 'handing_fee', title: '手续费', align: 'center',style:"color: #EE5C42", sort: true}
             ]]
             , id: 'push_log'
             , page: true

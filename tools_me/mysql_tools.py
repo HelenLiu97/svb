@@ -757,10 +757,10 @@ class SqlData(object):
             conn.rollback()
         self.close_connect(conn, cursor)
 
-    def insert_account(self, account, password, phone_num, name, create_price, min_top, max_top):
-        sql = "INSERT INTO user_info(account, password, phone_num, name, create_price, min_top, max_top) " \
-              "VALUES ('{}','{}','{}','{}',{},{},{})".format(account, password, phone_num, name, create_price,
-                                                             min_top, max_top)
+    def insert_account(self, account, password, phone_num, name, create_price, min_top, max_top, middle_id):
+        sql = "INSERT INTO user_info(account, password, phone_num, name, create_price, min_top, max_top, middle_id) " \
+              "VALUES ('{}','{}','{}','{}',{},{},{},{})".format(account, password, phone_num, name, create_price,
+                                                             min_top, max_top, middle_id)
         conn, cursor = self.connect()
         try:
             cursor.execute(sql)
@@ -972,6 +972,17 @@ class SqlData(object):
             info_dict['user_name'] = self.search_user_field('name', i[11])
             info_dict['detail'] = '双击查看'
             info_list.append(info_dict)
+        return info_list
+
+    def search_card_destroy(self):
+        sql = "SELECT card_number FROM card_info WHERE status='F'"
+        conn, cursor = self.connect()
+        cursor.execute(sql)
+        rows = cursor.fetchall()
+        self.close_connect(conn, cursor)
+        info_list = list()
+        for i in rows:
+            info_list.append(i[0])
         return info_list
 
     def search_trans_admin(self, cus_sql, card_sql, time_sql, do_sql, sql):
