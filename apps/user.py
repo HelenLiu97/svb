@@ -7,7 +7,7 @@ import time
 
 from config import cache
 from tools_me.other_tools import xianzai_time, login_required, check_float, account_lock, get_nday_list, \
-    verify_login_time
+    verify_login_time, trans_lock
 from tools_me.parameter import RET, MSG, TRANS_TYPE, DO_TYPE
 from tools_me.redis_tools import RedisTool
 from tools_me.remain import get_card_remain
@@ -193,75 +193,6 @@ def bento_refund():
         return jsonify({"code": RET.SERVERERROR, 'msg': "网络繁忙,请稍后重试！"})
 
 
-# svb在交易信息需要爬取
-@user_blueprint.route('/all_trans/', methods=['GET'])
-@login_required
-@account_lock
-def all_trans():
-    page = request.args.get("page")
-    limit = request.args.get("limit")
-
-    # 客户名
-    acc_name = request.args.get("acc_name")
-    # 卡的名字
-    order_num = request.args.get("order_num")
-    # 时间范围
-    time_range = request.args.get("time_range")
-    # 操作状态
-    trans_status = request.args.get("trans_status")
-
-    user_name = g.user_name
-    # data = SqlDataNative.one_bento_alltrans(alias=user_name)
-    data=[]
-    results = {"code": RET.OK, "msg": MSG.OK, "count": 0, "data": ""}
-    if len(data) == 0:
-        results["MSG"] = MSG.NODATA
-        return jsonify(results)
-    args_list = []
-    new_data = []
-    if acc_name:
-        args_list.append(acc_name)
-    if order_num:
-        args_list.append(order_num)
-    if trans_status:
-        args_list.append(trans_status)
-
-    if args_list and time_range == "":
-        for d in data:
-            if set(args_list) < set(d.values()):
-                new_data.append(d)
-    elif args_list and time_range != "":
-        min_time = time_range.split(' - ')[0] + ' 00:00:00'
-        max_time = time_range.split(' - ')[1] + ' 23:59:59'
-        min_tuple = datetime.datetime.strptime(min_time, '%Y-%m-%d %H:%M:%S')
-        max_tuple = datetime.datetime.strptime(max_time, '%Y-%m-%d %H:%M:%S')
-        for d in data:
-            dat = datetime.datetime.strptime(d.get("date"), '%Y-%m-%d %H:%M:%S')
-            if (min_tuple < dat and max_tuple > dat) and set(args_list) < set(d.values()):
-                new_data.append(d)
-    elif time_range and len(args_list) == 0:
-        min_time = time_range.split(' - ')[0] + ' 00:00:00'
-        max_time = time_range.split(' - ')[1] + ' 23:59:59'
-        min_tuple = datetime.datetime.strptime(min_time, '%Y-%m-%d %H:%M:%S')
-        max_tuple = datetime.datetime.strptime(max_time, '%Y-%m-%d %H:%M:%S')
-        for d in data:
-            dat = datetime.datetime.strptime(d.get("date"), '%Y-%m-%d %H:%M:%S')
-            if min_tuple < dat and max_tuple > dat:
-                new_data.append(d)
-
-    page_list = list()
-    if new_data:
-        data = sorted(new_data, key=operator.itemgetter("date"))
-    data = sorted(data, key=operator.itemgetter("date"))
-    data = list(reversed(data))
-    for i in range(0, len(data), int(limit)):
-        page_list.append(data[i: i + int(limit)])
-    results["data"] = page_list[int(page) - 1]
-    results["count"] = len(data)
-    # results = {"code": RET.OK, "msg": MSG.OK, "count": len(data), "data": page_list[int(page)-1]}
-    return jsonify(results)
-
-
 @user_blueprint.route('/card_label/', methods=['GET', 'POST'])
 @login_required
 def change_card_name():
@@ -296,26 +227,6 @@ def change_card_name():
         except Exception as e:
             logging.error(str(e))
             return jsonify({'code': RET.SERVERERROR, 'msg': MSG.SERVERERROR})
-
-
-@user_blueprint.route('/card_remain/', methods=['GET'])
-@account_lock
-def card_remain():
-    results = dict()
-    try:
-        results['code'] = RET.OK
-        results['msg'] = MSG.OK
-        data = request.args.get('data')
-        data = json.loads(data)
-        info = get_card_remain(data)
-        results['data'] = info
-        results['count'] = len(info)
-        return results
-    except Exception as e:
-        logging.error(str(e))
-        results['code'] = RET.SERVERERROR
-        results['msg'] = MSG.SERVERERROR
-        return jsonify(results)
 
 
 @user_blueprint.route('/user_top/')
@@ -418,6 +329,7 @@ def card_delete():
 @user_blueprint.route('/batch/', methods=['POST'])
 @login_required
 @account_lock
+@trans_lock
 def card_batch():
     if request.method == 'POST':
         try:
@@ -485,6 +397,7 @@ def card_batch():
 @user_blueprint.route('/card_top/', methods=['GET', 'POST'])
 @login_required
 @account_lock
+@trans_lock
 def top_up():
     # 判断是否是子账号用户
     vice_id = g.vice_id
@@ -539,6 +452,7 @@ def top_up():
 @user_blueprint.route('/create_card/', methods=['GET', 'POST'])
 @login_required
 @account_lock
+@trans_lock
 def create_card():
     if request.method == 'GET':
         user_id = g.user_id

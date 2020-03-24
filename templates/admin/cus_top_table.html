@@ -19,7 +19,8 @@
                 <div class="layui-input-inline">
 					<input type="text" class="layui-input searchVal" id="time_range" placeholder="时间范围" />
 				</div>
-				<a class="layui-btn search_btn" data-type="reload">搜索</a>
+				<a class="layui-btn search_btn">搜索</a>
+                <a class="layui-btn layui-btn-normal" type="btn" id="reload">重置</a>
 			</div>
 		</form>
 	</blockquote>
@@ -30,6 +31,10 @@
             laydate = layui.laydate,
             form = layui.form,
             $ = layui.jquery;
+
+        $("#reload").on("click", function () {
+           location.reload()
+        });
 
         laydate.render({
             elem: '#time_range'

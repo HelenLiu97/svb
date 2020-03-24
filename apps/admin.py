@@ -6,6 +6,8 @@ import re
 import time
 import os
 from flask import request, render_template, jsonify, session, g, redirect
+from xpinyin import Pinyin
+
 from tools_me.svb import svb
 from tools_me.des_code import ImgCode
 from tools_me.img_code import createCodeImage
@@ -708,6 +710,7 @@ def card_table():
 def notice():
     if request.method == 'GET':
         note = SqlData.search_admin_field('notice')
+        note = note.split("!@#")[0]
         context = dict()
         context['note'] = note
         return render_template('admin/notice.html', **context)
@@ -1228,6 +1231,7 @@ def edit_parameter():
             max_top = data.get('max_top')
             password = data.get('password')
             account_name = data.get('account_name')
+            account = data.get('account')
             if create_price:
                 SqlData.update_account_field('create_price', create_price, name)
             if min_top:
@@ -1236,9 +1240,17 @@ def edit_parameter():
                 SqlData.update_account_field('max_top', max_top, name)
             if password:
                 SqlData.update_account_field('password', password, name)
+            if account:
+                account = account.strip()
+                ed_name = SqlData.search_user_field_name('account', account)
+                if ed_name:
+                    results['code'] = RET.SERVERERROR
+                    results['msg'] = '该用账号已存在!'
+                    return jsonify(results)
+                SqlData.update_account_field('account', account, name)
             if account_name:
                 account_name = account_name.strip()
-                ed_name = SqlData.search_user_field_name('account', account_name)
+                ed_name = SqlData.search_user_field_name('name', account_name)
                 if ed_name:
                     results['code'] = RET.SERVERERROR
                     results['msg'] = '该用户名已存在!'
@@ -1298,7 +1310,7 @@ def account_info():
         results['MSG'] = MSG.NODATA
         return results
     page_list = list()
-    task_info_status = list()
+    task_info_status = dict()
     for c in task_one:
         u_id = c.get('u_id')
         r = RedisTool.string_get(u_id)
@@ -1306,8 +1318,12 @@ def account_info():
             c['status'] = 'T'
         else:
             c['status'] = 'F'
-        task_info_status.append(c)
-    task_info = list(reversed(task_info_status))
+        # 使用中文字母拍寻排列客户信息
+        user_name = Pinyin().get_pinyin(c.get('name')).lower().strip()
+        task_info_status[user_name] = c
+    task_info = list()
+    for i in sorted(task_info_status):
+        task_info.append(task_info_status[i])
     for i in range(0, len(task_info), int(limit)):
         page_list.append(task_info[i:i + int(limit)])
     data = page_list[int(page) - 1]
@@ -1317,7 +1333,7 @@ def account_info():
         u_id = i.get('u_id')
         sum_out_money = SqlData.search_trans_sum(u_id) - SqlData.search_income_money(u_id)
         card_remain = SqlData.search_sum_card_balance(u_id)
-        i.update({'sum_out_money': sum_out_money})
+        i.update({'sum_out_money': round(sum_out_money, 2)})
         i.update({'card_remain': card_remain})
         new_data.append(i)
     results['data'] = new_data

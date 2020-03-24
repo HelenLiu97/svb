@@ -1793,8 +1793,8 @@ class SqlData(object):
         info_dict = dict()
         info_dict['ex_change'] = rows[0]
         info_dict['ex_range'] = rows[1]
-        info_dict['hand'] = rows[2]
-        info_dict['dollar_hand'] = rows[3]
+        info_dict['hand'] = str(round(rows[2] * 100, 2)) + '%'
+        info_dict['dollar_hand'] = str(round(rows[3] * 100, 2)) + '%'
         return info_dict
 
 
