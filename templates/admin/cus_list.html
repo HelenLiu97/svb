@@ -90,6 +90,7 @@
         skin: 'line',
         even: true,
         height : "full-100",
+        totalRow: true,
         limit : 100,
         limits : [100,200,300,400,500],
         id : "newsListTable",
@@ -103,7 +104,7 @@
                 , {field: 'card_remain', title: '卡的总余额', align: 'center',  totalRow: true, style: "color: red", sort: true}
                 , {field: 'balance', title: '账户余额', align: 'center',  totalRow: true, style: "color: purple", sort: true}
                 , {field: 'sum_balance', title: '总充值金额', align: 'center',  totalRow: true, sort: true}
-                , {field: 'last_login_time', title: '上此登录时间', align: 'center',  totalRow: true}
+                , {field: 'last_login_time', title: '上此登录时间', align: 'center'}
                 , {field: 'status', title: '状态', align: 'center', templet:function(row){
                         var html = "<input type='checkbox' lay-skin='switch' lay-text='ON|OFF' lay-filter='checkboxIsSelected' table-index='"+row.LAY_TABLE_INDEX+"' class='checkboxIsSelected'";
                         if(row.status == 'T'){
@@ -118,7 +119,7 @@
 
     var base_info = [[ //表头
                 {type: 'numbers'}
-                , {field: 'name', title: '客户', align: 'center', totalRowText: '合计：'}
+                , {field: 'name', title: '客户', align: 'center'}
                 , {field: 'account', title: '账号', align: 'center', }
                 , {field: 'password', title: '密码', align: 'center', }
                 , {field: 'create_price', title: '开卡费', align: 'center', sort: true}
@@ -136,7 +137,7 @@
                 , {field: 'card_remain', title: '卡的总余额', align: 'center',  totalRow: true, style: "color: red", sort: true}
                 , {field: 'balance', title: '账户余额', align: 'center',  totalRow: true, style: "color: purple", sort: true}
                 , {field: 'sum_balance', title: '总充值金额', align: 'center',  totalRow: true, sort: true}
-                , {field: 'last_login_time', title: '上此登录时间', align: 'center',  totalRow: true}
+                , {field: 'last_login_time', title: '上此登录时间', align: 'center'}
                 , {field: 'status', title: '状态', align: 'center', templet:function(row){
                         var html = "<input type='checkbox' lay-skin='switch' lay-text='ON|OFF' lay-filter='checkboxIsSelected' table-index='"+row.LAY_TABLE_INDEX+"' class='checkboxIsSelected'";
                         if(row.status == 'T'){
@@ -177,7 +178,7 @@
                     , skin: 'line'
                     , even: true
                     , toolbar: "#acc_title" //开启工具栏，此处显示默认图标，可以自定义模板，详见文档
-                    , totalRow: true //开启合计行
+                    , totalRow: true
                     , cols: detail_info
                 });
                 return false;
@@ -382,6 +383,31 @@
                 });
         }
     });
+
+    table.on('rowDouble(newsList)', function (obj) {
+            var data = obj.data;
+            layer.open({
+                type: 2
+                , offset: 'auto'
+                , skin: 'layui-layer-lan'
+                , id: 'account_info'//防止重复弹出
+                , title: '客户为  [' + data.name + '] 的卡信息'
+                , area: ['90%', '88%']
+                , anim: 2
+                , shadeClose: true
+                , content: '/admin/account_card_list/?u_id=' + data.u_id
+                , btn: '关闭全部'
+                , btnAlign: 'c' //按钮居中a
+                , shade: [0.8, '#393D49'] //弹框背景选项
+                , success: function (layero, index) {
+                    var body = layer.getChildFrame('body', index);
+                    body.contents().find("#user_id").val(data.u_id);
+                }
+            });
+
+            //标注选中样式
+            obj.tr.addClass('layui-table-click').siblings().removeClass('layui-table-click');
+        });
 
 });
 

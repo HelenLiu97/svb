@@ -32,9 +32,13 @@ def login():
         code = data.get('code')
         ver_code = data.get('ver_code')
         account = SqlData.recharge_search_user(username=login)
+        user_data = SqlData.search_user_info(login)
         if ver_code != code:
             return jsonify({'code': RET.SERVERERROR, 'msg': '验证码错误!区分大小写!'})
         elif account and account.get("password") == pwd:
+            session['pay_login'] = 'T'
+            return jsonify({'code': RET.OK, 'msg': MSG.OK})
+        elif user_data and user_data.get("password") == pwd:
             session['pay_login'] = 'T'
             return jsonify({'code': RET.OK, 'msg': MSG.OK})
         else:

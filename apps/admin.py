@@ -21,6 +21,50 @@ from . import admin_blueprint
 from config import cache
 
 
+@admin_blueprint.route('/money_detail/', methods=['GET'])
+@admin_required
+def money_detail():
+    info_id = request.args.get('info_id')
+    detail = SqlData.search_middle_money_field('detail', int(info_id))
+    detail_list = json.loads(detail)
+    context = dict()
+    context['info_list'] = detail_list
+    return render_template('middle/money_detail.html', **context)
+
+
+@admin_blueprint.route('/account_card/', methods=['GET'])
+@admin_required
+def account_card():
+    u_id = request.args.get('user_id')
+    page = request.args.get('page')
+    limit = request.args.get('limit')
+    card_info = SqlData.search_card_info_admin("WHERE user_id = {}".format(u_id))
+    if len(card_info) == 0:
+        results = dict()
+        results['msg'] = MSG.NODATA
+        results['code'] = RET.SERVERERROR
+        return jsonify(results)
+    task_info = list(reversed(card_info))
+    page_list = list()
+    for i in range(0, len(task_info), int(limit)):
+        page_list.append(task_info[i:i + int(limit)])
+    results = dict()
+    results['data'] = page_list[int(page) - 1]
+    results['count'] = len(card_info)
+    results['msg'] = MSG.OK
+    results['code'] = RET.OK
+    return jsonify(results)
+
+
+@admin_blueprint.route('/account_card_list/', methods=['GET'])
+@admin_required
+def account_card_list():
+    u_id = request.args.get('u_id')
+    context = dict()
+    context['u_id'] = u_id
+    return render_template('admin/card_list.html', **context)
+
+
 @admin_blueprint.route('/del_account/', methods=['GET'])
 @admin_required
 def del_account():

@@ -332,6 +332,14 @@ def card_delete():
 @trans_lock
 def card_batch():
     if request.method == 'POST':
+        vice_id = g.vice_id
+        if vice_id:
+            auth_dict = RedisTool.hash_get('svb_vice_auth', vice_id)
+            if auth_dict is None:
+                return jsonify({'code': RET.SERVERERROR, 'msg': '抱歉您没有权限执行此操作！'})
+            c_card = auth_dict.get('c_card')
+            if c_card == 'F':
+                return jsonify({'code': RET.SERVERERROR, 'msg': '抱歉您没有权限执行此操作！'})
         try:
             user_id = g.user_id
             money = request.form.get('money')

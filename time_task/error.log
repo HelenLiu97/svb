@@ -3,3 +3,5 @@
 2020-02-20 16:20:47,246 :: ERROR :: card_detail_api_error:HTTPSConnectionPool(host='api.svb.com', port=443): Read timed out. (read timeout=10)
 2020-02-20 16:21:23,097 :: ERROR :: card_detail_api_error:HTTPSConnectionPool(host='api.svb.com', port=443): Read timed out. (read timeout=10)
 2020-02-20 16:53:04,724 :: ERROR :: 更新ADMIN字段失败!(1054, "Unknown column 'up_remain_tim' in 'field list'")
+2020-03-25 16:51:00,146 :: ERROR :: 开始统计计算中介费用!开始时间为: 2020-03-18;结束时间为: 2020-03-24
+2020-03-25 16:51:58,770 :: ERROR :: 开始统计计算中介费用!开始时间为: 2020-03-18;结束时间为: 2020-03-24

@@ -68,6 +68,31 @@
             }
         });
 
+        table.on('rowDouble(middle_money)', function(obj){
+        var data = obj.data;
+            layer.open({
+                type: 2
+                ,offset: 'auto' //具体配置参考：http://www.layui.com/doc/modules/layer.html#offset
+                ,skin:'layui-layer-demo'
+                ,id: 'layerUser'//防止重复弹出
+                ,title: '客户为 ' + data.name + ' 提成明细'
+                ,area: ['25%','33%']
+                ,anim: 2
+                ,shadeClose:true
+                ,content: '/admin/money_detail?info_id=' + data.id
+                ,btn: '关闭全部'
+                ,btnAlign: 'c' //按钮居中a
+                ,shade:  [0.8, '#393D49'] //弹框背景选项
+                ,success: function(layero, index) {
+                        var body = layer.getChildFrame('body', index);
+                        body.contents().find("#card_num").html(data.card_no);
+                    }
+              });
+
+            //标注选中样式
+            obj.tr.addClass('layui-table-click').siblings().removeClass('layui-table-click');
+        });
+
         table.on('tool(middle_money)', function (obj) {
             var data = obj.data
                 , layEvent = obj.event;

@@ -195,9 +195,15 @@ class SVB(object):
 
 
 svb = SVB()
-
 if __name__ == '__main__':
     print(time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(time.time())))
-    res = svb.card_detail(65377501)
-    print(res.get('data').get('clearings'))
+    res = svb.all_virtualcards()
+    card_list = res.get('data')
+    print(len(card_list))
+    for i in card_list:
+        card_id = i.get('id')
+        print(card_id)
+        if card_id == "34025878":
+            print('找到了！')
+    # print(res.get('data').get('clearings'))
     print(time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(time.time())))
