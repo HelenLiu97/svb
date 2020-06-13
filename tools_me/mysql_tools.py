@@ -216,6 +216,26 @@ class SqlData(object):
             return False
         return rows[0]
 
+    def search_card_like(self, field, card_no):
+        sql = "SELECT {} from card_info WHERE card_number LIKE '%{}'".format(field, card_no)
+        conn, cursor = self.connect()
+        cursor.execute(sql)
+        rows = cursor.fetchall()
+        self.close_connect(conn, cursor)
+        if len(rows) != 1:
+            return False
+        return rows[0][0]
+
+    def check_card_real(self, card_number, user_id):
+        sql = "SELECT * from card_info WHERE card_number='{}' AND user_id={}".format(card_number, user_id)
+        conn, cursor = self.connect()
+        cursor.execute(sql)
+        rows = cursor.fetchone()
+        self.close_connect(conn, cursor)
+        if rows:
+            return True
+        return False
+
     def update_card_info_card_no(self, field, value, card_no):
         sql = "UPDATE card_info SET {}='{}' WHERE card_number='{}'".format(field, value, card_no)
         conn, cursor = self.connect()
@@ -356,7 +376,7 @@ class SqlData(object):
             info_dict['trans_type'] = i[2]
             info_dict['do_type'] = i[3]
             info_dict['card_no'] = "\t" + i[4]
-            info_dict['do_money'] = i[5]
+            info_dict['do_money'] = i[5] if i[2] == '收入' else -i[5]
             info_dict['before_balance'] = i[6]
             info_dict['balance'] = i[7]
             info_list.append(info_dict)
@@ -1002,7 +1022,7 @@ class SqlData(object):
             info_dict['trans_type'] = i[2]
             info_dict['do_type'] = i[3]
             info_dict['card_no'] = "\t" + i[4]
-            info_dict['do_money'] = i[5]
+            info_dict['do_money'] = i[5] if i[2] == '收入' else -i[5]
             info_dict['before_balance'] = i[6]
             info_dict['balance'] = i[7]
             info_dict['cus_name'] = i[9]
@@ -1672,7 +1692,7 @@ class SqlData(object):
         return rows[0]
 
     def search_card_trans(self, user_id, sql_line):
-        sql = "SELECT DISTINCT card_trans.* FROM card_trans JOIN card_info ON card_trans.card_id=card_info.card_id WHERE card_info.user_id={} {}".format(
+        sql = "SELECT DISTINCT card_trans.*, card_info.label FROM card_trans JOIN card_info ON card_trans.card_id=card_info.card_id WHERE card_info.user_id={} {}".format(
             user_id, sql_line)
         conn, cursor = self.connect()
         cursor.execute(sql)
@@ -1699,6 +1719,7 @@ class SqlData(object):
             info_dict['transaction_type'] = i[14]
             info_dict['vcn_response'] = i[15]
             info_dict['status'] = i[17]
+            info_dict['label'] = i[18]
             info_list.append(info_dict)
         return info_list
 
@@ -1797,9 +1818,113 @@ class SqlData(object):
         info_dict['dollar_hand'] = str(round(rows[3] * 100, 2)) + '%'
         return info_dict
 
+    def search_del_card(self, n_time):
+        sql = "SELECT do_money, card_no FROM user_trans WHERE do_type='注销' AND do_date < '{}'".format(n_time)
+        conn, cursor = self.connect()
+        cursor.execute(sql)
+        rows = cursor.fetchall()
+        self.close_connect(conn, cursor)
+        info_list = list()
+        for i in rows:
+            info_dict = dict()
+            info_dict['money'] = i[0]
+            info_dict['card_no'] = i[1]
+            info_list.append(info_dict)
+        return info_list
+
+    def search_card_top(self, card_no):
+        sql = "SELECT SUM(do_money) FROM user_trans WHERE card_no='{}' AND (do_type='充值' OR do_type='批量充值')".format(card_no)
+        conn, cursor = self.connect()
+        cursor.execute(sql)
+        rows = cursor.fetchone()
+        self.close_connect(conn, cursor)
+        return rows[0]
+
+    def search_card_refund(self, card_no):
+        sql = "SELECT SUM(do_money) FROM user_trans WHERE card_no='{}' AND do_type='退款'".format(card_no)
+        conn, cursor = self.connect()
+        cursor.execute(sql)
+        rows = cursor.fetchone()
+        self.close_connect(conn, cursor)
+        return rows[0]
+
+    def search_set_change(self):
+        sql = "SELECT set_change, set_range  FROM admin"
+        conn, cursor = self.connect()
+        cursor.execute(sql)
+        rows = cursor.fetchone()
+        self.close_connect(conn, cursor)
+        return rows[0], rows[1]
+
+    def insert_delete_card(self, card_number, card_id, user_id):
+        sql = "INSERT INTO delete_card(card_number, card_id, user_id) VALUES('{}',{},{})".format(card_number, card_id, user_id)
+        conn, cursor = self.connect()
+        try:
+            cursor.execute(sql)
+            conn.commit()
+        except Exception as e:
+            logging.error("插入待删卡信息失败!" + str(e))
+            conn.rollback()
+        self.close_connect(conn, cursor)
+
+    def search_delete_in(self, value):
+        sql = "select * from delete_card where find_in_set('{}',card_number)".format(value)
+        conn, cursor = self.connect()
+        cursor.execute(sql)
+        row = cursor.fetchone()
+        self.close_connect(conn, cursor)
+        if row:
+            return True
+        else:
+            return False
+
+    def search_delete_card_info(self):
+        sql = "SELECT * FROM delete_card;"
+        conn, cursor = self.connect()
+        cursor.execute(sql)
+        row = cursor.fetchall()
+        self.close_connect(conn, cursor)
+        info_list = list()
+        if row:
+            for i in row:
+                info_dict = dict()
+                info_dict['card_number'] = i[1]
+                info_dict['card_id'] = i[2]
+                info_dict['first_time'] = i[3]
+                info_dict['first_remain'] = i[4]
+                info_dict['second_time'] = i[5]
+                info_dict['second_remain'] = i[6]
+                info_dict['status'] = i[7]
+                info_dict['user_id'] = i[8]
+                info_list.append(info_dict)
+            return info_list
+        return info_list
+
+    def update_delete_first(self, first_time, first_remain, card_number):
+        sql = "UPDATE delete_card SET first_time = '{}',first_remain = {} WHERE card_number = '{}'".format(first_time, first_remain, card_number)
+        conn, cursor = self.connect()
+        try:
+            cursor.execute(sql)
+            conn.commit()
+        except Exception as e:
+            logging.error(str(e))
+            conn.rollback()
+        self.close_connect(conn, cursor)
+
+    def update_delete_second(self, second_time, second_remain, card_number):
+        sql = "UPDATE delete_card SET second_time = '{}',second_remain = {},status='T' WHERE card_number = '{}'".format(second_time, second_remain, card_number)
+        conn, cursor = self.connect()
+        try:
+            cursor.execute(sql)
+            conn.commit()
+        except Exception as e:
+            logging.error(str(e))
+            conn.rollback()
+        self.close_connect(conn, cursor)
+
 
 SqlData = SqlData()
 
 if __name__ == "__main__":
-    res = SqlData.search_card_trans(292, "")
+    res = SqlData.search_card_id("1")
     print(res)

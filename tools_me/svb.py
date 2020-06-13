@@ -144,7 +144,7 @@ class SVB(object):
                 return False
         except Exception as e:
             logging.error("delete_card_api_error:" + str(e))
-            return False
+            return self.delete_card(card_id)
 
     def update_card(self, card_id, cents):
         path = '/v1/virtualcards/{}'.format(card_id)
@@ -196,6 +196,9 @@ class SVB(object):
 
 svb = SVB()
 if __name__ == '__main__':
+    r = svb.delete_card(39417548)
+    print(r)
+    """
     print(time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(time.time())))
     res = svb.all_virtualcards()
     card_list = res.get('data')
@@ -207,3 +210,4 @@ if __name__ == '__main__':
             print('找到了！')
     # print(res.get('data').get('clearings'))
     print(time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(time.time())))
+    """

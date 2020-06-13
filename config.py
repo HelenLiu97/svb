@@ -60,6 +60,10 @@ from apps.finance import finance_blueprint
 app.register_blueprint(finance_blueprint)
 
 
+from apps.search import search_blueprint
+app.register_blueprint(search_blueprint)
+
+
 '''
 if not app.debug:
     if not os.path.exists('logs'):

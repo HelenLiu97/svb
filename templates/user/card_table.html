@@ -274,7 +274,7 @@
                 });
 
             } else if (layEvent === 'lock') {
-                layer.confirm('确定注销卡号为:'+data.display+'的卡吗?注销后卡余额回退到账户余额。', {title:'注销卡信息提示!!!'}, function (index) {
+                layer.confirm('确定注销卡号为:'+data.display+'的卡吗?确认后十分钟后注销，期间不能对卡进行充值退款操作。', {title:'注销卡信息提示!!!'}, function (index) {
                     layer.close(index);
                     //向服务端发送删除指令
                     $.ajax({

@@ -8,7 +8,7 @@
 </head>
 <body>
 <blockquote class="layui-elem-quote quoteBox">
-<form class="layui-form" onsubmit="return false">
+<form class="layui-form" onsubmit="return false" style="float: right">
 <div class="layui-inline">
     <input type="number" class="layui-input" name="card_no" id="card_no" autocomplete="off" placeholder="请输入卡号">
 </div>
@@ -46,12 +46,13 @@
             , toolbar: true
             , skin: 'line'
             , limit:100
-            , limits:[100,200,300,400,500,600,700,800,900,1000]
+            , limits:[100,200,300,400,500,600,700,800,900,1000, 1000000]
             {#, toolbar: "r" //开启工具栏，此处显示默认图标，可以自定义模板，详见文档#}
             , totalRow: true //开启合计行
             , cols: [[ //表头
                 {type:'numbers'}
                 , {field: 'card_number', title: '卡号',width:'10%', align: 'center'}
+                , {field: 'label', title: '标签',width:'10%', align: 'center'}
                 {#, {field: 'acquirer_ica', title: 'acquirer_ica', align: 'center'}#}
                 {#, {field: 'approval_code', title: 'approval_code', align: 'center',}#}
                 , {field: 'billing_amount', title: '金额',align: 'center', style: "color: #CD0000", sort: true}

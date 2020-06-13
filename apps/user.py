@@ -134,6 +134,7 @@ def add_vice():
 @user_blueprint.route('/refund/', methods=['POST'])
 @login_required
 @account_lock
+@trans_lock
 def bento_refund():
     # 判断是否是子账号用户
     vice_id = g.vice_id
@@ -149,6 +150,10 @@ def bento_refund():
     data = request.form.get("data")
     card_number = request.form.get("card_number").strip()
     user_id = g.user_id
+    real_status = SqlData.check_card_real(card_number.strip(), user_id)
+    if not real_status:
+        results = {"code": RET.SERVERERROR, "msg": "请不要违规操作!"}
+        return jsonify(results)
 
     # 金额的校验
     if "-" in str(data):
@@ -161,6 +166,10 @@ def bento_refund():
     card_status = SqlData.search_one_card_status(card_number)
     if not card_status:
         return jsonify({'code': RET.SERVERERROR, 'msg': "该卡已注销,不支持此操作！"})
+
+    del_status = SqlData.search_delete_in(card_number)
+    if del_status:
+        return jsonify({'code': RET.SERVERERROR, 'msg': "该卡正在等待删除！"})
 
     # 查询卡余额，校验退款金额大小
     card_id = SqlData.search_card_field('card_id', card_number)
@@ -286,6 +295,7 @@ def account_trans():
 @user_blueprint.route('/card_delete/', methods=['DELETE'])
 @login_required
 @account_lock
+@trans_lock
 def card_delete():
     if request.method == "DELETE":
 
@@ -298,29 +308,21 @@ def card_delete():
             c_card = auth_dict.get('refund')
             if c_card == 'F':
                 return jsonify({'code': RET.SERVERERROR, 'msg': '抱歉您没有权限执行此操作！'})
-
+        # return jsonify({"code": RET.SERVERERROR, "msg": "暂时关闭卡删除，开放日期请咨询客服！"})
         card_number = request.args.get('card_number')
+        user_id = g.user_id
+        real_status = SqlData.check_card_real(card_number.strip(), user_id)
+        if not real_status:
+            results = {"code": RET.SERVERERROR, "msg": "请不要违规操作!"}
+            return jsonify(results)
         card_status = SqlData.search_one_card_status(card_number)
         if card_status:
+            status = SqlData.search_delete_in(card_number)
+            if status:
+                return jsonify({'code': RET.OK, 'msg': '该卡正在等待删除！'})
             card_id = SqlData.search_card_field('card_id', card_number)
-            card_detail = svb.card_detail(card_id)
-            if not card_detail:
-                return jsonify({'code': RET.SERVERERROR, 'msg': '网络繁忙,请稍后重试！'})
-            available_balance = card_detail.get('data').get('available_balance')
-            res = svb.delete_card(card_id)
-            if res:
-                user_id = g.user_id
-                before_balance = SqlData.search_user_field('balance', user_id)
-                update_balance = float(available_balance/100)
-                SqlData.update_balance(update_balance, user_id)
-                balance = SqlData.search_user_field("balance", user_id)
-                SqlData.update_card_info_card_no('status', 'F', card_number)
-                n_time = xianzai_time()
-                SqlData.insert_account_trans(n_time, TRANS_TYPE.IN, "注销", card_number,
-                                             update_balance, before_balance, balance, user_id)
-
-                return jsonify({"code": RET.OK, "msg": '注销成功！退回金额:$' + str(update_balance)})
-
+            SqlData.insert_delete_card(card_number, card_id, user_id)
+            return jsonify({'code': RET.OK, 'msg': '操作成功!十分钟后删卡。'})
         else:
             return jsonify({'code': RET.SERVERERROR, 'msg': '该卡已注销！'})
 
@@ -426,6 +428,10 @@ def top_up():
         user_id = g.user_id
         card_number = request.args.get('card_number')
         top_money = data.get('top_money')
+        real_status = SqlData.check_card_real(card_number.strip(), user_id)
+        if not real_status:
+            results = {"code": RET.SERVERERROR, "msg": "请不要违规操作!"}
+            return jsonify(results)
         user_data = SqlData.search_user_index(user_id)
         before_balance = user_data.get('balance')
         if not check_float(top_money):
@@ -437,6 +443,9 @@ def top_up():
         card_status = SqlData.search_one_card_status(card_number)
         if not card_status:
             return jsonify({'code': RET.SERVERERROR, 'msg': "该卡已注销,不支持此操作！"})
+        del_status = SqlData.search_delete_in(card_number)
+        if del_status:
+            return jsonify({'code': RET.SERVERERROR, 'msg': "该卡正在等待删除！"})
         card_id = SqlData.search_card_field('card_id', card_number)
         card_detail = svb.card_detail(card_id)
         if card_detail:
@@ -705,7 +714,6 @@ def one_detail():
                 "approval_code": td.get("approval_code"),
                 "billing_amount": float(td.get("billing_amount") / 100),
                 "billing_currency": td.get("billing_currency"),
-                "issuer_response": td.get("issuer_response"),
                 "mcc": td.get("mcc"),
                 "mcc_description": td.get("mcc_description"),
                 "merchant_amount": float(td.get("merchant_amount") / 100),
@@ -1068,7 +1076,8 @@ def line_chart():
             tooltip: {
                 valueSuffix: ' 张'
             }
-        }]'''
+        }]
+        '''
     results = dict()
     results['code'] = RET.OK
     results['msg'] = MSG.OK
@@ -1194,7 +1203,7 @@ def material():
         res = re.match('(?!.*\s)(?!^[\u4e00-\u9fa5]+$)(?!^[0-9]+$)(?!^[A-z]+$)(?!^[^A-z0-9]+$)^.{8,16}$', pass_1)
         if not res:
             return jsonify({'code': RET.SERVERERROR, 'msg': '密码不符合要求！'})
-        res_phone = re.match('^1(3[0-9]|4[5,7]|5[0-9]|6[2,5,6,7]|7[0,1,7,8]|8[0-9]|9[1,8,9])\d{8}$', phone)
+        res_phone = re.match('^1(3[0-9]|4[5,7]|5[0-9]|6[2,5,6,7]|7[0-9]|8[0-9]|9[1,8,9])\d{8}$', phone)
         if not res_phone:
             return jsonify({'code': RET.SERVERERROR, 'msg': '请输入规范手机号码！'})
         try:

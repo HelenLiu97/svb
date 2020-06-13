@@ -18,6 +18,7 @@ verify_pay_blueprint = Blueprint('verify_pay', __name__, url_prefix='/verify_pay
 
 finance_blueprint = Blueprint('finance', __name__, url_prefix='/finance', template_folder='../template')
 
-study_blueprint = Blueprint('study', __name__, url_prefix='/study', template_folder='../template')
+search_blueprint = Blueprint('search', __name__, url_prefix='/search', template_folder='../template')
 
-from . import upload, user,  middle, admin
+
+from . import upload, user,  middle, admin, search
