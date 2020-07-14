@@ -1724,7 +1724,7 @@ class SqlData(object):
         return info_list
 
     def search_card_trans_settle(self, user_id, sql_line):
-        sql = "SELECT DISTINCT card_trans_settle.* FROM card_trans_settle JOIN card_info ON card_trans_settle.card_id=card_info.card_id WHERE card_info.user_id={} {}".format(
+        sql = "SELECT DISTINCT card_trans_settle.*,card_info.label FROM card_trans_settle JOIN card_info ON card_trans_settle.card_id=card_info.card_id WHERE card_info.user_id={} {}".format(
             user_id, sql_line)
         conn, cursor = self.connect()
         cursor.execute(sql)
@@ -1744,6 +1744,7 @@ class SqlData(object):
             info_dict['merchant_name'] = i[14]
             info_dict['settlement_date'] = i[15]
             info_dict['handing_fee'] = i[17]
+            info_dict['label'] = i[18]
             info_list.append(info_dict)
         return info_list
 

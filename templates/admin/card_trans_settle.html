@@ -80,6 +80,28 @@
             return false;
          });
 
+        document.onkeydown=keyDownSearch;
+
+            function keyDownSearch(e) {
+                // 兼容FF和IE和Opera
+                var theEvent = e || window.event;
+                var code = theEvent.keyCode || theEvent.which || theEvent.charCode;
+                if (code == 13) {
+                    var card_no = $("#card_no").val(),
+                         trans_status = $("#trans_status").val();
+                     table.reload("push_log", {
+                         page: {
+                           curr: 1 //重新从第 1 页开始
+                         },where: {
+                             card_no:card_no,
+                             trans_status: trans_status
+                           }
+                       }, '/user/push_log/');
+                    return false;
+                }
+                return true;
+            }
+
     })
 </script>
 </body>

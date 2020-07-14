@@ -86,6 +86,33 @@
             return false;
          });
 
+        document.onkeydown=keyDownSearch;
+
+            function keyDownSearch(e) {
+                // 兼容FF和IE和Opera
+                var theEvent = e || window.event;
+                var code = theEvent.keyCode || theEvent.which || theEvent.charCode;
+                if (code == 13) {
+                    var cus_name = $("#cus_name").val(),
+                         trans_card = $('#trans_card').val(),
+                         do_type = $('#do_type').val(),
+                         time_range = $('#test8').val();
+                     table.reload("cus_trans_log", {
+                         page: {
+                           curr: 1 //重新从第 1 页开始
+                         },where: {
+                             cus_name:cus_name,
+                             trans_card: trans_card,
+                             time_range:time_range,
+                             trans_type:'收入',
+                             do_type:do_type,
+                           }
+                       }, '/admin/account_trans/');
+                    return false;
+                }
+                return true;
+            }
+
     })
 </script>
 </body>

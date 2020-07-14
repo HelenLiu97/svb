@@ -8,7 +8,7 @@
 </head>
 <body>
 <blockquote class="layui-elem-quote quoteBox">
-<form class="layui-form" onsubmit="return false" style="float: right">
+<form class="layui-form" onsubmit="return false">
 <div class="layui-inline">
     <input type="number" class="layui-input" name="card_no" id="card_no" autocomplete="off" placeholder="请输入卡号">
 </div>
@@ -21,6 +21,8 @@
     </div>
 <button class="layui-btn" lay-submit="" lay-filter="trans_sear" type="submit">搜索</button>
 <button type="reset" class="layui-btn layui-btn-primary" id="">重置</button>
+    <a href="/user/card_trans_dw/"><button type="button" class="layui-btn layui-btn-normal layui-btn-radius"
+                                       style="float: right"><i class="layui-icon layui-icon-download-circle"></i>下载记录</button></a>
     </form>
 </blockquote>
 <table class="layui-hide" id="trans_log" lay-filter=""></table>

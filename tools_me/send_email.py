@@ -11,8 +11,10 @@ from email.mime.image import MIMEImage
 
 
 def send(context, pic_list, msg_to):
-    msg_from = "2172767522@qq.com"  # 发送方邮箱
-    passwd = "atkzoaptyqlaeaaj"  # 填入发送方邮箱的授权码
+    # msg_from = "2172767522@qq.com"  # 发送方邮箱
+    # passwd = "atkzoaptyqlaeaaj"  # 填入发送方邮箱的授权码
+    msg_from = "helen@nexttrendinc.com"
+    passwd = "eCharging1"
     subject = "556338"  # 主题
     msg = MIMEMultipart('related')
     image_tent = ""
@@ -40,11 +42,12 @@ def send(context, pic_list, msg_to):
     send_num = 0
     while send_num < 100:
         try:
-            s = smtplib.SMTP_SSL("smtp.qq.com", 465)  # 邮件服务器及端口号
+            s = smtplib.SMTP_SSL("smtp.exmail.qq.com", 465)  # 邮件服务器及端口号
             s.login(msg_from, passwd)
             s.sendmail(msg_from, msg_to, msg.as_string())
             break
         except Exception as e:
+            print(e)
             logging.error(e)
             continue
         finally:
@@ -52,3 +55,5 @@ def send(context, pic_list, msg_to):
     return True
 
 
+if __name__ == "__main__":
+    send('一封测试邮件信息', [], '2404052713@qq.com')

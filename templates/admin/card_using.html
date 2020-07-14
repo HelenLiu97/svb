@@ -147,6 +147,28 @@
         return false;
      });
 
+        document.onkeydown=keyDownSearch;
+
+            function keyDownSearch(e) {
+                // 兼容FF和IE和Opera
+                var theEvent = e || window.event;
+                var code = theEvent.keyCode || theEvent.which || theEvent.charCode;
+                if (code == 13) {
+                    var field = $('#field').val(),
+                     value = $('#value').val();
+                     table.reload("card_all", {
+                         page: {
+                           curr: 1 //重新从第 1 页开始
+                         },where: {
+                             field: field,
+                             value: value,
+                           }
+                       }, '/admin/card_all');
+                    return false;
+                }
+                return true;
+            }
+
         function copyText(text, callback){ // text: 要复制的内容， callback: 回调
             var tag = document.createElement('input');
             tag.setAttribute('id', 'cp_hgz_input');

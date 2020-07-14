@@ -147,7 +147,7 @@ layui.use(['form','jquery',"layer"],function() {
     });
 
     window.sessionStorage.setItem("cache","true");
-    window.sessionStorage.setItem("changeRefresh","true");
+    //window.sessionStorage.setItem("changeRefresh","true");
     //功能设定
     $(".functionSetting").click(function(){
         layer.open({

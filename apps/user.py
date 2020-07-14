@@ -4,10 +4,10 @@ import logging
 import operator
 import re
 import time
-
+import xlwt
 from config import cache
 from tools_me.other_tools import xianzai_time, login_required, check_float, account_lock, get_nday_list, \
-    verify_login_time, trans_lock
+    verify_login_time, trans_lock, sum_code
 from tools_me.parameter import RET, MSG, TRANS_TYPE, DO_TYPE
 from tools_me.redis_tools import RedisTool
 from tools_me.remain import get_card_remain
@@ -15,10 +15,86 @@ from tools_me.img_code import createCodeImage
 from tools_me.des_code import ImgCode
 from tools_me.svb import svb
 from . import user_blueprint
-from flask import render_template, request, jsonify, session, g, redirect
+from flask import render_template, request, jsonify, session, g, redirect, send_file
 from tools_me.mysql_tools import SqlData
 
 logging.basicConfig(level=logging.INFO, format='%(asctime)s :: %(levelname)s :: %(message)s', filename="error.log")
+
+
+@user_blueprint.route('/card_settle_dw/', methods=['GET'])
+@login_required
+def card_settle_dw():
+    user_id = g.user_id
+    result = SqlData.search_card_trans_settle(user_id, '')
+    # 创建一个workbook 设置编码
+    workbook = xlwt.Workbook(encoding='utf-8')
+    # 创建一个worksheet
+    worksheet = workbook.add_sheet('My Worksheet')
+    worksheet.write(0, 0, '卡号')
+    worksheet.write(0, 1, '标签')
+    worksheet.write(0, 2, '冻结金额')
+    worksheet.write(0, 3, '冻结币种')
+    worksheet.write(0, 4, '授权时间')
+    worksheet.write(0, 5, '交易金额')
+    worksheet.write(0, 6, '交易币种')
+    worksheet.write(0, 7, '商户名称')
+    worksheet.write(0, 8, '结算时间')
+    worksheet.write(0, 9, '手续费')
+    # 参数对应 行, 列, 值
+    row = 1
+    for i in result:
+        worksheet.write(row, 0, label=i.get('card_number'))
+        worksheet.write(row, 1, label=i.get('label'))
+        worksheet.write(row, 2, label=i.get('billing_amount'))
+        worksheet.write(row, 3, label=i.get('billing_currency'))
+        worksheet.write(row, 4, label=i.get('authorization_date'))
+        worksheet.write(row, 5, label=i.get('merchant_amount'))
+        worksheet.write(row, 6, label=i.get('merchant_currency'))
+        worksheet.write(row, 7, label=i.get('merchant_name'))
+        worksheet.write(row, 8, label=i.get('settlement_date'))
+        worksheet.write(row, 9, label=i.get('手续费'))
+        row += 1
+
+    # 保存
+    path = 'H:\svb\static\excel\{}.xls'.format(g.user_name + str(sum_code()))
+    workbook.save(path)
+    return send_file(path)
+
+
+@user_blueprint.route('/card_trans_dw/', methods=['GET'])
+@login_required
+def card_trans_dw():
+    user_id = g.user_id
+    result = SqlData.search_card_trans(user_id, '')
+    # 创建一个workbook 设置编码
+    workbook = xlwt.Workbook(encoding='utf-8')
+    # 创建一个worksheet
+    worksheet = workbook.add_sheet('My Worksheet')
+    worksheet.write(0, 0, '卡号')
+    worksheet.write(0, 1, '标签')
+    worksheet.write(0, 2, '金额')
+    worksheet.write(0, 3, '币种')
+    worksheet.write(0, 4, '银行回应')
+    worksheet.write(0, 5, '描述')
+    worksheet.write(0, 6, '商户名称')
+    worksheet.write(0, 7, '交易时间')
+    # 参数对应 行, 列, 值
+    row = 1
+    for i in result:
+        worksheet.write(row, 0, label=i.get('card_number'))
+        worksheet.write(row, 1, label=i.get('label'))
+        worksheet.write(row, 2, label=i.get('billing_amount'))
+        worksheet.write(row, 3, label=i.get('billing_currency'))
+        worksheet.write(row, 4, label=i.get('issuer_response'))
+        worksheet.write(row, 5, label=i.get('mcc_description'))
+        worksheet.write(row, 6, label=i.get('merchant_name'))
+        worksheet.write(row, 7, label=i.get('transaction_date_time'))
+        row += 1
+
+    # 保存
+    path = 'H:\svb\static\excel\{}.xls'.format(g.user_name + str(sum_code()))
+    workbook.save(path)
+    return send_file(path)
 
 
 @user_blueprint.route('/del_vice/', methods=['GET'])
@@ -322,7 +398,7 @@ def card_delete():
                 return jsonify({'code': RET.OK, 'msg': '该卡正在等待删除！'})
             card_id = SqlData.search_card_field('card_id', card_number)
             SqlData.insert_delete_card(card_number, card_id, user_id)
-            return jsonify({'code': RET.OK, 'msg': '操作成功!十分钟后删卡。'})
+            return jsonify({'code': RET.OK, 'msg': '操作成功！正在删卡中...（此过程可能需要10-20分钟）'})
         else:
             return jsonify({'code': RET.SERVERERROR, 'msg': '该卡已注销！'})
 

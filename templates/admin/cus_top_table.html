@@ -19,7 +19,7 @@
                 <div class="layui-input-inline">
 					<input type="text" class="layui-input searchVal" id="time_range" placeholder="时间范围" />
 				</div>
-				<a class="layui-btn search_btn">搜索</a>
+				<a class="layui-btn search_btn" >搜索</a>
                 <a class="layui-btn layui-btn-normal" type="btn" id="reload">重置</a>
 			</div>
 		</form>
@@ -79,6 +79,30 @@
                 }, '/admin/top_history/');
                 return false;
         });
+
+         document.onkeydown=keyDownSearch;
+
+            function keyDownSearch(e) {
+                // 兼容FF和IE和Opera
+                var theEvent = e || window.event;
+                var code = theEvent.keyCode || theEvent.which || theEvent.charCode;
+                if (code == 13) {
+                    var acc_name = $('#acc_name').val(),
+                    order_num = $('#order_num').val(),
+                    time_range = $('#time_range').val();
+                    table.reload("top_history", {
+                        page: {
+                            curr: 1 //重新从第 1 页开始
+                        }, where: {
+                            acc_name: acc_name,
+                            order_num: order_num,
+                            time_range: time_range,
+                        }
+                    }, '/admin/top_history/');
+                    return false;
+                }
+                return true;
+            }
 
 
 

@@ -21,6 +21,8 @@
     </div>
 <button class="layui-btn" lay-submit="" lay-filter="trans_sear" type="submit">搜索</button>
 <button type="reset" class="layui-btn layui-btn-primary" id="">重置</button>
+    <a href="/user/card_settle_dw/" id="download"><button type="button" id="btnDownload" class="layui-btn layui-btn-normal layui-btn-radius"
+                                       style="float: right"><i class="layui-icon layui-icon-download-circle"></i>下载记录</button></a>
     </form>
 </blockquote>
 <table class="layui-hide" id="trans_log" lay-filter=""></table>
@@ -52,6 +54,7 @@
             , cols: [[ //表头
                 {type:'numbers'}
                 , {field: 'card_number', title: '卡号',width:'10%', align: 'center'}
+                , {field: 'label', title: '标签',width:'10%', align: 'center'}
                 , {field: 'billing_amount', title: '冻结金额',align: 'center', style: "color: #CD0000", sort: true}
                 , {field: 'billing_currency', title: '冻结币种', align: 'center', style: 'color: #436EEE'}
                 , {field: 'authorization_date', title: '授权时间',width:'12%', align: 'center', style:"color: #8B0A50"}
@@ -78,6 +81,12 @@
                }, '/user/push_log/');
             return false;
          });
+
+        $("#download").on('click', function () {
+            layer.msg('正在开始下载.......', {
+						icon : 6,time:4000
+					});
+        })
 
     })
 </script>
