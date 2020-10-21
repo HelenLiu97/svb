@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <script src="https://code.highcharts.com.cn/highcharts/highcharts.js"></script>
+    <script src="https://code.highcharts.com.cn/highcharts/modules/exporting.js"></script>
+    <script src="https://img.hcharts.cn/highcharts-plugins/highcharts-zh_CN.js"></script>
+    <script src="https://code.highcharts.com.cn/highcharts/themes/sand-signika.js"></script>
+    <script src="/static/layui/layui.all.js" charset="utf-8"></script>
+</head>
+<body>
+
+<div class="layui-form-item" style="display: none">
+    <label class="layui-form-label">隐藏域</label>
+    <div class="layui-input-block">
+        <input type ="text" name="user_id"  id="user_id" value="{{ user_id }}">
+    </div>
+</div>
+
+
+<section class="panel">
+    <div id="container" style="min-width:400px;height:570px"></div>
+</section>
+
+<script>
+
+    var $ = layui.jquery;
+
+    $.ajax({
+        type: 'GET',
+        url: '/admin/user_line_chart/?user_id=' + $("#user_id").val(),
+        dataType: 'json',
+        success: function (data) {
+            // 成功提示框
+            if (data.code == 0) {
+                var column = data.column,
+                    xax = data.xAx,
+                    xaxis = [{categories: xax, crosshair: true}],
+                    series = data.data;
+                var chart = Highcharts.chart('container', {
+                chart: {
+                    zoomType: 'xy'
+                },
+                title: {
+                    text: '近7天账户充值开卡预览'
+                },
+                subtitle: {
+                    text: '不包含今日'
+                },
+                credits: {
+                    enabled: false//不显示LOGO
+                },
+                xAxis: xaxis,
+
+                yAxis: [{ // Primary yAxis
+                    labels: {
+                        format: '{value} 张',
+                        style: {
+                            color: Highcharts.getOptions().colors[1]
+                        }
+                    },
+                    title: {
+                        text: '开卡数量',
+                        style: {
+                            color: Highcharts.getOptions().colors[1]
+                        }
+                    }
+                }, { // Secondary yAxis
+                    title: {
+                        text: '充值金额',
+                        style: {
+                            color: Highcharts.getOptions().colors[0]
+                        }
+                    },
+                    labels: {
+                        format: '{value} $',
+                        style: {
+                            color: Highcharts.getOptions().colors[0]
+                        }
+                    },
+                    opposite: true
+                }],
+                tooltip: {
+                    shared: true
+                },
+                legend: {
+                    layout: 'vertical',
+                    align: 'left',
+                    x: 120,
+                    verticalAlign: 'top',
+                    y: 100,
+                    floating: true,
+                    backgroundColor: (Highcharts.theme && Highcharts.theme.legendBackgroundColor) || '#FFFFFF'
+                },
+                series: series
+            });
+            } else if (data.code == 502) {
+                parent.layer.msg(data.msg, {
+                    icon: 5
+                });
+            }
+
+        },
+        error: function (data) {
+            // 异常提示
+            parent.layer.msg('折线图接口', {
+                icon: 5
+            });
+        }
+        });
+
+</script>
+
+</body>
+</html>

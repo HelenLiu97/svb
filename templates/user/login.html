@@ -25,9 +25,9 @@
 							<input type="password" name="pass_word" required lay-verify="required" placeholder="密码" autocomplete="off" class="layui-input">
 						</div>
 
-                        <div class="layui-form-item">
+                        <div class="layui-form-item" style="display: {{ drop_status }};" id="drop">
                             <div>
-							<input type="text" name="image_code" required lay-verify="required" placeholder="图片密码" autocomplete="off" class="layui-input" maxlength="5" style="width: 178px;float: left">
+							<input type="text" name="image_code" placeholder="图片密码" autocomplete="off" class="layui-input" maxlength="5" style="width: 178px;float: left">
                             <span style="float: right; border:1px #9400D3 solid ;">
                                 <img src="{{ img }}" alt="验证码图片" title="点击再换一张" id="valid-img">
                             </span>
@@ -89,6 +89,11 @@
                                parent.layer.msg(data.msg, {
                                 icon : 5
                             });
+                            }else if (data.code == 501){
+                                document.getElementById('drop').style.display = 'block';
+                                parent.layer.msg(data.msg, {
+                                icon : 5
+                            })
                             }
                         },
                         error : function(data) {
@@ -137,6 +142,11 @@
                             });
                             }else if (data.code == 307){
                                 location.href = '/user/material/?name='+ $("#user_name").val()
+                            }else if (data.code == 501){
+                                document.getElementById('drop').style.display = 'block';
+                                parent.layer.msg(data.msg, {
+                                icon : 5
+                            })
                             }
                         },
                         error : function(data) {

@@ -21,6 +21,44 @@ from . import admin_blueprint
 from config import cache
 
 
+@admin_blueprint.route('/user_line_chart/')
+@admin_required
+def line_chart():
+    u_id = request.args.get('user_id')
+    day_list = get_nday_list(7)
+    sum_day_money = list()
+    sum_day_card = list()
+    u_sql = "AND user_id={}".format(u_id)
+    for d in day_list:
+        start_t = d + " 00:00:00"
+        end_t = d + " 23:59:59"
+        day_money = SqlData.search_trans_money(start_t, end_t, user_sql=u_sql)
+        if not day_money:
+            day_money = 0
+        sum_day_money.append(abs(day_money))
+        sql = "WHERE do_type='开卡' AND do_date BETWEEN '{}' AND '{}' AND user_id={}".format(start_t, end_t, u_id)
+        card_num = SqlData.search_value_count('user_trans', sql=sql)
+        sum_day_card.append(card_num)
+    money_dict = {'name': '充值金额', 'type': 'column', 'yAxis': 1, 'data': sum_day_money, 'tooltip': {'valueSuffix': ' $'}}
+    card_dict = {'name': '开卡数量', 'type': 'spline', 'data': sum_day_card, 'tooltip': {'valueSuffix': ' 张'}}
+    results = dict()
+    results['code'] = RET.OK
+    results['msg'] = MSG.OK
+    results['data'] = [money_dict, card_dict]
+    results['xAx'] = day_list
+    return jsonify(results)
+
+
+@admin_blueprint.route('/account_chart_line/', methods=['GET', 'POST'])
+@admin_required
+def account_chart_line():
+    if request.method == 'GET':
+        u_id = request.args.get('user_id')
+        context = dict()
+        context['user_id'] = u_id
+        return render_template('admin/user-chart.html', **context)
+
+
 @admin_blueprint.route('/money_detail/', methods=['GET'])
 @admin_required
 def money_detail():
@@ -36,9 +74,14 @@ def money_detail():
 @admin_required
 def account_card():
     u_id = request.args.get('user_id')
+    card_status = request.args.get('card_status')
     page = request.args.get('page')
     limit = request.args.get('limit')
-    card_info = SqlData.search_card_info_admin("WHERE user_id = {}".format(u_id))
+    if card_status == "hide":
+        sql = " AND status != 'F'"
+    else:
+        sql = ""
+    card_info = SqlData.search_card_info_admin("WHERE user_id = {} {}".format(u_id, sql))
     if len(card_info) == 0:
         results = dict()
         results['msg'] = MSG.NODATA
@@ -239,21 +282,21 @@ def push_log_settle():
         trans_status = request.args.get('trans_status')
         # 这是所有消费记录的sql
         if trans_status and card_number:
-            sql_1 = " AND card_trans_settle.card_number LIKE '%{}%'".format(card_number)
+            sql_1 = " AND card_number LIKE '%{}%'".format(card_number)
             if trans_status == "T":
-                sql_2 = " AND card_trans_settle.handing_fee != 0"
+                sql_2 = " AND handing_fee != 0"
             else:
-                sql_2 = " AND card_trans_settle.handing_fee = 0"
+                sql_2 = " AND handing_fee = 0"
             sql = sql_1 + sql_2
         elif card_number:
-            sql = " AND card_trans_settle.card_number LIKE '%{}%'".format(card_number)
+            sql = " AND card_number LIKE '%{}%'".format(card_number)
         elif trans_status:
             if trans_status == "T":
-                sql = " AND card_trans_settle.handing_fee != 0"
+                sql = " AND handing_fee != 0"
             else:
-                sql = " AND card_trans_settle.handing_fee = 0"
+                sql = " AND handing_fee = 0"
         else:
-            sql = ''
+            sql = ""
 
         results = dict()
         results['msg'] = MSG.OK
@@ -301,10 +344,10 @@ def push_log():
             else:
                 sql = "AND" + card_sql + cus_sql
         else:
-            sql = ''
+            sql = ""
         # 这是decline的sql
         if status:
-            sql = sql + " AND card_trans.status='{}'".format(status)
+            sql = " AND status='{}'".format(status)
 
         results = dict()
         results['msg'] = MSG.OK
@@ -466,15 +509,13 @@ def up_pay_pic():
     # file_path = DIR_PATH.PHOTO_DIR + "/" + file_name
     file_path = os.path.join(DIR_PATH.PHOTO_DIR, file_name)
     file.save(file_path)
-    filename = sm_photo(file_path)
-    if filename == 'F':
-        os.remove(file_path)
-        return jsonify({'code': RET.SERVERERROR, 'msg': '不可上传相同图片,请重新上传!'})
+    filename = sm_photo(file_path, file_name)
     if filename:
         # 上传成功后插入信息的新的收款方式信息
         os.remove(file_path)
         t = xianzai_time()
-        SqlData.insert_qr_code(filename, t)
+        url = "http://cdn.trybest.top/" + filename
+        SqlData.insert_qr_code(url, t)
         return jsonify(results)
     else:
         return jsonify({'code': RET.SERVERERROR, 'msg': MSG.SERVERERROR})
@@ -1285,13 +1326,14 @@ def edit_parameter():
             if password:
                 SqlData.update_account_field('password', password, name)
             if account:
-                account = account.strip()
-                ed_name = SqlData.search_user_field_name('account', account)
-                if ed_name:
-                    results['code'] = RET.SERVERERROR
-                    results['msg'] = '该用账号已存在!'
-                    return jsonify(results)
-                SqlData.update_account_field('account', account, name)
+                # 取消消费记录的关联增快消费记录的查询速度，不支持直接修改用户名
+                #account = account.strip()
+                #ed_name = SqlData.search_user_field_name('account', account)
+                #if ed_name:
+                results['code'] = RET.SERVERERROR
+                results['msg'] = "请联系管理员处理！"
+                return jsonify(results)
+                #SqlData.update_account_field('account', account, name)
             if account_name:
                 account_name = account_name.strip()
                 ed_name = SqlData.search_user_field_name('name', account_name)
@@ -1472,11 +1514,20 @@ def logout():
 
 @admin_blueprint.route('/login', methods=['GET', 'POST'])
 def admin_login():
+    # ip = request.headers.get('X-Forwarded-For')
+    ip = request.remote_addr
     if request.method == 'GET':
         str_data, img = createCodeImage(height=36)
         context = dict()
         context['img'] = img
         context['code'] = ImgCode().jiami(str_data)
+        try_number = RedisTool.string_get(ip)
+        if try_number is None:
+            try_number = 0
+        if int(try_number) >= 3:
+            context['drop_status'] = "block"
+        else:
+            context['drop_status'] = "none"
         return render_template('admin/login.html', **context)
 
     if request.method == 'POST':
@@ -1489,26 +1540,43 @@ def admin_login():
             password = data.get('password')
             image_real = data.get('image_real')
             image_code = data.get('image_code')
-            img_code = ImgCode().jiemi(image_real)
-            if image_code.lower() != img_code.lower():
-                results['code'] = RET.SERVERERROR
-                results['msg'] = '验证码错误！'
-                return jsonify(results)
-            elif account == 'finance' and password == "finance1001":
+
+            try_number = RedisTool.string_get(ip)
+            if not try_number:
+                RedisTool.string_set(ip, 1)
+            else:
+                new_number = int(try_number) + 1
+                RedisTool.string_set(ip, new_number)
+
+            try_number = RedisTool.string_get(ip)
+            if int(try_number) > 3:
+                img_code = ImgCode().jiemi(image_real)
+                if image_code.lower() != img_code.lower():
+                    results['code'] = RET.SERVERERROR
+                    results['msg'] = '验证码错误！'
+                    return jsonify(results)
+            if account == 'finance' and password == "finance1001":
                 session['admin_id'] = 857
                 session['admin_name'] = 'finance'
                 session.permanent = True
+                RedisTool.string_del(ip)
                 return jsonify(results)
             else:
                 admin_id, name = SqlData.search_admin_login(account, password)
                 session['admin_id'] = admin_id
                 session['admin_name'] = name
                 session.permanent = True
+                RedisTool.string_del(ip)
                 return jsonify(results)
 
         except Exception as e:
-            results['code'] = RET.SERVERERROR
-            results['msg'] = MSG.PSWDERROR
+            try_number = RedisTool.string_get(ip)
+            if int(try_number) == 3:
+                results['code'] = 501
+                results['msg'] = MSG.PSWDERROR
+            else:
+                results['code'] = RET.SERVERERROR
+                results['msg'] = MSG.PSWDERROR
             return jsonify(results)
 
 

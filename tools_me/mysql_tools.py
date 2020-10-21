@@ -28,7 +28,7 @@ class SqlData(object):
         cursor.execute(sql)
         row = cursor.fetchone()
         self.close_connect(conn, cursor)
-        if row:
+        if row
             return True
         else:
             return False
@@ -1610,17 +1610,17 @@ class SqlData(object):
     def insert_card_trans(self, card_number, acquirer_ica, approval_code, billing_amount, billing_currency,
                           issuer_reponse, mcc,
                           mcc_description, merchant_amount, merchant_currency, merchant_id, merchant_name,
-                          transaction_date_time, transaction_type, vcn_response, card_id, status):
+                          transaction_date_time, transaction_type, vcn_response, card_id, status, user_name, user_id):
         # 这么写sql是为了插入的交易数据重复，因为交易信息内没有唯一标识
         sql = "Insert into card_trans(`card_number`, `acquirer_ica`,`approval_code`, `billing_amount`,`billing_currency`," \
               "`issuer_reponse`,`mcc`,`mcc_description`,`merchant_amount`,`merchant_currency`,`merchant_id`," \
-              "`merchant_name`,transaction_date_time,`transaction_type`,`vcn_response`, `card_id`, `status`)select '{0}','{1}','{2}',{3},'{4}','{5}','{6}','{7}',{8},'{9}','{10}','{11}','{12}','{13}','{14}',{15},'{16}' from DUAL where not exists (select * from card_trans where `card_number`='{0}' and `acquirer_ica` = '{1}' and `approval_code`='{2}' and `billing_amount`={3} and `billing_currency`='{4}' and " \
+              "`merchant_name`,transaction_date_time,`transaction_type`,`vcn_response`, `card_id`, `status`, `user_name`, `user_id`)select '{0}','{1}','{2}',{3},'{4}','{5}','{6}','{7}',{8},'{9}','{10}','{11}','{12}','{13}','{14}',{15},'{16}','{17}', {18} from DUAL where not exists (select * from card_trans where `card_number`='{0}' and `acquirer_ica` = '{1}' and `approval_code`='{2}' and `billing_amount`={3} and `billing_currency`='{4}' and " \
               "`issuer_reponse`='{5}' and `mcc`='{6}' and `mcc_description` ='{7}' and `merchant_amount` = {8} and  `merchant_currency`= '{9}' and `merchant_id`='{10}' and " \
-              "`merchant_name`='{11}' and `transaction_date_time`='{12}' and `transaction_type`='{13}' and `vcn_response`='{14}' and  `card_id`={15} and  `status`='{16}')".format(
+              "`merchant_name`='{11}' and `transaction_date_time`='{12}' and `transaction_type`='{13}' and `vcn_response`='{14}' and  `card_id`={15} and  `status`='{16}' and `user_name`='{17}' and `user_id`={18})".format(
             card_number, acquirer_ica, approval_code, billing_amount, billing_currency, issuer_reponse, mcc,
             mcc_description,
             merchant_amount, merchant_currency, merchant_id, merchant_name, transaction_date_time, transaction_type,
-            vcn_response, card_id, status)
+            vcn_response, card_id, status, user_name, user_id)
         conn, cursor = self.connect()
         try:
             cursor.execute(sql)
@@ -1749,7 +1749,7 @@ class SqlData(object):
         return info_list
 
     def search_admin_card_trans(self, sql_line):
-        sql = "SELECT DISTINCT card_trans.*,user_info.`name` FROM card_trans JOIN card_info JOIN user_info ON card_trans.card_id=card_info.card_id WHERE card_info.user_id=user_info.id {}".format(
+        sql = "SELECT * FROM card_trans WHERE id is not null {}".format(
             sql_line)
         conn, cursor = self.connect()
         cursor.execute(sql)
@@ -1781,8 +1781,7 @@ class SqlData(object):
         return info_list
 
     def search_admin_card_trans_settle(self, sql_line):
-        sql = "SELECT DISTINCT card_trans_settle.*,user_info.`name` FROM card_trans_settle JOIN card_info JOIN " \
-              "user_info ON card_trans_settle.card_id=card_info.card_id WHERE card_info.user_id=user_info.id {}".format(
+        sql = "SELECT * FROM card_trans_settle WHERE id is not null {}".format(
                sql_line)
         conn, cursor = self.connect()
         cursor.execute(sql)

@@ -196,7 +196,7 @@ class SVB(object):
 
 svb = SVB()
 if __name__ == '__main__':
-    r = svb.delete_card(39417548)
+    r = svb.card_detail(43853646)
     print(r)
     """
     print(time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(time.time())))

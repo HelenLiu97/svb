@@ -1,28 +1,33 @@
-import requests
+from qiniu import Auth, put_file
 
 
-def sm_photo(path):
-    url = "https://sm.ms/api/v2/upload?inajax=1"
+def sm_photo(path, file_name):
+    try:
+        # -*- coding: utf-8 -*-
+        # flake8: noqa
 
-    file = open(path, 'rb')
+        # 需要填写你的 Access Key 和 Secret Key
+        access_key = 'KgHe4AAvPJStXOlhxGB3ds-3ndsUxS-wypBwKAgW'
+        secret_key = '6l1ujW79c4Zwo5XmpznDLTdQLaobW3As3r9fnol1'
 
-    smfile = {'smfile': file}
+        # 构建鉴权对象
+        q = Auth(access_key, secret_key)
 
-    header = {'Authorization': "y5Ddvk7l0eca8eyDJO70zyk6FdujIv3k"}
+        # 要上传的空间
+        bucket_name = 'pay_pic'
 
-    results = requests.post(url, headers=header, files=smfile)
+        # 上传后保存的文件名
+        key = file_name
 
-    dict_info = results.json()
+        # 生成上传 Token，可以指定过期时间等
+        token = q.upload_token(bucket_name, key)
 
-    data = dict_info.get('data')
+        # 要上传文件的本地路径
+        localfile = path
 
-    code = dict_info.get('code')
+        ret, info = put_file(token, key, localfile)
 
-    if code == 'exception':
-        return 'F'
-    elif code != 'success':
+        return ret.get('key')
+    except:
         return False
-    else:
-        url = data.get('url')
-        return url
 

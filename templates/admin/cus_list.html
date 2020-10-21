@@ -46,6 +46,7 @@
 	<script type="text/html" id="barDemo">
 		<a class="layui-btn layui-btn-xs layui-btn-radius" lay-event="top_up">充值</a>
 		<a class="layui-btn layui-btn-xs layui-btn-normal layui-btn-radius" lay-event="pay">消费</a>
+        <a class="layui-btn layui-btn-warm layui-btn-xs layui-btn-radius" lay-event="line">查看</a>
         <a class="layui-btn layui-btn-xs layui-btn-danger layui-btn-radius" lay-event="chart">免费卡量</a>
 	</script>
 
@@ -113,7 +114,7 @@
                         html += ">";
                         return html;
                     }}
-                , {fixed: 'right', width: 200, align: 'center', toolbar: '#barDemo'}
+                , {fixed: 'right', width: 250, align: 'center', toolbar: '#barDemo'}
             ]]
     });
 
@@ -146,7 +147,7 @@
                         html += ">";
                         return html;
                     }}
-                , {fixed: 'right', width: 200, align: 'center', toolbar: '#barDemo'}
+                , {fixed: 'right', width: 250, align: 'center', toolbar: '#barDemo'}
             ]];
 
     form.on('radio(card_status)', function (data) {
@@ -409,7 +410,26 @@
                     layer.close(index);
 
                 });
-        }
+        }else if(layEvent === 'line'){
+                layer.open({
+                type: 2
+                , offset: '100px' //具体配置参考：http://www.layui.com/doc/modules/layer.html#offset
+                , skin: 'layui-layer-demo'
+                , id: 'account_info'//防止重复弹出
+                , title: '客户为 ' + data.name + ' 的消费概览'
+                , area: ['90%', "700px"]
+                , anim: 2
+                , shadeClose: true
+                , content: '/admin/account_chart_line/?user_id=' + data.u_id
+                , btn: '关闭全部'
+                , btnAlign: 'c' //按钮居中a
+                , shade: [0.8, '#393D49'] //弹框背景选项
+                , success: function (layero, index) {
+                    var body = layer.getChildFrame('body', index);
+                    body.contents().find("#user_id").val(data.u_id);
+                }
+            });
+            }
     });
 
     table.on('rowDouble(newsList)', function (obj) {

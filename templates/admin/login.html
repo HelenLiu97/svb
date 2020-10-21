@@ -27,9 +27,9 @@
 			<label for="password">密码</label>
 			<input type="password" placeholder="请输入密码" autocomplete="off" name="password" class="layui-input" lay-verify="required">
 		</div>
-        <div class="layui-form-item input-item">
+        <div class="layui-form-item input-item" style="display: {{ drop_status }};" id="drop">
 			<label for="password">图片验证码</label>
-			<input type="text" placeholder="图片验证码" autocomplete="off"  name="image_code" class="layui-input" lay-verify="required" maxlength="5" style="width: 98px;float: left">
+			<input type="text" placeholder="图片验证码" autocomplete="off"  name="image_code" class="layui-input" maxlength="5" style="width: 98px;float: left">
             <span style="float: right; border:1px #9400D3 solid ;">
                 <img src="{{ img }}" alt="验证码图片" title="点击再换一张" id="valid-img">
             </span>
@@ -65,7 +65,12 @@
                            parent.layer.msg(data.msg, {
                             icon : 5
                         });
-                        }
+                        }else if (data.code == 501){
+                                document.getElementById('drop').style.display = 'block';
+                                parent.layer.msg(data.msg, {
+                                icon : 5
+                            })
+                            }
                     },
                     error : function(data) {
                         // 异常提示
@@ -97,6 +102,11 @@
                                 parent.layer.msg(data.msg, {
                                 icon : 5
                             });
+                            }else if (data.code == 501){
+                                document.getElementById('drop').style.display = 'block';
+                                parent.layer.msg(data.msg, {
+                                icon : 5
+                            })
                             }
 
                         },

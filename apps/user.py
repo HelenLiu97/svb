@@ -1193,28 +1193,32 @@ def user_main():
     three_before = (datetime.datetime.now() - datetime.timedelta(days=3)).strftime("%Y-%m-%d")
 
     # 获取所有的交易数据
-    card_trans = SqlData.search_card_trans(user_id, '')
-    decline_num = 0
-    trans_num = 0
-    for tran in card_trans:
-        status = tran.get('status')  # 根据状态来判断给订单是否decline
-        u_name = tran.get('name')
-        trans_time = tran.get('transaction_date_time')
-        mat = re.search(r"(\d{4}-\d{1,2}-\d{1,2})", trans_time)
-        # 如果匹配时间失败则时间调为4天前(不计数)
-        try:
-            trans_t = mat.group(0)
-        except:
-            trans_t = (datetime.datetime.now() - datetime.timedelta(days=4)).strftime("%Y-%m-%d")
-        result = verify_login_time(three_before + " 00:00:00", trans_t + " 00:00:00")
-        if result and status == 'F':
-            decline_num += 1
-        if result:
-            trans_num += 1
+    if user_id == 10:
+        res = RedisTool.hash_get('declined', 10)
+        three_bili = res.get('three_bili')
+        sum_bili = res.get('sum_bili')
+    else:
+        card_trans = SqlData.search_card_trans(user_id, '')
+        decline_num = 0
+        trans_num = 0
+        for tran in card_trans:
+            status = tran.get('status')  # 根据状态来判断给订单是否decline
+            trans_time = tran.get('transaction_date_time')
+            mat = re.search(r"(\d{4}-\d{1,2}-\d{1,2})", trans_time)
+            # 如果匹配时间失败则时间调为4天前(不计数)
+            try:
+                trans_t = mat.group(0)
+            except:
+                trans_t = (datetime.datetime.now() - datetime.timedelta(days=4)).strftime("%Y-%m-%d")
+            result = verify_login_time(three_before + " 00:00:00", trans_t + " 00:00:00")
+            if result and status == 'F':
+                decline_num += 1
+            if result:
+                trans_num += 1
 
-    sum_decline = SqlData.search_trans_count(user_id, "AND card_trans.status='F'")
-    three_bili = str(float("%.4f" % (decline_num / trans_num * 100)) if trans_num != 0 else 0) + "%"
-    sum_bili = str(float("%.4f" % (sum_decline / len(card_trans) * 100)) if len(card_trans) != 0 else 0) + "%"
+        sum_decline = SqlData.search_trans_count(user_id, "AND card_trans.status='F'")
+        three_bili = str(float("%.4f" % (decline_num / trans_num * 100)) if trans_num != 0 else 0) + "%"
+        sum_bili = str(float("%.4f" % (sum_decline / len(card_trans) * 100)) if len(card_trans) != 0 else 0) + "%"
 
     update_t = up_remain_time
     context = dict()
@@ -1301,11 +1305,20 @@ def material():
 
 @user_blueprint.route('/login/', methods=['POST', 'GET'])
 def login():
+    # ip = request.headers.get('X-Forwarded-For')
+    ip = request.remote_addr
     if request.method == 'GET':
         str_data, img = createCodeImage(height=38)
         context = dict()
         context['img'] = img
         context['code'] = ImgCode().jiami(str_data)
+        try_number = RedisTool.string_get(ip)
+        if try_number is None:
+            try_number = 0
+        if int(try_number) >= 3:
+            context['drop_status'] = "block"
+        else:
+            context['drop_status'] = "none"
         return render_template('user/login.html', **context)
 
     if request.method == 'POST':
@@ -1317,11 +1330,20 @@ def login():
         cus_status = data.get('cus_status')
         results = {'code': RET.OK, 'msg': MSG.OK}
         try:
-            img_code = ImgCode().jiemi(image_real)
-            if image_code.lower() != img_code.lower():
-                results['code'] = RET.SERVERERROR
-                results['msg'] = '验证码错误！'
-                return jsonify(results)
+            try_number = RedisTool.string_get(ip)
+            if not try_number:
+                RedisTool.string_set(ip, 1)
+            else:
+                new_number = int(try_number) + 1
+                RedisTool.string_set(ip, new_number)
+
+            try_number = RedisTool.string_get(ip)
+            if int(try_number) > 3:
+                img_code = ImgCode().jiemi(image_real)
+                if image_code.lower() != img_code.lower():
+                    results['code'] = RET.SERVERERROR
+                    results['msg'] = '验证码错误！'
+                    return jsonify(results)
             if cus_status == "main":
                 user_data = SqlData.search_user_info(user_name)
                 if user_data:
@@ -1338,14 +1360,23 @@ def login():
                         session['name'] = name
                         session['vice_id'] = None
                         session.permanent = True
+                        RedisTool.string_del(ip)
                         return jsonify(results)
+                    else:
+                        if int(try_number) == 3:
+                            results['code'] = 501
+                            results['msg'] = MSG.PSWDERROR
+                        else:
+                            results['code'] = RET.SERVERERROR
+                            results['msg'] = MSG.PSWDERROR
+                        return jsonify(results)
+                else:
+                    if int(try_number) == 3:
+                        results['code'] = 501
+                        results['msg'] = MSG.PSWDERROR
                     else:
                         results['code'] = RET.SERVERERROR
                         results['msg'] = MSG.PSWDERROR
-                        return jsonify(results)
-                else:
-                    results['code'] = RET.SERVERERROR
-                    results['msg'] = MSG.PSWDERROR
                     return jsonify(results)
             if cus_status == 'vice':
                 user_data = SqlData.search_user_vice_info(user_name)
@@ -1361,10 +1392,15 @@ def login():
                     # 存储子子账号操作权限到redis
                     res = SqlData.search_one_acc_vice(vice_id)
                     RedisTool.hash_set('svb_vice_auth', res.get('vice_id'), res)
+                    RedisTool.string_del(ip)
                     return jsonify(results)
                 else:
-                    results['code'] = RET.SERVERERROR
-                    results['msg'] = MSG.PSWDERROR
+                    if int(try_number) == 3:
+                        results['code'] = 501
+                        results['msg'] = MSG.PSWDERROR
+                    else:
+                        results['code'] = RET.SERVERERROR
+                        results['msg'] = MSG.PSWDERROR
                     return jsonify(results)
 
         except Exception as e:
