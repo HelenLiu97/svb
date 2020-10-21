@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <link rel="stylesheet" href="/static/layui/css/layui.css" media="all">
+    <script src="/static/layui/layui.js"></script>
+</head>
+<body>
+<blockquote class="layui-elem-quote quoteBox">
+<form class="layui-form" action="" lay-filter="example" id="example">
+<div class="layui-inline">
+    <input class="layui-input" name="cus_name" id="cus_name" autocomplete="off" placeholder="请输入用户名" >
+</div>
+<button class="layui-btn" lay-submit="" lay-filter="cus_trans" type="submit">搜索</button>
+<button type="reset" class="layui-btn layui-btn-primary" id="">重置</button>
+    </form>
+</blockquote>
+<table class="layui-table" id="cus_trans_log" lay-filter="cus_trans_log"></table>
+<script>
+    layui.use(['table','laydate','form','jquery'], function () {
+        var table = layui.table,
+            laydate = layui.laydate,
+            form = layui.form,
+            $ = layui.jquery;
+
+        table.render({
+            elem: '#cus_trans_log'
+            , height: 'full-90'
+            , cellMinWidth: '80'
+            , url: '/admin/card_free_log/' //数据接口
+            , title: '客户交易记录'
+            , limit:50
+            , limits:[50,100,150,200,250,300,350,400,450,500]
+            , toolbar: "true" //开启工具栏，此处显示默认图标，可以自定义模板，详见文档
+            , totalRow: true //开启合计行
+            , cols: [[ //表头
+                {type:'numbers'}
+                , {field: 'name', title: '客户', align: 'center', }
+                , {field: 'card_num', title: '免费卡数量', align: 'center', }
+                , {field: 'price', title: '单价', align: 'center',style: "color: green"}
+                , {field: 'money', title: '金额', align: 'center', }
+                , {field: 'sub_time', title: '操作时间', align: 'center', }
+            ]]
+            , id: 'cus_trans_log'
+            , page: true
+        });
+
+        form.on('submit(cus_trans)', function(data){
+             var cus_name = $("#cus_name").val();
+             table.reload("cus_trans_log", {
+                 page: {
+                   curr: 1 //重新从第 1 页开始
+                 },where: {
+                     cus_name:cus_name
+                   }
+               }, '/admin/card_free_log/');
+            return false;
+         });
+
+        document.onkeydown=keyDownSearch;
+
+            function keyDownSearch(e) {
+                // 兼容FF和IE和Opera
+                var theEvent = e || window.event;
+                var code = theEvent.keyCode || theEvent.which || theEvent.charCode;
+                if (code == 13) {
+                    var cus_name = $("#cus_name").val();
+                     table.reload("cus_trans_log", {
+                         page: {
+                           curr: 1 //重新从第 1 页开始
+                         },where: {
+                             cus_name:cus_name,
+                           }
+                       }, '/admin/card_free_log/');
+                    return false;
+                }
+                return true;
+            }
+
+    })
+</script>
+</body>
+</html>

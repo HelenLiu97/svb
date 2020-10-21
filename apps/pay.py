@@ -165,10 +165,11 @@ def pay_pic():
         phone2 = request.args.get("phone2")
         ex_change = request.args.get('ex_change')
         # 取出目前当前收款金额最低的收款码
-        qr_info = SqlData.search_qr_code('WHERE status=0')
-        if not qr_info:
-            url = ''
+        qr_info = SqlData.search_qr_code('WHERE status=2')
+        if qr_info:
+            url = qr_info[0].get('qr_code')
         else:
+            qr_info = SqlData.search_qr_code('WHERE status=0')
             url = ''
             value_list = list()
             for i in qr_info:

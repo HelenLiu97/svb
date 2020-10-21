@@ -22,6 +22,7 @@
 <button type="button" class="layui-btn layui-btn-danger" id="test7"><i class="layui-icon"></i>上传图片</button>
 <table class="layui-hide" id="qr_code" lay-filter="qr_code"> </table>
 <script type="text/html" id="barDemo">
+    <a class="layui-btn layui-btn-warm layui-btn-xs" lay-event="top" id="top">置顶</a>
     <a class="layui-btn layui-btn-normal layui-btn-xs" lay-event="lock" id="do_lock">锁定</a>
     <a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="del">删除</a>
 </script>
@@ -86,6 +87,8 @@
                         if (res.data[i].status == '锁定') {
                             $('table tbody tr').eq(i).css('color', '#B23AEE');
                             $('table tbody tr td a[id=do_lock]').eq(i).html('解锁').css('background-color', 'black')
+                        }else if(res.data[i].status == '置顶'){
+                            $('table tbody tr td a[id=top]').eq(i).html('取消').css('background-color', 'black')
                         }
                     }
                 }
@@ -150,6 +153,32 @@
                     }
                 });
                 })
+            }else if (layEvent === 'top'){
+                        $.ajax({
+                            type : 'GET',
+                            url : '/admin/top_code/?url=' + data.qr_code,
+                            beforeSend:function () {
+                            layer.load(2, {shade: false})
+                            },
+                            success : function(data) {
+                                // 成功提示框
+                                if (data.code == 0){
+                                    layer.closeAll();
+                                    layer.msg(data.msg, {
+                                    icon : 6,
+                                });
+                                location.reload()
+                                }else if(data.code == 502){
+                                    layer.closeAll();
+                                    layer.msg(data.msg, {
+                                    icon : 5
+                                });
+                                }
+
+                            }
+                        });
+                    layer.close(index);
+
             }
         });
 

@@ -373,43 +373,20 @@
 
                 });
         } else if (layEvent==='chart'){
-            layer.prompt({title: '请输入免费卡数量', value:data.free_number}, function(num, index){
-
-                    if (isNaN(num)){
-                        layer.msg('请输入数字!')
-                    }else{
-                        $.ajax({
-                            type : 'POST',
-                            url : '/admin/free_number/',
-                            data : {user_name:data.name,
-                                    free_number:num
-                            },
-                            dataType : 'json',
-                            beforeSend:function () {
-                                 top.layer.load(0, {shade: [0.8, '#393D49'],})
-                            },
-                            success : function(data) {
-                                // 成功提示框
-                                if (data.code == 0){
-                                    top.layer.closeAll();
-                                    parent.layer.msg(data.msg, {
-                                    icon : 6,
-                                });
-                                {#setTimeout(window.location.reload(), 2000)#}
-
-                                }else if(data.code == 502){
-                                    top.layer.closeAll();
-                                    parent.layer.msg(data.msg, {
-                                    icon : 5
-                                });
-                                }
-
-                            }
-                        });
+                layui.layer.open({
+                    title: '设置客户 [ ' + data.name + ' ] 的免费卡量',
+                    type: 2,
+                    anim: 3,
+                    skin: 'layui-layer-lan',
+                    area: ['25%', '30%'],//宽高
+                    shadeClose: true, //点击遮罩关闭
+                    content: '/admin/edit_free/?user_id=' + data.u_id,
+                    success: function (layero, index) {
+                        var body = layer.getChildFrame('body', index);
+                        body.contents().find("#name_str").val(data.name)
                     }
-                    layer.close(index);
-
                 });
+                return false
         }else if(layEvent === 'line'){
                 layer.open({
                 type: 2

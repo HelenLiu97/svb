@@ -27,6 +27,11 @@
 					"href": "/admin/cus_refund/",
 					"spread": false
 				},{
+					"title": "免费卡量记录",
+					"icon": "&#xe63c;",
+					"href": "/admin/card_free/",
+					"spread": false
+				},{
 					"title": "添加客户",
 					"icon": "&#xe654;",
 					"href": "/admin/add_account/",

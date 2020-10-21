@@ -450,6 +450,22 @@ def bank_msg():
             return jsonify({'code': RET.SERVERERROR, 'msg': MSG.SERVERERROR})
 
 
+@admin_blueprint.route('/top_code/', methods=['GET'])
+@admin_required
+def top_code():
+    url = request.args.get('url')
+    status = SqlData.search_qr_field('status', url)
+    # status:1为锁定，0为正常，2为置顶
+    if status == 2:
+        SqlData.update_qr_info('status', 0, url)
+    else:
+        res = SqlData.search_qr_code("WHERE status=2")
+        if res:
+            return jsonify({'code': RET.SERVERERROR, 'msg': '请取消已置顶收款码后重试！'})
+        SqlData.update_qr_info('status', 2, url)
+    return jsonify({'code': RET.OK, 'msg': MSG.OK})
+
+
 @admin_blueprint.route('/edit_code/', methods=['GET', 'POST'])
 @admin_required
 def edit_code():
@@ -1198,6 +1214,12 @@ def cus_refund_top():
     return render_template('admin/cus_refund.html')
 
 
+@admin_blueprint.route('/card_free/', methods=['GET'])
+@admin_required
+def card_free():
+    return render_template('admin/card_free.html')
+
+
 @admin_blueprint.route('/top_history/', methods=['GET'])
 @admin_required
 def top_history():
@@ -1363,17 +1385,70 @@ def lock_acc():
     return jsonify({'code': RET.OK, 'msg': MSG.OK})
 
 
-@admin_blueprint.route('/free_number/', methods=['POST'])
+@admin_blueprint.route('/edit_free/', methods=['GET'])
+@admin_required
+def edit_free():
+    user_id = request.args.get('user_id')
+    context = {'user_id': user_id}
+    return render_template('admin/edit_free.html', **context)
+
+
+@admin_blueprint.route('/free/', methods=['POST'])
 @admin_required
 def free_number():
-    user_name = request.form.get("user_name")
-    free_number = request.form.get("free_number").strip()
-    # 数量的校验
-    if "-" in str(free_number) or "." in str(free_number):
-        return jsonify({"code": RET.SERVERERROR, 'msg': "请输入正确数量!"})
-    user_id = SqlData.search_user_field_name('id', user_name)
-    SqlData.update_user_field('free_number', int(free_number), user_id)
-    return jsonify({"code": RET.OK, 'msg': MSG.OK})
+    if request.method == 'POST':
+        data = json.loads(request.form.get('data'))
+        card_num = data.get('card_num')
+        price = data.get('price')
+        user_id = data.get('user_id')
+        try:
+            if '-' in card_num or '-' in price:
+                return jsonify({'code': RET.SERVERERROR, 'msg': '请输入正数！'})
+            card_num = int(card_num)
+        except:
+            return jsonify({'code': RET.SERVERERROR, 'msg': '卡量请输入整数！'})
+        price = float(price)
+        deduct_money = round(price * card_num, 2)
+        user_balance = SqlData.search_user_field('balance', int(user_id))
+        if deduct_money > user_balance:
+            return jsonify({'code': RET.SERVERERROR, 'msg': '账户余额不足！'})
+        SqlData.update_user_free_card(card_num, user_id)
+        SqlData.update_user_balance(-deduct_money, user_id)
+        now_time = xianzai_time()
+        SqlData.insert_card_free(card_num, price, deduct_money, now_time, int(user_id))
+        balance = SqlData.search_user_field('balance', int(user_id))
+        SqlData.insert_account_trans(now_time, '支出', '系统扣费', '购买免费卡量', deduct_money, user_balance, balance, int(user_id))
+        return jsonify({'code': RET.OK, 'msg': MSG.OK})
+
+
+@admin_blueprint.route('/card_free_log/', methods=['GET'])
+@admin_required
+def card_free_log():
+    page = request.args.get('page')
+    limit = request.args.get('limit')
+
+    acc_name = request.args.get('acc_name')
+
+    results = {"code": RET.OK, "msg": MSG.OK, "count": 0, "data": ""}
+
+    if acc_name:
+        sql = "WHERE user_info.name like '%" + acc_name + "%'"
+    else:
+        sql = ""
+
+    task_info = SqlData.search_card_free_history(sql)
+    if len(task_info) == 0:
+        results['MSG'] = MSG.NODATA
+        return jsonify(results)
+    page_list = list()
+    task_info = sorted(task_info, key=operator.itemgetter('sub_time'))
+    task_info = list(reversed(task_info))
+    for i in range(0, len(task_info), int(limit)):
+        page_list.append(task_info[i:i + int(limit)])
+    data = page_list[int(page) - 1]
+    results['data'] = data
+    results['count'] = len(task_info)
+    return jsonify(results)
 
 
 @admin_blueprint.route('/account_info/', methods=['GET'])

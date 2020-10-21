@@ -28,7 +28,7 @@ class SqlData(object):
         cursor.execute(sql)
         row = cursor.fetchone()
         self.close_connect(conn, cursor)
-        if row
+        if row:
             return True
         else:
             return False
@@ -1182,8 +1182,10 @@ class SqlData(object):
             info_dict['sum_money'] = i[3]
             if i[4] == 0:
                 info_dict['status'] = '正常'
-            else:
+            elif i[4] == 1:
                 info_dict['status'] = '锁定'
+            else:
+                info_dict['status'] = '置顶'
             info_list.append(info_dict)
         return info_list
 
@@ -1921,6 +1923,49 @@ class SqlData(object):
             logging.error(str(e))
             conn.rollback()
         self.close_connect(conn, cursor)
+
+    def update_user_free_card(self, number, user_name):
+        sql = "UPDATE user_info SET free_number=free_number+{} WHERE id = {}".format(number, user_name)
+        conn, cursor = self.connect()
+        try:
+            cursor.execute(sql)
+            conn.commit()
+        except Exception as e:
+            logging.error(str(e))
+            conn.rollback()
+        self.close_connect(conn, cursor)
+
+    def insert_card_free(self, card_num, price, money, sub_time, user_id):
+        sql = "INSERT INTO card_free(card_num, price, money, sub_time, user_id) VALUES({}, {}, {}, '{}',{})".format(
+              card_num, price, money, sub_time, user_id)
+        conn, cursor = self.connect()
+        try:
+            cursor.execute(sql)
+            conn.commit()
+        except Exception as e:
+            logging.error("添加用户免费卡量记录失败!" + str(e))
+            conn.rollback()
+        self.close_connect(conn, cursor)
+
+    def search_card_free_history(self, sql_line):
+        sql = "SELECT card_free.*, user_info.name FROM card_free LEFT JOIN user_info ON user_info.id=card_free.user_id {}".format(sql_line)
+        conn, cursor = self.connect()
+        cursor.execute(sql)
+        rows = cursor.fetchall()
+        self.close_connect(conn, cursor)
+        info_list = list()
+        if not rows:
+            return info_list
+        else:
+            for i in rows:
+                info_dict = dict()
+                info_dict['card_num'] = i[1]
+                info_dict['price'] = i[2]
+                info_dict['money'] = i[3]
+                info_dict['sub_time'] = str(i[4])
+                info_dict['name'] = i[6]
+                info_list.append(info_dict)
+            return info_list
 
 
 SqlData = SqlData()
