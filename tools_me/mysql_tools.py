@@ -1967,6 +1967,33 @@ class SqlData(object):
                 info_list.append(info_dict)
             return info_list
 
+    def search_top_money(self, start_t, end_t):
+        sql = "SELECT SUM(money) FROM top_up WHERE `time` BETWEEN  '{}' AND '{}' ".format(start_t, end_t)
+        conn, cursor = self.connect()
+        cursor.execute(sql)
+        row = cursor.fetchone()
+        self.close_connect(conn, cursor)
+        return row[0]
+
+    def search_valid_card(self, number):
+        sql = "SELECT * FROM new_card WHERE status = '' ORDER BY id ASC LIMIT {}".format(number)
+        conn, cursor = self.connect()
+        cursor.execute(sql)
+        rows = cursor.fetchall()
+        self.close_connect(conn, cursor)
+        return rows
+
+    def update_new_card_use(self, card_id):
+        sql = "UPDATE new_card SET status='T' WHERE card_id={}".format(card_id)
+        conn, cursor = self.connect()
+        try:
+            cursor.execute(sql)
+            conn.commit()
+        except Exception as e:
+            logging.error("更新卡信息失败!")
+            conn.rollback()
+        self.close_connect(conn, cursor)
+
 
 SqlData = SqlData()
 

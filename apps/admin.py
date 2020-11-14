@@ -1402,7 +1402,7 @@ def free_number():
         price = data.get('price')
         user_id = data.get('user_id')
         try:
-            if '-' in card_num or '-' in price:
+            if '-' in price:
                 return jsonify({'code': RET.SERVERERROR, 'msg': '请输入正数！'})
             card_num = int(card_num)
         except:
@@ -1545,7 +1545,7 @@ def test():
     for d in day_list:
         start_t = d + " 00:00:00"
         end_t = d + " 23:59:59"
-        day_money = SqlData.search_trans_money(start_t, end_t)
+        day_money = SqlData.search_top_money(start_t, end_t)
         if not day_money:
             day_money = 0
         sum_day_money.append(day_money)

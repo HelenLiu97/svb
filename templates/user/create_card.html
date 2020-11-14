@@ -39,10 +39,11 @@
         <div class="layui-form-item">
             <label class="layui-form-label">充值金额</label>
             <div class="layui-input-inline">
-                <input type="number" id="top_money" name="top_money" required lay-verify="required" placeholder="充值的金额不能为小数" autocomplete="off"
-                       class="layui-input">
+                <select name="top_money">
+                    <option value="20">20</option>
+                  </select>
             </div>
-            <div class="layui-form-mid layui-word-aux">最低充值: $ {{ min_top }}</div>
+            <div class="layui-form-mid layui-word-aux">暂支持二十刀余额</div>
         </div>
         <div class="layui-form-item">
             <label class="layui-form-label">标签</label>

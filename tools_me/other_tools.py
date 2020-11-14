@@ -113,6 +113,27 @@ def verify_login_time(before_time, now_time):
         return
 
 
+def create_card(view_func):
+    """自定义装饰器判断用户是否正在开卡
+       该装饰器避免多个用户同时开卡，导致
+       新卡出现多次绑定
+    """
+    @wraps(view_func)
+    def wraaper(*args, **kwargs):
+        res = RedisTool.string_get("create_card_ing")
+        if res:
+            return jsonify({'code': 502, 'msg': '开卡繁忙，请稍后重试！'})
+        else:
+            RedisTool.string_set("create_card_ing", 'user crate card!')
+            try:
+                f = view_func(*args, **kwargs)
+                return f
+            finally:
+                # 删除标记，为已处理完交易用户
+                RedisTool.string_del("create_card_ing")
+    return wraaper
+
+
 def trans_lock(view_func):
     """自定义装饰器判断用户是否正在交易
        该装饰器避免用户刷新充值加载界面

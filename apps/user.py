@@ -7,7 +7,7 @@ import time
 import xlwt
 from config import cache
 from tools_me.other_tools import xianzai_time, login_required, check_float, account_lock, get_nday_list, \
-    verify_login_time, trans_lock, sum_code
+    verify_login_time, trans_lock, sum_code, create_card
 from tools_me.parameter import RET, MSG, TRANS_TYPE, DO_TYPE
 from tools_me.redis_tools import RedisTool
 from tools_me.remain import get_card_remain
@@ -546,6 +546,7 @@ def top_up():
 @login_required
 @account_lock
 @trans_lock
+@create_card
 def create_card():
     if request.method == 'GET':
         user_id = g.user_id
@@ -566,7 +567,8 @@ def create_card():
             if c_card == 'F':
                 return jsonify({'code': RET.SERVERERROR, 'msg': '抱歉您没有权限执行此操作！'})
         data = json.loads(request.form.get('data'))
-        top_money = data.get('top_money')
+        #top_money = data.get('top_money')
+        top_money = 20
         label = data.get('label')
         card_num = data.get('card_num')
         user_id = g.user_id
@@ -591,63 +593,62 @@ def create_card():
             results = {"code": RET.SERVERERROR, "msg": "本次消费金额:" + str(money_all) + ",账号余额不足!"}
             return jsonify(results)
 
+        # 已修改，最低20，建的缓存卡量就是20刀
         # 计算充值金额是否在允许范围
         # if not min_top <= int(top_money) <= max_top:
-        if not min_top <= int(top_money):
-            results = {"code": RET.SERVERERROR, "msg": "充值金额不在允许范围内!"}
+        # if not min_top <= int(top_money):
+        #     results = {"code": RET.SERVERERROR, "msg": "充值金额不在允许范围内!"}
+        #     return jsonify(results)
+
+        new_card = SqlData.search_valid_card(card_num)
+        if not card_num == len(new_card):
+            results = {"code": RET.SERVERERROR, "msg": "库存不足请五分钟后重试"}
             return jsonify(results)
         # 该处修改开卡
         try:
-            data_list = []
-            cents = int(top_money) * 100
-            for i in range(card_num):
-                data = svb.create_card(cents)
-                if data:
-                    # 开卡费用
-                    n_time = xianzai_time()
-                    card_number = data.get('card_number')
-                    cvc = data.get('cvc')
-                    expiry = data.get('expiry')
-                    card_id = data.get('card_id')
-                    last4 = data.get('last4')
-                    valid_starting_on = data.get('valid_start_on')
-                    valid_ending_on = data.get('valid_end_on')
+            for i in new_card:
+                # 开卡费用
+                n_time = xianzai_time()
+                card_number = i[1]
+                cvc = i[3]
+                expiry = i[4]
+                card_id = i[5]
+                valid_starting_on = i[6]
+                valid_ending_on = i[7]
+                last4 = i[8]
 
-                    # 插入卡信息
-                    SqlData.insert_card(card_number, cvc, expiry, card_id, last4, valid_starting_on, valid_ending_on, label, 'T', int(top_money), user_id)
+                SqlData.update_new_card_use(card_id)
+                # 插入卡信息
+                SqlData.insert_card(card_number, cvc, expiry, card_id, last4, valid_starting_on, valid_ending_on, label, 'T', int(top_money), user_id)
 
-                    # 扣去开卡费用
-                    free_number = SqlData.search_user_field('free_number', user_id)
-                    before_balance = SqlData.search_user_field('balance', user_id)
+                # 扣去开卡费用
+                free_number = SqlData.search_user_field('free_number', user_id)
+                before_balance = SqlData.search_user_field('balance', user_id)
 
-                    # 判断是否有可用免费卡量
-                    if free_number > 0:
-                        SqlData.update_user_free_number(-1, user_id)
-                        SqlData.insert_account_trans(n_time, TRANS_TYPE.OUT, DO_TYPE.CREATE_CARD, card_number,
-                                                     0, before_balance, before_balance, user_id)
-                    else:
-                        create_price_do_money = float(create_price) - float(create_price) * 2
-                        SqlData.update_balance(create_price_do_money, user_id)
-                        balance = SqlData.search_user_field("balance", user_id)
-                        # balance = before_balance - create_price
-                        SqlData.insert_account_trans(n_time, TRANS_TYPE.OUT, DO_TYPE.CREATE_CARD, card_number,
-                                                     create_price, before_balance, balance, user_id)
-
-                    # 扣去充值费用
-                    before_balance = SqlData.search_user_field('balance', user_id)
-                    top_money = int(top_money)
-                    top_money_do_money = top_money - top_money * 2
-                    SqlData.update_balance(top_money_do_money, user_id)
+                # 判断是否有可用免费卡量
+                if free_number > 0:
+                    SqlData.update_user_free_number(-1, user_id)
+                    SqlData.insert_account_trans(n_time, TRANS_TYPE.OUT, DO_TYPE.CREATE_CARD, card_number,
+                                                 0, before_balance, before_balance, user_id)
+                else:
+                    create_price_do_money = float(create_price) - float(create_price) * 2
+                    SqlData.update_balance(create_price_do_money, user_id)
                     balance = SqlData.search_user_field("balance", user_id)
-                    n_time = xianzai_time()
-                    SqlData.insert_account_trans(n_time, TRANS_TYPE.OUT, DO_TYPE.TOP_UP, card_number,
-                                                 top_money, before_balance, balance, user_id)
-                    data_list.append(card_num)
-            if len(data_list) < 1:
-                code = RET.SERVERERROR
-            else:
-                code = RET.OK
-            return jsonify({"code": code, "msg": "成功开卡" + str(len(data_list)) + "张! 账户余额为: $"+str(balance)})
+                    # balance = before_balance - create_price
+                    SqlData.insert_account_trans(n_time, TRANS_TYPE.OUT, DO_TYPE.CREATE_CARD, card_number,
+                                                 create_price, before_balance, balance, user_id)
+
+                # 扣去充值费用
+                before_balance = SqlData.search_user_field('balance', user_id)
+                # 当前只有20刀的余额
+                top_money = int(top_money)
+                top_money_do_money = top_money - top_money * 2
+                SqlData.update_balance(top_money_do_money, user_id)
+                balance = SqlData.search_user_field("balance", user_id)
+                n_time = xianzai_time()
+                SqlData.insert_account_trans(n_time, TRANS_TYPE.OUT, DO_TYPE.TOP_UP, card_number,
+                                             top_money, before_balance, balance, user_id)
+            return jsonify({"code": RET.OK, "msg": "成功开卡! 账户余额为: $"+str(balance)})
 
         except Exception as e:
             logging.error(str(e))
