@@ -1,21 +1,31 @@
 <html>
 <head>
     <meta charset="UTF-8" />
-    <title>556338客户充值</title>
+    <title>511572客户充值</title>
     <link rel="stylesheet" href="/static/layui/css/layui.css"  media="all">
     <link rel="icon" href="/static/images/svb_top.ico">
     <meta http-equiv="refresh" content="600">
     <script src="/static/layui/layui.js" charset="utf-8"></script>
+    <style>
+        .divForm{
+            width: 500px;
+            height: 400px;
+            top: 50%;
+            left: 50%;
+            margin-bottom: 300px;
+            margin-top: 100px;
+            margin-left: 36%;
+        }
+    </style>
 </head>
 <body>
 
 <div class="layui-layout layui-layout-admin">
     <div class="layui-header">
     <ul class="layui-nav layui-bg-green">
-        <li class="layui-nav-item"><a href="">556338客户充值</a></li>
+        <li class="layui-nav-item"><a href="">511572客户充值</a></li>
     </ul>
         <ul class="layui-nav layui-layout-right">
-            <button type="button" class="layui-btn layui-btn-danger layui-btn-radius" ><a href="/verify_pay/brex/">511572</a></button>
             <li class="layui-nav-item"><a>{{ user_name }}</a></li>
             <button type="button" class="layui-btn layui-btn-normal layui-btn-radius" ><a href="/verify_pay/logout">注销</a></button>
         </ul>
@@ -28,13 +38,17 @@
     <li class="layui-this" lay-id="1">待确认充值</li>
     <li lay-id="2">已确认充值</li>
       <li lay-id="5">已删除充值</li>
+      <li lay-id="3">创建登录账号</li>
+      <li lay-id="4">账号信息</li>
+      <li lay-id="6">邮箱设置</li>
+
   </ul>
   <div class="layui-tab-content" style="height: 100px;">
     <div class="layui-tab-item layui-show">
         <table class="layui-hide" id="wait_pay" lay-filter="wait_pay"></table>
     </div>
       <script type="text/html" id="barDemo">
-            <a class="layui-btn layui-btn-xs" lay-event="top_up">确认充值</a>
+            <a class="layui-btn layui-btn-xs" lay-event="top_up">确认</a>
             <a class="layui-btn layui-btn-normal layui-btn-xs" lay-event="del">删除</a>
       </script>
     <div class="layui-tab-item">
@@ -43,6 +57,78 @@
       <!--del-->
       <div class="layui-tab-item">
           <table class="layui-hide" id="deled" lay-filter="deled"></table>
+      </div>
+      <div class="layui-tab-item">
+          <div class="divForm">
+    <form class="layui-form layui-form-pane">
+        <div class="layui-form-item">
+            <label class="layui-form-label">账   号</label>
+            <div class="layui-input-inline">
+                <input type="text" id="account" name="account" required lay-verify="required" placeholder="客户登录账号" autocomplete="off"
+                       class="layui-input">
+            </div>
+        </div>
+
+        <div class="layui-form-item">
+            <label class="layui-form-label">密   码</label>
+            <div class="layui-input-inline">
+                <input type="text" id="password" name="password" placeholder="客户登录密码" required lay-verify="required" autocomplete="off"
+                       class="layui-input">
+            </div>
+        </div>
+
+
+        <div class="layui-form-item">
+            <div class="layui-input-block">
+                <button  class="layui-btn layui-btn-lg" lay-submit="" lay-filter="add_acc" type="submit">确认</button>
+            </div>
+        </div>
+    </form>
+</div>
+
+      </div>
+      <div class="layui-tab-item">
+          <table class="layui-hide" id="all_account" lay-filter="all_account"></table>
+          <script type="text/html" id="barDemo1">
+            <a class="layui-btn layui-btn-normal layui-btn-xs" lay-event="del">删除</a>
+      </script>
+      </div>
+
+      <div class="layui-tab-item">
+
+          <table class="layui-hide" id="top_msg" lay-filter="top_msg"></table>
+            <hr class="layui-bg-gray">
+            <div id="details" style="padding: 20px;" lay-filter="detail">
+            <form class="layui-form" lay-filter="example" id="example" enctype="multipart/form-data">
+                <div class="layui-form-item">
+                    <label class="layui-form-label">通知人:</label>
+                    <div class="layui-input-block">
+                        <input type="text" name="top_people"  placeholder="通知的人名" autocomplete="off"
+                               class="layui-input" id="top_people">
+                    </div>
+                </div>
+                <div class="layui-form-item">
+                    <label class="layui-form-label">邮  箱:</label>
+                    <div class="layui-input-block">
+                        <input type="text" name="email" placeholder="推送的邮箱" autocomplete="off"
+                               class="layui-input" id="email">
+                    </div>
+                </div>
+
+                <div class="layui-form-item">
+
+                    <div class="layui-input-block">
+                        <button class="layui-btn" lay-submit="" lay-filter="formDemo" id="sub" type="submit">立即提交</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+            <script type="text/html" id="barDemo3">
+            <a class="layui-btn layui-btn-xs" lay-event="edit">编辑</a>
+            <a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="del">删除</a>
+        </script>
+
+
       </div>
 
 </div>
@@ -102,8 +188,7 @@
             , totalRow: true //开启合计行
             , cols: [[ //表头
                 {type:'numbers'}
-                , {field: 'name', title: '用户名', align: 'center', totalRowText: '合计：'}
-                , {field: 'username', title: '登录账号', align: 'center',}
+                , {field: 'account', title: '登录账号', align: 'center',}
                 , {field: 'password', title: '登录密码', align: 'center', }
                 , {fixed: 'right', width: 220, align: 'center', toolbar: '#barDemo1'}
             ]]
@@ -117,10 +202,10 @@
 
             if (layEvent === 'del'){
 
-                layer.confirm('确认删除该用户信息?', function(index){
+                layer.confirm('确认删除该用户?', function(index){
                     $.ajax({
                     type : 'GET',
-                    url : '/verify_pay/del_account/?user_id='+data.user_id,
+                    url : '/verify_pay/del_account/?account='+data.account,
                     success : function(data) {
                         // 成功提示框
                         if (data.code == 0){
@@ -133,7 +218,6 @@
                             icon : 5
                         });
                         }
-
                     },
                     error : function(data) {
                         // 异常提示
@@ -144,23 +228,6 @@
                     }
                 });
                 })
-
-            } else if (layEvent === 'edit') {
-                layui.layer.open({
-                    title: '确认客户为 [ ' + data.name + ' ] 的充值信息',
-                    type: 2,
-                    anim: 3,
-                    area: ['340px', '340px'],//宽高
-                    shadeClose: true, //点击遮罩关闭
-                    content: '/verify_pay/edit_acc/?user_id=' + data.user_id,
-                    success: function(layer, index) {
-                        var body = layer.getChildFrame('body', index);
-                    },
-                    end: function () {
-                        location.reload()
-                    }
-                });
-                return false
             }
         });
 
@@ -169,7 +236,7 @@
         table.render({
             elem: '#wait_pay'
             , height: ''
-            , url: '/verify_pay/pay_log/?status=待充值' //数据接口
+            , url: '/verify_pay/brex_pay_log/?status=待充值' //数据接口
             , title: '待确认充值信息表'
             , limit:20
             , toolbar: "r" //开启工具栏，此处显示默认图标，可以自定义模板，详见文档
@@ -196,7 +263,7 @@
             elem: '#deled'
             , height: 'full-143'
             , cellMinWidth: '80'
-            , url: '/verify_pay/del_log/?status=已删除' //数据接口
+            , url: '/verify_pay/brex_pay_log/?status=已删除' //数据接口
             , title: '已确认充值信息表'
             , limit: 20
             , toolbar: "r" //开启工具栏，此处显示默认图标，可以自定义模板，详见文档
@@ -223,7 +290,7 @@
             elem: '#payed'
             , height: 'full-143'
             , cellMinWidth: '80'
-            , url: '/verify_pay/pay_log/?status=已充值' //数据接口
+            , url: '/verify_pay/brex_pay_log/?status=已充值' //数据接口
             , title: '已确认充值信息表'
             , limit: 20
             , toolbar: "r" //开启工具栏，此处显示默认图标，可以自定义模板，详见文档
@@ -233,9 +300,6 @@
                 , {field: 'cus_name', title: '客户', align: 'center', totalRowText: '合计：'}
                 , {field: 'pay_time', title: '下单时间', align: 'center',}
                 , {field: 'top_money', title: '充值金额', align: 'center', }
-                , {field: 'before_balance', title: '充值前金额', align: 'center',style:'color: #CD3700' }
-                , {field: 'balance', title: '充值后金额', align: 'center', style:'color: #8B0A50'}
-                , {field: 'sum_balance', title: '总充值金额', align: 'center', style:'color: #00868B' }
                 , {field: 'pay_money', title: '折合金额', align: 'center', }
                 , {field: 'status', title: '充值状态', align: 'center', }
                 , {field: 'url', title: '收款码', width:'20%', align: 'center',templet: function (res) {
@@ -257,10 +321,10 @@
 
                 layer.confirm('确认删除该充值信息?', function(index){
 
-                    data_info = {data: JSON.stringify({user_name:data.cus_name,pay_time:data.pay_time})};
+                    var data_info = {data: JSON.stringify({pay_id:data.pay_id})};
                     $.ajax({
                     type : 'POST',
-                    url : '/verify_pay/del_pay/',
+                    url : '/verify_pay/brex_del_pay/',
                     data : data_info,
                     dataType : 'json',
                     success : function(data) {
@@ -288,21 +352,37 @@
                 })
 
             } else if (layEvent === 'top_up') {
-                layui.layer.open({
-                    title: '确认客户为 [ ' + data.cus_name + ' ] 的充值信息',
-                    type: 2,
-                    anim: 3,
-                    area: ['400px', '330px'],//宽高
-                    shadeClose: true, //点击遮罩关闭
-                    content: '/verify_pay/top_up/?pay_time='+ data.pay_time + "&cus_name=" + data.cus_name + "&bank_msg=" + data.bank_msg,
-                    success: function(layer, index) {
-                        var body = layer.getChildFrame('body', index);
+                layer.confirm('确认该充值信息?', function(index){
+
+                    var data_info = {data: JSON.stringify({pay_id:data.pay_id})};
+                    $.ajax({
+                    type : 'POST',
+                    url : '/verify_pay/brex_top_up/',
+                    data : data_info,
+                    dataType : 'json',
+                    success : function(data) {
+                        // 成功提示框
+                        if (data.code == 0){
+                            parent.layer.msg(data.msg, {
+                            icon : 6,
+                        },obj.del());
+
+                        }else if(data.code == 502){
+                            parent.layer.msg(data.msg, {
+                            icon : 5
+                        });
+                        }
+
                     },
-                    end: function () {
-                        location.reload()
+                    error : function(data) {
+                        // 异常提示
+                        parent.layer.msg('出现网络故障', {
+                            icon : 5
+                        });
+                        parent.layer.closeAll('iframe'); //关闭弹框
                     }
                 });
-                return false
+                })
             }
         });
 
@@ -327,6 +407,158 @@
 					});
                     }
 
+				},
+				error : function(data) {
+					// 异常提示
+					parent.layer.msg('出现网络故障', {
+						icon : 5
+					});
+					parent.layer.closeAll('iframe'); //关闭弹框
+				}
+			});
+			return false;
+            });
+
+        form.on('submit(add_acc)', function (data) {
+            var data_info = {data: JSON.stringify(data.field)};
+            $.ajax({
+                type: 'POST',
+                url: '/verify_pay/add_account/',
+                data: data_info,
+                dataType: 'json',
+                success: function (data) {
+                    // 成功提示框
+                    if (data.code == 0) {
+                        parent.layer.msg(data.msg, {
+                            icon: 6,
+                        });
+
+                    } else if (data.code == 502) {
+                        parent.layer.msg(data.msg, {
+                            icon: 5
+                        });
+                    }
+
+                },
+                error: function (data) {
+                    // 异常提示
+                    parent.layer.msg('出现网络故障', {
+                        icon: 5
+                    });
+                    parent.layer.closeAll('iframe'); //关闭弹框
+                }
+            });
+            return false;
+        });
+
+        table.render({
+                elem: '#top_msg'
+                , height: '500'
+                , cellMinWidth: '80'
+                , url: '/verify_pay/top_msg_table/' //数据接口
+                , title: '收款码信息'
+                , skin: 'line'
+                , toolbar: false
+                , cols: [[ //表头
+                    {type:'numbers'}
+                    , {field: 'user', title: '收件人姓名', align: 'center',}
+                    , {field: 'email', title: '收件邮箱', align: 'center', }
+                    , {fixed: 'right', width: 250, align: 'center', toolbar: '#barDemo3'}
+                ]]
+                , id: 'qr_code'
+            });
+
+        table.on('tool(top_msg)', function (obj) {
+            var data = obj.data
+                , layEvent = obj.event;
+
+            if (layEvent === 'del') {
+                layer.confirm('确认删除这个收件人?', function (index) {
+                $.ajax({
+                    type: 'GET',
+                    url: '/verify_pay/del_email/?user=' + data.user,
+                    dataType: 'json',
+                    success: function (data) {
+                        // 成功提示框
+                        if (data.code == 0) {
+                            parent.layer.msg(data.msg, {
+                                icon: 6,time:1000
+                            });
+                            location.reload()
+                        } else if (data.code == 502) {
+                            parent.layer.msg(data.msg, {
+                                icon: 5
+                            });
+                        }
+
+                    },
+                    error: function (data) {
+                        // 异常提示
+                        parent.layer.msg('出现网络故障', {
+                            icon: 2
+                        });
+                    }
+                });
+                })
+            } else if (layEvent === 'edit'){
+                layer.prompt({title: '请输入新的邮箱', value:data.email}, function(num, index){
+
+                        $.ajax({
+                            type : 'POST',
+                            url : '/verify_pay/edit_email/',
+                            data : {user:data.user,
+                                    email:num
+                            },
+                            dataType : 'json',
+                            beforeSend:function () {
+                            layer.load(2, {shade: false})
+                            },
+                            success : function(data) {
+                                // 成功提示框
+                                if (data.code == 0){
+                                    layer.closeAll();
+                                    parent.layer.msg(data.msg, {
+                                    icon : 6,
+                                });
+                                location.reload()
+                                }else if(data.code == 502){
+                                    layer.closeAll();
+                                    parent.layer.msg(data.msg, {
+                                    icon : 5
+                                });
+                                }
+
+                            }
+                        });
+                    layer.close(index);
+
+                });
+            }
+        });
+
+      //监听提交
+        form.on('submit(formDemo)', function(data){
+            var data_info = {data:JSON.stringify(data.field)};
+            var $ = layui.jquery;
+
+            $.ajax({
+				type : 'POST',
+				url : '/verify_pay/top_msg/',
+				data : data_info,
+				dataType : 'json',
+				success : function(data) {
+			    	console.log(data.code);
+					// 成功提示框
+                    if (data.code == 0){
+                        parent.layer.msg(data.msg, {
+						icon : 6,
+					});
+					parent.layer.closeAll('iframe'); //关闭弹框
+                    }else if(data.code == 502){
+                        parent.layer.msg(data.msg, {
+						icon : 5
+					});
+                    }
 				},
 				error : function(data) {
 					// 异常提示

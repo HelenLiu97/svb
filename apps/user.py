@@ -21,6 +21,35 @@ from tools_me.mysql_tools import SqlData
 logging.basicConfig(level=logging.INFO, format='%(asctime)s :: %(levelname)s :: %(message)s', filename="error.log")
 
 
+@user_blueprint.route('/free_card/', methods=['GET', 'POST'])
+@login_required
+def free_card():
+    if request.method == 'GET':
+        return render_template('user/free_card.html')
+    if request.method == "POST":
+        user_id = g.user_id
+        data = json.loads(request.form.get('data'))
+        set_meal_data = {1: {'number': 100, 'price': 4}, 2: {'number': 300, 'price': 3}, 3: {'number': 700, 'price': 2}}
+        set_meal_number = data.get('number')
+        set_meal_info = set_meal_data.get(int(set_meal_number))
+        card_number = set_meal_info.get('number')
+        price = set_meal_info.get('price')
+        out_money = card_number * price
+        user_data = SqlData.search_user_index(user_id)
+        before_balance = user_data.get('balance')
+        if out_money > before_balance:
+            results = {"code": RET.SERVERERROR, "msg": "本次消费金额:" + str(out_money) + ",账号余额不足!"}
+            return jsonify(results)
+        SqlData.update_user_free_card(card_number, user_id)
+        SqlData.update_user_balance(-out_money, user_id)
+        now_time = xianzai_time()
+        SqlData.insert_card_free(card_number, price, out_money, now_time, int(user_id))
+        balance = SqlData.search_user_field('balance', int(user_id))
+        SqlData.insert_account_trans(now_time, '支出', '系统扣费', '购买免费卡量', out_money, before_balance, balance,
+                                     int(user_id))
+        return jsonify({'code': RET.OK, 'msg': MSG.OK})
+
+
 @user_blueprint.route('/card_settle_dw/', methods=['GET'])
 @login_required
 def card_settle_dw():

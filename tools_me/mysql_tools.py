@@ -1994,6 +1994,135 @@ class SqlData(object):
             conn.rollback()
         self.close_connect(conn, cursor)
 
+    def search_brex_user(self, username):
+        sql = "SELECT * FROM brex_user WHERE account='{}'".format(username)
+        conn, cursor = self.connect()
+        cursor.execute(sql)
+        rows = cursor.fetchone()
+        self.close_connect(conn, cursor)
+        if rows:
+            return {
+                "password": rows[2]
+            }
+        return {}
+
+    def insert_brex_pay_log(self, pay_time, pay_money, top_money, status, phone, url, user_name):
+        sql = "INSERT INTO brex_pay_log(pay_time, pay_money, top_money, status, phone, url, user_name) VALUES ('{}',{},{},'{}','{}', '{}','{}')".format(
+            pay_time, pay_money, top_money, status, phone, url, user_name)
+        conn, cursor = self.connect()
+
+        try:
+            cursor.execute(sql)
+            conn.commit()
+        except Exception as e:
+            logging.error("插入用户请求充值信息失败!" + str(e))
+            conn.rollback()
+        self.close_connect(conn, cursor)
+
+    def insert_brex_user(self, account, password):
+        sql = "INSERT INTO brex_user(account, password) VALUES ('{}','{}')".format(account, password)
+        conn, cursor = self.connect()
+        try:
+            cursor.execute(sql)
+            conn.commit()
+        except Exception as e:
+            logging.error("插入用户请求充值信息失败!" + str(e))
+            conn.rollback()
+        self.close_connect(conn, cursor)
+
+    def search_brex_user_all(self):
+        sql = "SELECT * FROM brex_user"
+        conn, cursor = self.connect()
+        cursor.execute(sql)
+        rows = cursor.fetchall()
+        self.close_connect(conn, cursor)
+        info_list = list()
+        if not rows:
+            return info_list
+        else:
+            for i in rows:
+                info_dict = dict()
+                info_dict['account'] = i[1]
+                info_dict['password'] = i[2]
+                info_list.append(info_dict)
+            return info_list
+
+    def del_brex_user(self, account):
+        sql = "DELETE FROM brex_user WHERE account = '{}'".format(account)
+        conn, cursor = self.connect()
+        try:
+            cursor.execute(sql)
+            conn.commit()
+        except Exception as e:
+            logging.error("删除失败" + str(e))
+            conn.rollback()
+        self.close_connect(conn, cursor)
+
+    def search_brex_pay_log(self, status):
+        sql = "SELECT * FROM brex_pay_log WHERE status='{}'".format(
+            status)
+        conn, cursor = self.connect()
+        cursor.execute(sql)
+        rows = cursor.fetchall()
+        self.close_connect(conn, cursor)
+        if not rows:
+            return
+        info_list = list()
+        for i in rows:
+            info_dict = dict()
+            info_dict['pay_id'] = i[0]
+            info_dict['pay_time'] = str(i[1])
+            info_dict['pay_money'] = i[2]
+            info_dict['top_money'] = i[3]
+            info_dict['status'] = i[4]
+            info_dict['ver_time'] = str(i[5])
+            info_dict['url'] = i[7]
+            info_dict['cus_name'] = i[8]
+            info_dict['bank_msg'] = i[7] if "http" not in i[7] else ""
+            info_list.append(info_dict)
+        return info_list
+
+    def del_brex_pay_log(self, pay_id):
+        sql = "UPDATE brex_pay_log SET status='已删除' WHERE id = {} ".format(pay_id)
+        conn, cursor = self.connect()
+        try:
+            cursor.execute(sql)
+            conn.commit()
+        except Exception as e:
+            logging.error("删除失败" + str(e))
+            conn.rollback()
+        self.close_connect(conn, cursor)
+
+    def update_brex_pay_log(self, now_time, pay_id):
+        sql = "UPDATE brex_pay_log SET status='已充值', ver_time='{}' WHERE id = {} ".format(now_time, pay_id)
+        conn, cursor = self.connect()
+        try:
+            cursor.execute(sql)
+            conn.commit()
+        except Exception as e:
+            logging.error("删除失败" + str(e))
+            conn.rollback()
+        self.close_connect(conn, cursor)
+
+    def search_verify_email(self):
+        sql = "SELECT email FROM verify_account"
+        conn, cursor = self.connect()
+        cursor.execute(sql)
+        rows = cursor.fetchone()
+        self.close_connect(conn, cursor)
+        return rows[0]
+
+    def update_verify_email(self, email):
+        sql = "UPDATE verify_account SET email='{}'".format(email)
+        conn, cursor = self.connect()
+        try:
+            cursor.execute(sql)
+            conn.commit()
+        except Exception as e:
+            logging.error("更新BREX收件邮箱失败" + str(e))
+            conn.rollback()
+        self.close_connect(conn, cursor)
+
 
 SqlData = SqlData()
 

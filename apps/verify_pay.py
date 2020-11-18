@@ -231,3 +231,198 @@ def del_pay():
         results['code'] = RET.SERVERERROR
         results['msg'] = MSG.SERVERERROR
         return jsonify(results)
+
+
+@verify_pay_blueprint.route('/brex/')
+@verify_required
+def brex():
+    user_name = session.get('user_name')
+    context = dict()
+    context['user_name'] = user_name
+    return render_template('verify_pay/brex.html', **context)
+
+
+@verify_pay_blueprint.route('/add_account/', methods=['POST'])
+@verify_required
+def add_brex_account():
+    data = json.loads(request.form.get('data'))
+    account = data.get('account')
+    password = data.get('password')
+    res = SqlData.search_brex_user(account)
+    results = {"code": RET.OK, "msg": MSG.OK}
+    if res:
+        results['code'] = RET.SERVERERROR
+        results['msg'] = '该账号已存在!'
+        return jsonify(results)
+    else:
+        SqlData.insert_brex_user(account, password)
+        return jsonify(results)
+
+
+@verify_pay_blueprint.route('/all_account/')
+@verify_required
+def brex_user():
+    results = dict()
+    results['code'] = RET.OK
+    results['msg'] = MSG.OK
+    limit = request.args.get('limit')
+    page = request.args.get('page')
+    data = SqlData.search_brex_user_all()
+    if not data:
+        results['msg'] = MSG.NODATA
+        return jsonify(results)
+    info = list(reversed(data))
+    page_list = list()
+    for i in range(0, len(info), int(limit)):
+        page_list.append(info[i:i + int(limit)])
+    info_list = page_list[int(page) - 1]
+    results['data'] = info_list
+    results['count'] = len(data)
+    return jsonify(results)
+
+
+@verify_pay_blueprint.route('/del_account/')
+@verify_required
+def del_account():
+    account = request.args.get('account')
+    SqlData.del_brex_user(account)
+    results = {"code": RET.OK, "msg": MSG.OK}
+    return jsonify(results)
+
+
+@verify_pay_blueprint.route('/brex_pay_log/', methods=['GET'])
+# @verify_required
+def brex_pay_log():
+    results = dict()
+    results['code'] = RET.OK
+    results['msg'] = MSG.OK
+    limit = request.args.get('limit')
+    page = request.args.get('page')
+    status = request.args.get('status')
+    data = SqlData.search_brex_pay_log(status)
+    if not data:
+        results['msg'] = MSG.NODATA
+        return jsonify(results)
+    info = list(reversed(data))
+    page_list = list()
+    for i in range(0, len(info), int(limit)):
+        page_list.append(info[i:i + int(limit)])
+    info_list = page_list[int(page) - 1]
+    results['data'] = info_list
+    results['count'] = len(data)
+    return jsonify(results)
+
+
+@verify_pay_blueprint.route('/brex_del_pay/', methods=['POST'])
+@verify_required
+def brex_del_pay():
+    try:
+        data = json.loads(request.form.get('data'))
+        pay_id = data.get('pay_id')
+        SqlData.del_brex_pay_log(pay_id)
+        results = dict()
+        results['code'] = RET.OK
+        results['msg'] = MSG.OK
+        return jsonify(results)
+    except Exception as e:
+        logging.error(str(e))
+        results = dict()
+        results['code'] = RET.SERVERERROR
+        results['msg'] = MSG.SERVERERROR
+        return jsonify(results)
+
+
+@verify_pay_blueprint.route('/brex_top_up/', methods=['POST'])
+@verify_required
+def brex_top_up():
+    try:
+        data = json.loads(request.form.get('data'))
+        pay_id = data.get('pay_id')
+        now_time = xianzai_time()
+        SqlData.update_brex_pay_log(now_time, pay_id)
+        results = dict()
+        results['code'] = RET.OK
+        results['msg'] = MSG.OK
+        return jsonify(results)
+    except Exception as e:
+        logging.error(str(e))
+        results = dict()
+        results['code'] = RET.SERVERERROR
+        results['msg'] = MSG.SERVERERROR
+        return jsonify(results)
+
+
+@verify_pay_blueprint.route('/top_msg_table/', methods=['GET'])
+@verify_required
+def email_table():
+    push_json = SqlData.search_verify_email()
+    if push_json:
+        push_dict = json.loads(push_json)
+        info_list = list()
+        for i in push_dict:
+            info_dict = dict()
+            info_dict['user'] = i
+            info_dict['email'] = push_dict.get(i)
+            info_list.append(info_dict)
+        return jsonify({'code': RET.OK, 'msg': MSG.OK, 'count': len(info_list), 'data': info_list})
+    else:
+        return jsonify({'code': RET.OK, 'msg': MSG.NODATA})
+
+
+@verify_pay_blueprint.route('/top_msg/', methods=['POST'])
+@verify_required
+def top_msg():
+    if request.method == 'POST':
+        try:
+            results = {"code": RET.OK, "msg": MSG.OK}
+            data = json.loads(request.form.get('data'))
+            top_people = data.get('top_people')
+            email = data.get('email')
+            push_json = SqlData.search_verify_email()
+            if not push_json:
+                info_dict = dict()
+                info_dict[top_people] = email
+            else:
+                info_dict = json.loads(push_json)
+                if top_people in info_dict:
+                    return jsonify({'code': RET.SERVERERROR, 'msg': '收件人已存在！'})
+                else:
+                    info_dict[top_people] = email
+            json_info = json.dumps(info_dict, ensure_ascii=False)
+            SqlData.update_verify_email(json_info)
+            return jsonify(results)
+        except Exception as e:
+            logging.error(str(e))
+            return jsonify({'code': RET.SERVERERROR, 'msg': MSG.SERVERERROR})
+
+
+@verify_pay_blueprint.route('/del_email/')
+@verify_required
+def del_email():
+    try:
+        user = request.args.get('user')
+        push_json = SqlData.search_verify_email()
+        push_dict = json.loads(push_json)
+        del push_dict[user]
+        json_info = json.dumps(push_dict, ensure_ascii=False)
+        SqlData.update_verify_email(json_info)
+        results = {"code": RET.OK, "msg": MSG.OK}
+        return jsonify(results)
+    except Exception as e:
+        logging.error(e)
+        return jsonify({'code': RET.SERVERERROR, 'msg': MSG.SERVERERROR})
+
+
+@verify_pay_blueprint.route('/edit_email/', methods=['POST'])
+@verify_required
+def edit_email():
+    user = request.form.get('user')
+    email = request.form.get('email')
+    push_json = SqlData.search_verify_email()
+    push_dict = json.loads(push_json)
+    push_dict[user] = email
+    json_info = json.dumps(push_dict, ensure_ascii=False)
+    SqlData.update_verify_email(json_info)
+    results = {"code": RET.OK, "msg": MSG.OK}
+    return jsonify(results)
+
