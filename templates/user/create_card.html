@@ -31,10 +31,37 @@
         z-index: 1024;
         display: none;
     }
+
+        #logo {
+            font-weight: 900;
+            font-size: 20px;
+            font-family: "黑体";
+            color: #898989;
+            background: -webkit-linear-gradient(45deg, #39eef6, #f86527, #fcd72d, #5f2cf8, #bed5f5);
+        -moz-linear-gradient(45 deg, #70f7fe, #fbd7c6, #fdefac, #bfb5dd, #bed5f5);
+        -ms-linear-gradient(45 deg, #70f7fe, #fbd7c6, #fdefac, #bfb5dd, #bed5f5);
+            color: transparent;
+            /*设置字体颜色透明*/
+            -webkit-background-clip: text;
+            /*背景裁剪为文本形式*/
+            animation: ran 10s linear infinite;
+            /*动态10s展示*/
+        }
+
+        @keyframes ran {
+            from {
+                backgroud-position: 0 0;
+            }
+            to {
+                background-position: 2000px 0;
+            }
+        }
     </style>
 </head>
 <body>
-<div style="padding-top: 50px; padding-left: 42%">
+<div id="logo" style="padding-top: 20px; padding-left: 40%">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;优惠活动<br>
+通过批量购卡功能可低价<br>购卡，购卡量100张起。<br>价格低至2刀</div>
+<div style="padding-top: 20px; padding-left: 42%">
     <button  class="layui-btn layui-btn-lg layui-btn-radius layui-btn-normal" id="buy_card">批量购卡</button>
 </div>
 <div class="divForm">

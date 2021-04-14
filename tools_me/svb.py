@@ -91,6 +91,7 @@ class SVB(object):
             if resp.status_code == 200:
                 data = resp.json().get('data')
                 card_number = data.get('card_number')
+                available_balance = data.get('available_balance')
                 cvc = data.get('cvc')
                 expiry = data.get('expiry')
                 card_id = data.get('id')
@@ -114,13 +115,15 @@ class SVB(object):
         method = "GET"
         params = 'show_card_number=true&show_realtime_auths=true'
         url = self.base_url + path + "?" + params
+        # proxies = {'http': '107.150.104.119:2000'}
         try:
             resp = self.requests.get(url, headers=self.create_header(method, path, params=params), timeout=60)
             if resp.status_code == 200:
                 return resp.json()
             else:
                 return {}
-        except Exception as e:
+        except requests.exceptions.RequestException as e:
+            print(e)
             logging.error("card_detail_api_error:" + str(e))
             return False
 
@@ -196,7 +199,8 @@ class SVB(object):
 
 svb = SVB()
 if __name__ == '__main__':
-    r = svb.card_detail(43853646)
+
+    r = svb.card_detail(54091998)
     print(r)
     """
     print(time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(time.time())))

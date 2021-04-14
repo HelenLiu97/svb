@@ -51,6 +51,10 @@
 					"title": "子账号权限",
 					"icon": "&#xe674;",
 					"href": "/user/update_vice/"
+				},{
+					"title": "账户充值",
+					"icon": "&#xe659;",
+					"href": "/user/pay_top/"
 				}
 			]
 		}

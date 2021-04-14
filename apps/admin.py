@@ -777,7 +777,7 @@ def account_trans():
     if trans_card:
         card_sql = "AND user_trans.card_no LIKE '%{}%'".format(trans_card.strip())
     if cus_name:
-        cus_sql = "AND user_info.name='" + cus_name + "'"
+        cus_sql = "AND user_info.name LIKE '%" + cus_name + "%'"
     if do_type:
         do_sql = "AND user_trans.do_type LIKE '%{}%'".format(do_type)
 
@@ -1234,7 +1234,7 @@ def top_history():
     order_sql = ""
     time_sql = ""
     if acc_name:
-        name_sql = " AND user_info.name ='" + acc_name + "'"
+        name_sql = " AND user_info.name  LIKE '%" + acc_name + "%'"
     if order_num:
         order_sql = " AND top_up.pay_num = '" + order_num + "'"
     if time_range:
