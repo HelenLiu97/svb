@@ -182,7 +182,7 @@ def user_top():
     if request.method == 'GET':
         ex_change = SqlData.search_admin_field('ex_change')
         ex_range = SqlData.search_admin_field('ex_range')
-        hand = SqlData.search_admin_field('hand')
+        hand = SqlData.search_user_field('hand', g.user_id)
         dollar_hand = SqlData.search_admin_field('dollar_hand')
         context = dict()
         context['ex_change'] = ex_change
@@ -204,7 +204,7 @@ def user_top():
 
         ex_change = SqlData.search_admin_field('ex_change')
         ex_range = SqlData.search_admin_field('ex_range')
-        hand = SqlData.search_admin_field('hand')
+        hand = SqlData.search_user_field('hand', g.user_id)
         _money_self = float(top_money) * (ex_change + ex_range) * (hand + 1)
         money_self = round(_money_self, 10)
         sum_money = round(float(sum_money), 10)

@@ -35,6 +35,15 @@
                        class="layui-input" id="create_price">
             </div>
         </div>
+
+        <div class="layui-form-item">
+            <label class="layui-form-label">手续费: </label>
+            <div class="layui-input-block">
+                <input type="number" name="hand" placeholder="账户充值手续费(小数)" autocomplete="off"
+                       class="layui-input" id="hand">
+            </div>
+        </div>
+
         <div class="layui-form-item">
             <label class="layui-form-label">最低充值</label>
             <div class="layui-input-block">
@@ -102,8 +111,8 @@
                         parent.layer.msg(data.msg, {
 						icon : 6,
 					});
-					    parent.layer.closeAll('iframe'); //关闭弹框
-                        window.parent.location.reload()
+					    {#parent.layer.closeAll('iframe'); //关闭弹框#}
+                        {#window.parent.location.reload()#}
                     }else if(data.code == 502){
                         parent.layer.msg('出现网络故障', {
 						icon : 5

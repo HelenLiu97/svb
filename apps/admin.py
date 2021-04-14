@@ -1106,6 +1106,7 @@ def add_account():
             min_top = float(data.get('min_top'))
             max_top = float(30000)
             middle_name = data.get('middle_name')
+            hand = float(data.get('hand'))
             ed_name = SqlData.search_user_field_name('account', name)
             if ed_name:
                 results['code'] = RET.SERVERERROR
@@ -1123,7 +1124,7 @@ def add_account():
                 middle_id = SqlData.search_middle_name('id', middle_name)
             else:
                 middle_id = 'NULL'
-            SqlData.insert_account(account, password, phone_num, name, create_price, min_top, max_top, middle_id)
+            SqlData.insert_account(account, password, phone_num, name, create_price, min_top, max_top, middle_id, hand)
             # 创建用户后插入充值数据
             pay_num = sum_code()
             t = xianzai_time()
@@ -1339,6 +1340,7 @@ def edit_parameter():
             password = data.get('password')
             account_name = data.get('account_name')
             account = data.get('account')
+            hand = data.get('hand')
             if create_price:
                 SqlData.update_account_field('create_price', create_price, name)
             if min_top:
@@ -1364,6 +1366,8 @@ def edit_parameter():
                     results['msg'] = '该用户名已存在!'
                     return jsonify(results)
                 SqlData.update_account_field('name', account_name, name)
+            if hand:
+                SqlData.update_account_field('hand', hand, name)
             return jsonify(results)
         except Exception as e:
             logging.error(e)

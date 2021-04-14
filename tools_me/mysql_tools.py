@@ -666,6 +666,7 @@ class SqlData(object):
                 account_dict['sum_balance'] = i[9]
                 account_dict['last_login_time'] = str(i[10])
                 account_dict['free_number'] = str(i[12])
+                account_dict['hand'] = i[13]
                 account_dict['create_card'] = self.search_value_count('card_info', 'WHERE user_id={}'.format(i[0]))
                 account_dict['card_true'] = self.search_value_count('card_info',
                                                                     "WHERE user_id={} AND status='T'".format(i[0]))
@@ -777,10 +778,10 @@ class SqlData(object):
             conn.rollback()
         self.close_connect(conn, cursor)
 
-    def insert_account(self, account, password, phone_num, name, create_price, min_top, max_top, middle_id):
-        sql = "INSERT INTO user_info(account, password, phone_num, name, create_price, min_top, max_top, middle_id) " \
-              "VALUES ('{}','{}','{}','{}',{},{},{},{})".format(account, password, phone_num, name, create_price,
-                                                             min_top, max_top, middle_id)
+    def insert_account(self, account, password, phone_num, name, create_price, min_top, max_top, middle_id, hand):
+        sql = "INSERT INTO user_info(account, password, phone_num, name, create_price, min_top, max_top, middle_id, hand) " \
+              "VALUES ('{}','{}','{}','{}',{},{},{},{},{})".format(account, password, phone_num, name, create_price,
+                                                             min_top, max_top, middle_id, hand)
         conn, cursor = self.connect()
         try:
             cursor.execute(sql)
