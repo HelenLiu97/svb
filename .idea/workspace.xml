@@ -1,0 +1,1209 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="AutoImportSettings">
+    <option name="autoReloadType" value="SELECTIVE" />
+  </component>
+  <component name="ChangeListManager">
+    <list default="true" id="6d8d786e-ad10-4630-ad92-b9cc656a22cd" name="Default Changelist" comment="">
+      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/svb.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/svb.iml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/vcs.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/vcs.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/apps/admin.py" beforeDir="false" afterPath="$PROJECT_DIR$/apps/admin.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/apps/user.py" beforeDir="false" afterPath="$PROJECT_DIR$/apps/user.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/apps/verify_pay.py" beforeDir="false" afterPath="$PROJECT_DIR$/apps/verify_pay.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/manager.py" beforeDir="false" afterPath="$PROJECT_DIR$/manager.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/templates/admin/recharge_account.html" beforeDir="false" afterPath="$PROJECT_DIR$/templates/admin/recharge_account.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/templates/user/card_table.html" beforeDir="false" afterPath="$PROJECT_DIR$/templates/user/card_table.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/templates/user/create_card.html" beforeDir="false" afterPath="$PROJECT_DIR$/templates/user/create_card.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/templates/user/main.html" beforeDir="false" afterPath="$PROJECT_DIR$/templates/user/main.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/templates/verify_pay/brex.html" beforeDir="false" afterPath="$PROJECT_DIR$/templates/verify_pay/brex.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/templates/verify_pay/index.html" beforeDir="false" afterPath="$PROJECT_DIR$/templates/verify_pay/index.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/time_task/card_trans.py" beforeDir="false" afterPath="$PROJECT_DIR$/time_task/card_trans.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tools_me/delete_card.py" beforeDir="false" afterPath="$PROJECT_DIR$/time_task/delete_card.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tools_me/error.log" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/tools_me/img_code.py" beforeDir="false" afterPath="$PROJECT_DIR$/tools_me/img_code.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tools_me/mysql_tools.py" beforeDir="false" afterPath="$PROJECT_DIR$/tools_me/mysql_tools.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tools_me/other_tools.py" beforeDir="false" afterPath="$PROJECT_DIR$/tools_me/other_tools.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tools_me/redis_tools.py" beforeDir="false" afterPath="$PROJECT_DIR$/tools_me/redis_tools.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tools_me/svb.py" beforeDir="false" afterPath="$PROJECT_DIR$/tools_me/svb.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tools_me/yang.xlsx" beforeDir="false" />
+    </list>
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="CoverageDataManager">
+    <SUITE FILE_PATH="coverage/svb$check_refund.coverage" NAME="check_refund Coverage Results" MODIFIED="1629637686605" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/tools_me" />
+    <SUITE FILE_PATH="coverage/svb$middle_money.coverage" NAME="middle_money Coverage Results" MODIFIED="1585126318617" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/time_task" />
+    <SUITE FILE_PATH="coverage/svb$send_sms.coverage" NAME="send_sms Coverage Results" MODIFIED="1584786914818" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/tools_me/send_sms" />
+    <SUITE FILE_PATH="coverage/svb$t.coverage" NAME="t Coverage Results" MODIFIED="1610618722296" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/tools_me" />
+    <SUITE FILE_PATH="coverage/svb$card_trans__1_.coverage" NAME="card_trans (1) Coverage Results" MODIFIED="1584614450991" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/tools_me" />
+    <SUITE FILE_PATH="coverage/svb$write_excel.coverage" NAME="write_excel Coverage Results" MODIFIED="1592292655622" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/tools_me" />
+    <SUITE FILE_PATH="coverage/svb$other_tools.coverage" NAME="other_tools Coverage Results" MODIFIED="1592297831397" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/tools_me" />
+    <SUITE FILE_PATH="coverage/svb$spider_change.coverage" NAME="spider_change Coverage Results" MODIFIED="1581574102241" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/tools_me" />
+    <SUITE FILE_PATH="coverage/svb$excel.coverage" NAME="excel Coverage Results" MODIFIED="1592207544110" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/tools_me" />
+    <SUITE FILE_PATH="coverage/svb$test__1_.coverage" NAME="test (1) Coverage Results" MODIFIED="1606273511073" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/time_task" />
+    <SUITE FILE_PATH="coverage/svb$card_trans.coverage" NAME="card_trans Coverage Results" MODIFIED="1582279933938" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/time_task" />
+    <SUITE FILE_PATH="coverage/svb$4754key.coverage" NAME="4754key Coverage Results" MODIFIED="1580787944422" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/tools_me" />
+    <SUITE FILE_PATH="coverage/svb$up_pic.coverage" NAME="up_pic Coverage Results" MODIFIED="1587621189068" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/tools_me" />
+    <SUITE FILE_PATH="coverage/svb$svb_key.coverage" NAME="svb_key Coverage Results" MODIFIED="1578034542492" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/tools_me" />
+    <SUITE FILE_PATH="coverage/svb$delete_card.coverage" NAME="delete_card Coverage Results" MODIFIED="1592037790687" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/tools_me" />
+    <SUITE FILE_PATH="coverage/svb$new_card.coverage" NAME="new_card Coverage Results" MODIFIED="1605346144872" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/time_task" />
+    <SUITE FILE_PATH="coverage/svb$manager.coverage" NAME="manager Coverage Results" MODIFIED="1618391327779" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+    <SUITE FILE_PATH="coverage/svb$mysql_tools.coverage" NAME="mysql_tools Coverage Results" MODIFIED="1587634095290" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/tools_me" />
+    <SUITE FILE_PATH="coverage/svb$svb.coverage" NAME="svb Coverage Results" MODIFIED="1617956303512" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/tools_me" />
+    <SUITE FILE_PATH="coverage/svb$send_email.coverage" NAME="send_email Coverage Results" MODIFIED="1592186820146" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/tools_me" />
+    <SUITE FILE_PATH="coverage/svb$test.coverage" NAME="test Coverage Results" MODIFIED="1605669115149" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/tools_me" />
+    <SUITE FILE_PATH="coverage/svb$Flask__app_py_.coverage" NAME="Flask (app.py) Coverage Results" MODIFIED="1577675599527" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+  </component>
+  <component name="FileTemplateManagerImpl">
+    <option name="RECENT_TEMPLATES">
+      <list>
+        <option value="Flask Main" />
+        <option value="JavaScript File" />
+        <option value="HTML File" />
+        <option value="Python Script" />
+      </list>
+    </option>
+  </component>
+  <component name="FindInProjectRecents">
+    <findStrings>
+      <find>top</find>
+      <find>top_msg_table</find>
+      <find>verify</find>
+      <find>top_msg</find>
+      <find>del_email</find>
+      <find>edit_email</find>
+      <find>verify_account</find>
+      <find>/card_de</find>
+      <find>/account_t</find>
+      <find>balance</find>
+      <find>refund</find>
+      <find>settle_tr</find>
+      <find>inser</find>
+      <find>delete</find>
+      <find>/user_top</find>
+      <find>dic_key</find>
+      <find>/pay_top</find>
+      <find>user_top_dollar</find>
+      <find>user_info</find>
+      <find>add_account</find>
+      <find>edit_parameter</find>
+      <find>edit_</find>
+      <find>/account_info</find>
+      <find>pay_to</find>
+      <find>/add_acc</find>
+      <find>insert_acc</find>
+      <find>hand</find>
+      <find>SqlData</find>
+      <find>remain_trans</find>
+      <find>search_card_top</find>
+    </findStrings>
+    <replaceStrings>
+      <replace>layui.form()</replace>
+      <replace>layui.elemen()</replace>
+      <replace>/static/page</replace>
+      <replace>AdminPage</replace>
+      <replace />
+      <replace>SqlData</replace>
+      <replace>vice_user</replace>
+      <replace>card_number</replace>
+      <replace>svb_vice_auth</replace>
+      <replace>i</replace>
+    </replaceStrings>
+    <dirStrings>
+      <dir>H:\svb</dir>
+    </dirStrings>
+  </component>
+  <component name="FlaskConsoleOptions" custom-start-script="import sys&#10;sys.path.extend([WORKING_DIR_AND_PYTHON_PATHS])&#10;from flask.cli import ScriptInfo&#10;locals().update(ScriptInfo(create_app=None).load_app().make_shell_context())&#10;print(&quot;Python %s on %s\nApp: %s [%s]\nInstance: %s&quot; % (sys.version, sys.platform, app.import_name, app.env, app.instance_path))">
+    <envs>
+      <env key="FLASK_APP" value="app" />
+    </envs>
+    <option name="myCustomStartScript" value="import sys&#10;sys.path.extend([WORKING_DIR_AND_PYTHON_PATHS])&#10;from flask.cli import ScriptInfo&#10;locals().update(ScriptInfo(create_app=None).load_app().make_shell_context())&#10;print(&quot;Python %s on %s\nApp: %s [%s]\nInstance: %s&quot; % (sys.version, sys.platform, app.import_name, app.env, app.instance_path))" />
+    <option name="myEnvs">
+      <map>
+        <entry key="FLASK_APP" value="app" />
+      </map>
+    </option>
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+  </component>
+  <component name="GitSEFilterConfiguration">
+    <file-type-list>
+      <filtered-out-file-type name="LOCAL_BRANCH" />
+      <filtered-out-file-type name="REMOTE_BRANCH" />
+      <filtered-out-file-type name="TAG" />
+      <filtered-out-file-type name="COMMIT_BY_MESSAGE" />
+    </file-type-list>
+  </component>
+  <component name="IdeDocumentHistory">
+    <option name="CHANGED_PATHS">
+      <list>
+        <option value="$PROJECT_DIR$/templates/user/card_table.html" />
+        <option value="$PROJECT_DIR$/tools_me/delete_card.py" />
+        <option value="$PROJECT_DIR$/tools_me/send_email.py" />
+        <option value="$PROJECT_DIR$/tools_me/write_excel.py" />
+        <option value="$PROJECT_DIR$/templates/user/card_trans.html" />
+        <option value="$PROJECT_DIR$/templates/user/card_trans_settle.html" />
+        <option value="$PROJECT_DIR$/templates/admin/cus_top_table.html" />
+        <option value="$PROJECT_DIR$/templates/admin/cus_trans.html" />
+        <option value="$PROJECT_DIR$/static/js/cache.js" />
+        <option value="$PROJECT_DIR$/templates/admin/cus_refund.html" />
+        <option value="$PROJECT_DIR$/templates/admin/card_using.html" />
+        <option value="$PROJECT_DIR$/templates/admin/card_trans.html" />
+        <option value="$PROJECT_DIR$/templates/admin/card_trans_settle.html" />
+        <option value="$PROJECT_DIR$/templates/admin/card_decline.html" />
+        <option value="$PROJECT_DIR$/templates/user/login.html" />
+        <option value="$PROJECT_DIR$/templates/admin/login.html" />
+        <option value="$PROJECT_DIR$/tools_me/ZFB01.txt" />
+        <option value="$PROJECT_DIR$/templates/admin/card_list.html" />
+        <option value="$PROJECT_DIR$/tools_me/sm_photo.py" />
+        <option value="$PROJECT_DIR$/static/json/navs.json" />
+        <option value="$PROJECT_DIR$/templates/admin/card_free.html" />
+        <option value="$PROJECT_DIR$/templates/admin/qr_code.html" />
+        <option value="$PROJECT_DIR$/time_task/new_card.py" />
+        <option value="$PROJECT_DIR$/tools_me/other_tools.py" />
+        <option value="$PROJECT_DIR$/templates/user/free_card.html" />
+        <option value="$PROJECT_DIR$/tools_me/test.py" />
+        <option value="$PROJECT_DIR$/templates/pay/index.html" />
+        <option value="$PROJECT_DIR$/templates/pay/pay_pic.html" />
+        <option value="$PROJECT_DIR$/templates/pay/brex.html" />
+        <option value="$PROJECT_DIR$/templates/pay/brex_pay_pic.html" />
+        <option value="$PROJECT_DIR$/templates/verify_pay/index.html" />
+        <option value="$PROJECT_DIR$/templates/admin/top_msg.html" />
+        <option value="$PROJECT_DIR$/templates/verify_pay/brex.html" />
+        <option value="$PROJECT_DIR$/apps/verify_pay.py" />
+        <option value="$PROJECT_DIR$/apps/pay.py" />
+        <option value="$PROJECT_DIR$/templates/user/create_card.html" />
+        <option value="$PROJECT_DIR$/time_task/test.py" />
+        <option value="$PROJECT_DIR$/tools_me/测试.txt" />
+        <option value="$PROJECT_DIR$/tools_me/ZFB01_PENDING.txt" />
+        <option value="$PROJECT_DIR$/tools_me/t.py" />
+        <option value="$PROJECT_DIR$/tools_me/send_sms/check_card.py" />
+        <option value="$PROJECT_DIR$/tools_me/svb.py" />
+        <option value="$PROJECT_DIR$/static/json/usernavs.json" />
+        <option value="$PROJECT_DIR$/templates/user/pay_top.html" />
+        <option value="$PROJECT_DIR$/templates/admin/add_account.html" />
+        <option value="$PROJECT_DIR$/apps/admin.py" />
+        <option value="$PROJECT_DIR$/templates/admin/cus_list.html" />
+        <option value="$PROJECT_DIR$/templates/admin/edit_parameter.html" />
+        <option value="$PROJECT_DIR$/tools_me/mysql_tools.py" />
+        <option value="$PROJECT_DIR$/apps/user.py" />
+        <option value="$PROJECT_DIR$/tools_me/check_refund.py" />
+      </list>
+    </option>
+  </component>
+  <component name="MarkdownSettingsMigration">
+    <option name="stateVersion" value="1" />
+  </component>
+  <component name="ProjectFrameBounds" extendedState="6">
+    <option name="x" value="18" />
+    <option name="y" value="10" />
+    <option name="width" value="1936" />
+    <option name="height" value="1066" />
+  </component>
+  <component name="ProjectId" id="1xwIKYa0jl1Gbd1PTgpzE9LauH5" />
+  <component name="ProjectLevelVcsManager" settingsEditedManually="true" />
+  <component name="ProjectView">
+    <navigator proportions="" version="1">
+      <foldersAlwaysOnTop value="true" />
+    </navigator>
+    <panes>
+      <pane id="Scope" />
+      <pane id="ProjectPane">
+        <subPane>
+          <expand>
+            <path>
+              <item name="svb" type="b2602c69:ProjectViewProjectNode" />
+              <item name="svb" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="svb" type="b2602c69:ProjectViewProjectNode" />
+              <item name="svb" type="462c0819:PsiDirectoryNode" />
+              <item name="apps" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="svb" type="b2602c69:ProjectViewProjectNode" />
+              <item name="svb" type="462c0819:PsiDirectoryNode" />
+              <item name="templates" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="svb" type="b2602c69:ProjectViewProjectNode" />
+              <item name="svb" type="462c0819:PsiDirectoryNode" />
+              <item name="templates" type="462c0819:PsiDirectoryNode" />
+              <item name="user" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="svb" type="b2602c69:ProjectViewProjectNode" />
+              <item name="svb" type="462c0819:PsiDirectoryNode" />
+              <item name="tools_me" type="462c0819:PsiDirectoryNode" />
+            </path>
+          </expand>
+          <select />
+        </subPane>
+      </pane>
+    </panes>
+  </component>
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showLibraryContents" value="true" />
+  </component>
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;RunOnceActivity.OpenProjectViewOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;WebServerToolWindowFactoryState&quot;: &quot;false&quot;,
+    &quot;last_opened_file_path&quot;: &quot;E:/svb&quot;,
+    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
+    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
+    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
+    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
+    &quot;settings.editor.selected.configurable&quot;: &quot;com.jetbrains.python.configuration.PyActiveSdkModuleConfigurable&quot;,
+    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
+  },
+  &quot;keyToStringList&quot;: {
+    &quot;com.intellij.ide.scratch.ScratchImplUtil$2/新建临时文件&quot;: [
+      &quot;Ini&quot;
+    ]
+  }
+}</component>
+  <component name="RecentsManager">
+    <key name="CopyFile.RECENT_KEYS">
+      <recent name="H:\svb\templates\user" />
+      <recent name="H:\svb\static\css" />
+      <recent name="H:\svb\time_task" />
+      <recent name="H:\svb\templates\admin" />
+      <recent name="H:\svb\static\images" />
+    </key>
+    <key name="MoveFile.RECENT_KEYS">
+      <recent name="E:\svb\time_task" />
+      <recent name="H:\svb\templates\admin" />
+      <recent name="H:\svb\static\images" />
+      <recent name="H:\svb\static\assets\logo" />
+      <recent name="H:\svb\tools_me" />
+    </key>
+  </component>
+  <component name="RunManager" selected="Python.delete_card">
+    <configuration name="card_trans" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
+      <module name="svb" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/time_task" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/time_task/card_trans.py" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="false" />
+      <option name="EMULATE_TERMINAL" value="false" />
+      <option name="MODULE_MODE" value="false" />
+      <option name="REDIRECT_INPUT" value="false" />
+      <option name="INPUT_FILE" value="" />
+      <method v="2" />
+    </configuration>
+    <configuration name="delete_card" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
+      <module name="svb" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/tools_me" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
+      <option name="SCRIPT_NAME" value="E:\svb\time_task\delete_card.py" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="false" />
+      <option name="EMULATE_TERMINAL" value="false" />
+      <option name="MODULE_MODE" value="false" />
+      <option name="REDIRECT_INPUT" value="false" />
+      <option name="INPUT_FILE" value="" />
+      <method v="2" />
+    </configuration>
+    <configuration name="manager" type="PythonConfigurationType" factoryName="Python" temporary="true">
+      <module name="svb" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/manager.py" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="false" />
+      <option name="EMULATE_TERMINAL" value="false" />
+      <option name="MODULE_MODE" value="false" />
+      <option name="REDIRECT_INPUT" value="false" />
+      <option name="INPUT_FILE" value="" />
+      <method v="2" />
+    </configuration>
+    <configuration name="new_card" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
+      <module name="svb" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/time_task" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/time_task/new_card.py" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="false" />
+      <option name="EMULATE_TERMINAL" value="false" />
+      <option name="MODULE_MODE" value="false" />
+      <option name="REDIRECT_INPUT" value="false" />
+      <option name="INPUT_FILE" value="" />
+      <method v="2" />
+    </configuration>
+    <configuration name="svb" type="PythonConfigurationType" factoryName="Python" temporary="true">
+      <module name="svb" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/tools_me" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/tools_me/svb.py" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="false" />
+      <option name="EMULATE_TERMINAL" value="false" />
+      <option name="MODULE_MODE" value="false" />
+      <option name="REDIRECT_INPUT" value="false" />
+      <option name="INPUT_FILE" value="" />
+      <method v="2" />
+    </configuration>
+    <configuration name="svb" type="Python.FlaskServer">
+      <module name="svb" />
+      <option name="target" value="$PROJECT_DIR$/app.py" />
+      <option name="targetType" value="PATH" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
+      <option name="IS_MODULE_SDK" value="false" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
+      <option name="launchJavascriptDebuger" value="false" />
+      <method v="2" />
+    </configuration>
+    <recent_temporary>
+      <list>
+        <item itemvalue="Python.delete_card" />
+        <item itemvalue="Python.svb" />
+        <item itemvalue="Python.card_trans" />
+        <item itemvalue="Python.new_card" />
+        <item itemvalue="Python.manager" />
+      </list>
+    </recent_temporary>
+  </component>
+  <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
+  <component name="SvnConfiguration">
+    <configuration />
+  </component>
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="6d8d786e-ad10-4630-ad92-b9cc656a22cd" name="Default Changelist" comment="" />
+      <created>1577089495934</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1577089495934</updated>
+      <workItem from="1577089497667" duration="7061000" />
+      <workItem from="1577501344612" duration="30686000" />
+      <workItem from="1577545325376" duration="1017000" />
+      <workItem from="1577669297243" duration="95749000" />
+      <workItem from="1578378233893" duration="1024000" />
+      <workItem from="1578554340480" duration="480000" />
+      <workItem from="1578904831094" duration="655000" />
+      <workItem from="1578906715290" duration="1013000" />
+      <workItem from="1579139386481" duration="24956000" />
+      <workItem from="1580442504416" duration="605000" />
+      <workItem from="1580783151290" duration="93130000" />
+      <workItem from="1581405902091" duration="6687000" />
+      <workItem from="1581575595386" duration="934000" />
+      <workItem from="1582082146848" duration="110332000" />
+      <workItem from="1583225285020" duration="5039000" />
+      <workItem from="1583310619284" duration="865000" />
+      <workItem from="1583312855799" duration="26682000" />
+      <workItem from="1583987597727" duration="67623000" />
+      <workItem from="1584684451049" duration="22090000" />
+      <workItem from="1584785918085" duration="5149000" />
+      <workItem from="1585033520408" duration="28202000" />
+      <workItem from="1585365261594" duration="283000" />
+      <workItem from="1585532958718" duration="12957000" />
+      <workItem from="1586590383465" duration="2612000" />
+      <workItem from="1586830797906" duration="2217000" />
+      <workItem from="1586943260085" duration="1235000" />
+      <workItem from="1587006634619" duration="3219000" />
+      <workItem from="1587093762745" duration="1519000" />
+      <workItem from="1587194704969" duration="24984000" />
+      <workItem from="1587713302758" duration="1000" />
+      <workItem from="1587713350637" duration="594000" />
+      <workItem from="1587954034143" duration="1958000" />
+      <workItem from="1588818070617" duration="1955000" />
+      <workItem from="1588920539453" duration="10716000" />
+      <workItem from="1588998621618" duration="3378000" />
+      <workItem from="1589172569496" duration="798000" />
+      <workItem from="1589266394553" duration="2054000" />
+      <workItem from="1589351689095" duration="1120000" />
+      <workItem from="1589619534217" duration="1258000" />
+      <workItem from="1589796173753" duration="1476000" />
+      <workItem from="1590457143133" duration="417000" />
+      <workItem from="1590478679051" duration="666000" />
+      <workItem from="1590648003469" duration="10756000" />
+      <workItem from="1590723570285" duration="13000" />
+      <workItem from="1590741414197" duration="749000" />
+      <workItem from="1590827093878" duration="1329000" />
+      <workItem from="1590995782985" duration="3168000" />
+      <workItem from="1591079323315" duration="2155000" />
+      <workItem from="1591092828945" duration="2014000" />
+      <workItem from="1591151709658" duration="13000" />
+      <workItem from="1591261299539" duration="2806000" />
+      <workItem from="1591328090405" duration="1687000" />
+      <workItem from="1591597157847" duration="4317000" />
+      <workItem from="1591672471011" duration="47000" />
+      <workItem from="1591672566709" duration="14000" />
+      <workItem from="1591676352558" duration="14012000" />
+      <workItem from="1591947726376" duration="16805000" />
+      <workItem from="1592043242426" duration="2487000" />
+      <workItem from="1592203289289" duration="1290000" />
+      <workItem from="1592206019884" duration="2801000" />
+      <workItem from="1592292096785" duration="11742000" />
+      <workItem from="1592449428998" duration="615000" />
+      <workItem from="1593586151558" duration="1269000" />
+      <workItem from="1593999504723" duration="814000" />
+      <workItem from="1594019031232" duration="19090000" />
+      <workItem from="1594710629043" duration="6399000" />
+      <workItem from="1595836016826" duration="5780000" />
+      <workItem from="1595917326181" duration="5336000" />
+      <workItem from="1596089387997" duration="14000" />
+      <workItem from="1596420533362" duration="721000" />
+      <workItem from="1597132238680" duration="613000" />
+      <workItem from="1597220103876" duration="8002000" />
+      <workItem from="1597829853349" duration="2066000" />
+      <workItem from="1597974722730" duration="2357000" />
+      <workItem from="1598426787761" duration="3168000" />
+      <workItem from="1598596301776" duration="17000" />
+      <workItem from="1599442503633" duration="6529000" />
+      <workItem from="1600502862580" duration="1461000" />
+      <workItem from="1601346140455" duration="2075000" />
+      <workItem from="1601351751610" duration="1543000" />
+      <workItem from="1601362635619" duration="411000" />
+      <workItem from="1601363483621" duration="678000" />
+      <workItem from="1602234394823" duration="64000" />
+      <workItem from="1602466614428" duration="20000" />
+      <workItem from="1602467141460" duration="2515000" />
+      <workItem from="1602578553405" duration="616000" />
+      <workItem from="1602655678228" duration="21000" />
+      <workItem from="1603263984680" duration="5183000" />
+      <workItem from="1603360129387" duration="174000" />
+      <workItem from="1603420048059" duration="18000" />
+      <workItem from="1604556721120" duration="2035000" />
+      <workItem from="1604991311530" duration="1209000" />
+      <workItem from="1605162170204" duration="1087000" />
+      <workItem from="1605253442267" duration="17000" />
+      <workItem from="1605259088081" duration="1168000" />
+      <workItem from="1605343021482" duration="102000" />
+      <workItem from="1605343681197" duration="5991000" />
+      <workItem from="1605508209670" duration="234000" />
+      <workItem from="1605584231630" duration="3066000" />
+      <workItem from="1605602241876" duration="2517000" />
+      <workItem from="1605667672669" duration="18052000" />
+      <workItem from="1605767628755" duration="1314000" />
+      <workItem from="1606096658695" duration="5867000" />
+      <workItem from="1606189750001" duration="3193000" />
+      <workItem from="1606290172956" duration="1671000" />
+      <workItem from="1606883565940" duration="1325000" />
+      <workItem from="1607323215840" duration="731000" />
+      <workItem from="1607325295635" duration="698000" />
+      <workItem from="1607330018931" duration="40000" />
+      <workItem from="1608196060606" duration="704000" />
+      <workItem from="1608256256162" duration="2827000" />
+      <workItem from="1608519455899" duration="19838000" />
+      <workItem from="1608619433472" duration="1568000" />
+      <workItem from="1609814606579" duration="3665000" />
+      <workItem from="1609928029842" duration="808000" />
+      <workItem from="1610609464804" duration="10253000" />
+      <workItem from="1611377075205" duration="629000" />
+      <workItem from="1614303157555" duration="2787000" />
+      <workItem from="1614743468107" duration="3294000" />
+      <workItem from="1615882400006" duration="1386000" />
+      <workItem from="1615962455866" duration="2147000" />
+      <workItem from="1616123348275" duration="8000" />
+      <workItem from="1616377217395" duration="2342000" />
+      <workItem from="1617871736632" duration="2018000" />
+      <workItem from="1617954543038" duration="17000" />
+      <workItem from="1617956223801" duration="3988000" />
+      <workItem from="1618389714988" duration="2922000" />
+      <workItem from="1629383328327" duration="215000" />
+      <workItem from="1629627089473" duration="5706000" />
+      <workItem from="1630341725018" duration="613000" />
+      <workItem from="1631259127711" duration="353000" />
+      <workItem from="1631259679176" duration="243000" />
+      <workItem from="1631259967744" duration="405000" />
+      <workItem from="1631260564725" duration="7000" />
+      <workItem from="1631264071651" duration="2764000" />
+      <workItem from="1632974091983" duration="38000" />
+      <workItem from="1634954046820" duration="56000" />
+      <workItem from="1634954134058" duration="33000" />
+      <workItem from="1635532618890" duration="1437000" />
+      <workItem from="1635559676305" duration="1125000" />
+      <workItem from="1654496553826" duration="1680000" />
+      <workItem from="1654652297358" duration="14000" />
+      <workItem from="1656922547439" duration="1694000" />
+      <workItem from="1657076929488" duration="69000" />
+      <workItem from="1657114033633" duration="4215000" />
+      <workItem from="1657157053336" duration="37000" />
+      <workItem from="1657167860630" duration="3783000" />
+      <workItem from="1657241760956" duration="537000" />
+      <workItem from="1657242467599" duration="381000" />
+      <workItem from="1657242871615" duration="24000" />
+      <workItem from="1657286094376" duration="1638000" />
+      <workItem from="1657412285964" duration="22000" />
+      <workItem from="1687852431392" duration="3668000" />
+      <workItem from="1687857302683" duration="3390000" />
+      <workItem from="1687933621737" duration="21000" />
+      <workItem from="1688452121479" duration="6073000" />
+      <workItem from="1688519108162" duration="3790000" />
+      <workItem from="1688780676203" duration="5963000" />
+      <workItem from="1688788056650" duration="13752000" />
+    </task>
+    <task id="LOCAL-00001" summary="首次推送svb">
+      <created>1582278040297</created>
+      <option name="number" value="00001" />
+      <option name="presentableId" value="LOCAL-00001" />
+      <option name="project" value="LOCAL" />
+      <updated>1582278040297</updated>
+    </task>
+    <task id="LOCAL-00002" summary="首次推送svb">
+      <created>1582280008961</created>
+      <option name="number" value="00002" />
+      <option name="presentableId" value="LOCAL-00002" />
+      <option name="project" value="LOCAL" />
+      <updated>1582280008962</updated>
+    </task>
+    <task id="LOCAL-00003" summary="首次推送svb">
+      <created>1582770627636</created>
+      <option name="number" value="00003" />
+      <option name="presentableId" value="LOCAL-00003" />
+      <option name="project" value="LOCAL" />
+      <updated>1582770627636</updated>
+    </task>
+    <task id="LOCAL-00004" summary="添加批量充值，细节修改">
+      <created>1582894291255</created>
+      <option name="number" value="00004" />
+      <option name="presentableId" value="LOCAL-00004" />
+      <option name="project" value="LOCAL" />
+      <updated>1582894291255</updated>
+    </task>
+    <task id="LOCAL-00005" summary="添加批量充值，细节修改">
+      <created>1584001460921</created>
+      <option name="number" value="00005" />
+      <option name="presentableId" value="LOCAL-00005" />
+      <option name="project" value="LOCAL" />
+      <updated>1584001460922</updated>
+    </task>
+    <task id="LOCAL-00006" summary="添加批量充值，细节修改">
+      <created>1584002033578</created>
+      <option name="number" value="00006" />
+      <option name="presentableId" value="LOCAL-00006" />
+      <option name="project" value="LOCAL" />
+      <updated>1584002033578</updated>
+    </task>
+    <task id="LOCAL-00007" summary="添加批量充值，细节修改">
+      <created>1584011156213</created>
+      <option name="number" value="00007" />
+      <option name="presentableId" value="LOCAL-00007" />
+      <option name="project" value="LOCAL" />
+      <updated>1584011156213</updated>
+    </task>
+    <task id="LOCAL-00008" summary="添加批量充值，细节修改">
+      <created>1584064905844</created>
+      <option name="number" value="00008" />
+      <option name="presentableId" value="LOCAL-00008" />
+      <option name="project" value="LOCAL" />
+      <updated>1584064905844</updated>
+    </task>
+    <task id="LOCAL-00009" summary="添加批量充值，细节修改">
+      <created>1584425301811</created>
+      <option name="number" value="00009" />
+      <option name="presentableId" value="LOCAL-00009" />
+      <option name="project" value="LOCAL" />
+      <updated>1584425301811</updated>
+    </task>
+    <task id="LOCAL-00010" summary="添加批量充值，细节修改">
+      <created>1584698851674</created>
+      <option name="number" value="00010" />
+      <option name="presentableId" value="LOCAL-00010" />
+      <option name="project" value="LOCAL" />
+      <updated>1584698851674</updated>
+    </task>
+    <task id="LOCAL-00011" summary="添加批量充值，细节修改">
+      <created>1584774187631</created>
+      <option name="number" value="00011" />
+      <option name="presentableId" value="LOCAL-00011" />
+      <option name="project" value="LOCAL" />
+      <updated>1584774187631</updated>
+    </task>
+    <task id="LOCAL-00012" summary="添加批量充值，细节修改">
+      <created>1584787158749</created>
+      <option name="number" value="00012" />
+      <option name="presentableId" value="LOCAL-00012" />
+      <option name="project" value="LOCAL" />
+      <updated>1584787158749</updated>
+    </task>
+    <task id="LOCAL-00013" summary="添加批量充值，细节修改">
+      <created>1585060337290</created>
+      <option name="number" value="00013" />
+      <option name="presentableId" value="LOCAL-00013" />
+      <option name="project" value="LOCAL" />
+      <updated>1585060337290</updated>
+    </task>
+    <task id="LOCAL-00014" summary="添加客户信息双击卡信息">
+      <created>1586314185257</created>
+      <option name="number" value="00014" />
+      <option name="presentableId" value="LOCAL-00014" />
+      <option name="project" value="LOCAL" />
+      <updated>1586314185257</updated>
+    </task>
+    <task id="LOCAL-00015" summary="调整删卡方式，添加定时十分钟后删除">
+      <created>1592041297759</created>
+      <option name="number" value="00015" />
+      <option name="presentableId" value="LOCAL-00015" />
+      <option name="project" value="LOCAL" />
+      <updated>1592041297760</updated>
+    </task>
+    <task id="LOCAL-00016" summary="调整删卡方式，添加定时十分钟后删除">
+      <created>1594716912122</created>
+      <option name="number" value="00016" />
+      <option name="presentableId" value="LOCAL-00016" />
+      <option name="project" value="LOCAL" />
+      <updated>1594716912123</updated>
+    </task>
+    <task id="LOCAL-00017" summary="调整删卡方式，添加定时十分钟后删除">
+      <created>1603264333645</created>
+      <option name="number" value="00017" />
+      <option name="presentableId" value="LOCAL-00017" />
+      <option name="project" value="LOCAL" />
+      <updated>1603264333645</updated>
+    </task>
+    <task id="LOCAL-00018" summary="调整免费卡量设置方式">
+      <created>1603270029582</created>
+      <option name="number" value="00018" />
+      <option name="presentableId" value="LOCAL-00018" />
+      <option name="project" value="LOCAL" />
+      <updated>1603270029582</updated>
+    </task>
+    <task id="LOCAL-00019" summary="调整卡开方式">
+      <created>1605349770675</created>
+      <option name="number" value="00019" />
+      <option name="presentableId" value="LOCAL-00019" />
+      <option name="project" value="LOCAL" />
+      <updated>1605349770675</updated>
+    </task>
+    <task id="LOCAL-00020" summary="新增brex充值和确认">
+      <created>1605693680573</created>
+      <option name="number" value="00020" />
+      <option name="presentableId" value="LOCAL-00020" />
+      <option name="project" value="LOCAL" />
+      <updated>1605693680573</updated>
+    </task>
+    <task id="LOCAL-00021" summary="新增brex充值和确认">
+      <created>1618389736544</created>
+      <option name="number" value="00021" />
+      <option name="presentableId" value="LOCAL-00021" />
+      <option name="project" value="LOCAL" />
+      <updated>1618389736544</updated>
+    </task>
+    <task id="LOCAL-00022" summary="新增brex充值和确认">
+      <created>1618392613304</created>
+      <option name="number" value="00022" />
+      <option name="presentableId" value="LOCAL-00022" />
+      <option name="project" value="LOCAL" />
+      <updated>1618392613304</updated>
+    </task>
+    <option name="localTasksCounter" value="23" />
+    <servers />
+  </component>
+  <component name="TimeTrackingManager">
+    <option name="totallyTimeSpent" value="879582000" />
+  </component>
+  <component name="TodoView">
+    <todo-panel id="selected-file">
+      <is-autoscroll-to-source value="true" />
+    </todo-panel>
+    <todo-panel id="all">
+      <are-packages-shown value="true" />
+      <is-autoscroll-to-source value="true" />
+    </todo-panel>
+  </component>
+  <component name="ToolWindowManager">
+    <frame x="-8" y="-8" width="1936" height="1066" extended-state="6" />
+    <layout>
+      <window_info content_ui="combo" id="Project" order="0" visible="true" weight="0.13059701" />
+      <window_info id="Structure" order="1" side_tool="true" weight="0.25" />
+      <window_info id="Favorites" order="2" side_tool="true" />
+      <window_info anchor="bottom" id="Message" order="0" />
+      <window_info anchor="bottom" id="Find" order="1" weight="0.3290461" />
+      <window_info active="true" anchor="bottom" id="Run" order="2" sideWeight="0.4989339" visible="true" weight="0.34120172" />
+      <window_info anchor="bottom" id="Debug" order="3" weight="0.39914164" />
+      <window_info anchor="bottom" id="Cvs" order="4" weight="0.25" />
+      <window_info anchor="bottom" id="Inspection" order="5" weight="0.4" />
+      <window_info anchor="bottom" id="TODO" order="6" weight="0.32939914" />
+      <window_info anchor="bottom" id="Docker" order="7" show_stripe_button="false" />
+      <window_info anchor="bottom" id="Version Control" order="8" weight="0.32939914" />
+      <window_info anchor="bottom" id="Database Changes" order="9" />
+      <window_info anchor="bottom" id="Event Log" order="10" sideWeight="0.5010661" side_tool="true" weight="0.34227467" />
+      <window_info anchor="bottom" id="Terminal" order="11" weight="0.32939914" />
+      <window_info anchor="bottom" id="Python Console" order="12" />
+      <window_info anchor="right" id="Commander" internal_type="SLIDING" order="0" type="SLIDING" weight="0.4" />
+      <window_info anchor="right" id="Ant Build" order="1" weight="0.25" />
+      <window_info anchor="right" content_ui="combo" id="Hierarchy" order="2" weight="0.25" />
+      <window_info anchor="right" id="SciView" order="3" />
+      <window_info anchor="right" id="Database" order="4" />
+    </layout>
+    <layout-to-restore>
+      <window_info content_ui="combo" id="Project" order="0" visible="true" weight="0.12526652" />
+      <window_info id="Structure" order="1" side_tool="true" weight="0.25" />
+      <window_info id="Favorites" order="2" side_tool="true" />
+      <window_info anchor="bottom" id="Message" order="0" />
+      <window_info anchor="bottom" id="Find" order="1" weight="0.3290461" />
+      <window_info active="true" anchor="bottom" id="Run" order="2" sideWeight="0.4989339" visible="true" weight="0.34120172" />
+      <window_info anchor="bottom" id="Debug" order="3" weight="0.39914164" />
+      <window_info anchor="bottom" id="Cvs" order="4" weight="0.25" />
+      <window_info anchor="bottom" id="Inspection" order="5" weight="0.4" />
+      <window_info anchor="bottom" id="TODO" order="6" weight="0.32939914" />
+      <window_info anchor="bottom" id="Docker" order="7" show_stripe_button="false" />
+      <window_info anchor="bottom" id="Version Control" order="8" weight="0.32939914" />
+      <window_info anchor="bottom" id="Database Changes" order="9" />
+      <window_info anchor="bottom" id="Event Log" order="10" sideWeight="0.5010661" side_tool="true" weight="0.34227467" />
+      <window_info anchor="bottom" id="Terminal" order="11" weight="0.32939914" />
+      <window_info anchor="bottom" id="Python Console" order="12" />
+      <window_info anchor="right" id="Commander" internal_type="SLIDING" order="0" type="SLIDING" weight="0.4" />
+      <window_info anchor="right" id="Ant Build" order="1" weight="0.25" />
+      <window_info anchor="right" content_ui="combo" id="Hierarchy" order="2" weight="0.25" />
+      <window_info anchor="right" id="SciView" order="3" />
+      <window_info anchor="right" id="Database" order="4" />
+    </layout-to-restore>
+  </component>
+  <component name="TypeScriptGeneratedFilesManager">
+    <option name="version" value="3" />
+  </component>
+  <component name="VcsManagerConfiguration">
+    <MESSAGE value="首次推送svb" />
+    <MESSAGE value="添加批量充值，细节修改" />
+    <MESSAGE value="添加客户信息双击卡信息" />
+    <MESSAGE value="调整删卡方式，添加定时十分钟后删除" />
+    <MESSAGE value="调整免费卡量设置方式" />
+    <MESSAGE value="调整卡开方式" />
+    <MESSAGE value="新增brex充值和确认" />
+    <option name="LAST_COMMIT_MESSAGE" value="新增brex充值和确认" />
+  </component>
+  <component name="com.intellij.coverage.CoverageDataManagerImpl">
+    <SUITE FILE_PATH="coverage/svb$mysql_tools.coverage" NAME="mysql_tools 覆盖结果" MODIFIED="1688452143939" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/tools_me" />
+    <SUITE FILE_PATH="coverage/svb$new_card.coverage" NAME="new_card 覆盖结果" MODIFIED="1688806813217" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/time_task" />
+    <SUITE FILE_PATH="coverage/svb$manager.coverage" NAME="manager 覆盖结果" MODIFIED="1688788377451" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+    <SUITE FILE_PATH="coverage/svb$delete_card.coverage" NAME="delete_card 覆盖结果" MODIFIED="1688808427927" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/tools_me" />
+    <SUITE FILE_PATH="coverage/svb$svb.coverage" NAME="svb 覆盖结果" MODIFIED="1688808314002" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/tools_me" />
+    <SUITE FILE_PATH="coverage/svb$card_trans.coverage" NAME="card_trans 覆盖结果" MODIFIED="1688807600454" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/time_task" />
+    <SUITE FILE_PATH="coverage/svb$verify_pay.coverage" NAME="verify_pay 覆盖结果" MODIFIED="1631260641138" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/apps" />
+  </component>
+  <component name="editorHistoryManager">
+    <entry file="file://$PROJECT_DIR$/templates/user/free_card.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="360">
+          <caret line="12" selection-start-line="12" selection-end-line="12" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/tools_me/db_conn_init.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state>
+          <folding>
+            <element signature="e#0#14#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/templates/admin/qr_code.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="4470">
+          <caret line="149" column="24" selection-start-line="149" selection-start-column="24" selection-end-line="149" selection-end-column="24" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/templates/pay/pay_pic.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="240">
+          <caret line="8" column="35" selection-start-line="8" selection-start-column="35" selection-end-line="8" selection-end-column="35" />
+          <folding>
+            <element signature="n#style#0;n#div#3;n#form#0;n#div#2;n#body#0;n#html#0;n#!!top" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/apps/__init__.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="195">
+          <caret line="16" selection-start-line="16" selection-end-line="16" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/templates/admin/top_msg.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="203">
+          <caret line="148" column="37" lean-forward="true" selection-start-line="148" selection-start-column="37" selection-end-line="148" selection-end-column="37" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/tools_me/test.py" />
+    <entry file="file://$PROJECT_DIR$/templates/user/create_card.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="252">
+          <caret line="63" column="28" selection-start-line="63" selection-start-column="28" selection-end-line="63" selection-end-column="28" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/templates/pay/brex.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="12420">
+          <caret line="414" column="24" selection-start-line="414" selection-start-column="24" selection-end-line="414" selection-end-column="24" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/templates/pay/brex_pay_pic.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="420">
+          <caret line="14" column="9" selection-end-line="242" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/templates/pay/index.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="13650">
+          <caret line="455" column="25" selection-start-line="455" selection-start-column="25" selection-end-line="455" selection-end-column="25" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/time_task/new_card.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="4620">
+          <caret line="159" column="57" selection-start-line="159" selection-start-column="57" selection-end-line="159" selection-end-column="57" />
+          <folding>
+            <element signature="e#0#11#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/time_task/middle_money.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="900">
+          <caret line="33" selection-start-line="33" selection-end-line="33" />
+          <folding>
+            <element signature="e#0#11#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/time_task/test.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="120">
+          <caret line="5" column="41" selection-start-line="5" selection-start-column="41" selection-end-line="5" selection-end-column="41" />
+          <folding>
+            <element signature="e#0#11#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/apps/send_sms.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state>
+          <folding>
+            <element signature="e#0#31#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/time_task/card_trans.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state>
+          <folding>
+            <element signature="e#0#15#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/tools_me/error.log">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="390">
+          <caret line="13" selection-start-line="13" selection-end-line="13" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/templates/verify_pay/brex.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="750">
+          <caret line="25" column="65" selection-end-line="582" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/templates/verify_pay/index.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="1830">
+          <caret line="61" selection-start-line="61" selection-end-line="61" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/tools_me/ZFB01settle.txt" />
+    <entry file="file://$PROJECT_DIR$/tools_me/ZFB01.txt" />
+    <entry file="file://$PROJECT_DIR$/tools_me/测试.txt" />
+    <entry file="file://$PROJECT_DIR$/../world_pay/venv/Lib/site-packages/pymysql/__init__.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="2430">
+          <caret line="92" column="30" selection-start-line="92" selection-start-column="29" selection-end-line="92" selection-end-column="39" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/../world_pay/venv/Lib/site-packages/pymysql/connections.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="4200">
+          <caret line="164" column="23" selection-start-line="164" selection-start-column="23" selection-end-line="164" selection-end-column="23" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/../world_pay/venv/Lib/site-packages/pymysql/err.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="3180">
+          <caret line="108" selection-start-line="108" selection-end-line="108" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/tools_me/svb.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="943">
+          <caret line="207" column="31" selection-start-line="207" selection-start-column="31" selection-end-line="207" selection-end-column="31" />
+          <folding>
+            <element signature="e#0#11#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/apps/pay.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="12660">
+          <caret line="433" column="24" selection-start-line="433" selection-start-column="24" selection-end-line="433" selection-end-column="24" />
+          <folding>
+            <element signature="e#0#14#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/tools_me/send_sms/check_card.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="5130">
+          <caret line="177" selection-start-line="177" selection-end-line="177" />
+          <folding>
+            <element signature="e#0#15#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/tools_me/t.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state>
+          <caret column="19" selection-start-column="19" selection-end-column="19" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/tools_me/1.txt">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="3300">
+          <caret line="110" selection-start-line="110" selection-end-line="110" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/tools_me/send_email.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="540">
+          <caret line="22" selection-start-line="22" selection-end-line="22" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/manager.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="180">
+          <caret line="6" selection-start-line="6" selection-end-line="6" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/static/json/usernavs.json">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="1620">
+          <caret line="54" column="20" selection-start-line="54" selection-start-column="20" selection-end-line="56" selection-end-column="44" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/static/css/pay_top.css">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="300">
+          <caret line="10" selection-start-line="10" selection-end-line="10" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/templates/user/pay_top.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="4560">
+          <caret line="152" column="14" selection-start-line="152" selection-start-column="14" selection-end-line="152" selection-end-column="14" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/static/css/x-admin.css">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="90">
+          <caret line="3" column="22" selection-start-line="3" selection-start-column="22" selection-end-line="3" selection-end-column="22" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/templates/user/pay_pic.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="6000">
+          <caret line="200" column="34" lean-forward="true" selection-start-line="200" selection-start-column="34" selection-end-line="200" selection-end-column="34" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/tools_me/other_tools.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="12360">
+          <caret line="425" column="17" lean-forward="true" selection-start-line="425" selection-start-column="17" selection-end-line="425" selection-end-column="17" />
+          <folding>
+            <element signature="e#0#15#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/templates/user/user_top.html">
+      <provider selected="true" editor-type-id="text-editor" />
+    </entry>
+    <entry file="file://$PROJECT_DIR$/apps/verify_pay.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="3180">
+          <caret line="115" column="47" selection-start-line="115" selection-start-column="47" selection-end-line="115" selection-end-column="47" />
+          <folding>
+            <element signature="e#0#11#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/templates/admin/edit_acc.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="-540" />
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/templates/admin/add_account.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="1410">
+          <caret line="47" column="27" selection-start-line="47" selection-start-column="27" selection-end-line="47" selection-end-column="27" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/templates/admin/edit_parameter.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="3030">
+          <caret line="101" selection-start-line="101" selection-end-line="101" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/apps/admin.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="20640">
+          <caret line="708" column="27" selection-start-line="708" selection-start-column="27" selection-end-line="708" selection-end-column="27" />
+          <folding>
+            <element signature="e#0#11#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/templates/admin/cus_list.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="3810">
+          <caret line="127" column="16" selection-start-line="127" selection-start-column="16" selection-end-line="127" selection-end-column="77" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/tools_me/mysql_tools.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="24360">
+          <caret line="813" selection-start-line="813" selection-end-line="813" />
+          <folding>
+            <element signature="e#0#43#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/apps/user.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="5610">
+          <caret line="210" column="35" selection-start-line="210" selection-start-column="35" selection-end-line="210" selection-end-column="35" />
+          <folding>
+            <element signature="e#0#11#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/tools_me/ZFB01_PENDING.txt">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="90">
+          <caret line="3" column="35" selection-start-line="3" selection-start-column="35" selection-end-line="3" selection-end-column="35" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/tools_me/ZFB01_SETTLE.txt">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="270">
+          <caret line="9" selection-start-line="9" selection-end-line="9" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/tools_me/ZFB01settle_trans.txt">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="240">
+          <caret line="8" column="50" selection-start-line="8" selection-start-column="50" selection-end-line="8" selection-end-column="50" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/tools_me/check_refund.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="822">
+          <caret line="236" column="50" selection-start-line="236" selection-start-column="50" selection-end-line="236" selection-end-column="50" />
+          <folding>
+            <element signature="e#0#16#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+  </component>
+</project>

@@ -1,16 +1,16 @@
-from .db_conn_init import get_my_connection
+from tools_me.db_conn_init import get_my_connection
 import logging
 
 logging.basicConfig(level=logging.INFO, format='%(asctime)s :: %(levelname)s :: %(message)s', filename="error.log")
 
 
-class SqlData(object):
+class SqlDataBase(object):
     def __init__(self):
         self.db = get_my_connection()
 
     def __new__(cls, *args, **kwargs):
         if not hasattr(cls, 'inst'):  # 单例
-            cls.inst = super(SqlData, cls).__new__(cls, *args, **kwargs)
+            cls.inst = super(SqlDataBase, cls).__new__(cls, *args, **kwargs)
         return cls.inst
 
     def connect(self):
@@ -86,7 +86,7 @@ class SqlData(object):
 
     # 查询用户首页数据信息
     def search_user_index(self, user_id):
-        sql = "SELECT create_price, min_top, max_top, balance, sum_balance FROM user_info WHERE id = {}".format(
+        sql = "SELECT create_price, min_top, balance, sum_balance FROM user_info WHERE id = {}".format(
             user_id)
         conn, cursor = self.connect()
         cursor.execute(sql)
@@ -95,9 +95,8 @@ class SqlData(object):
         user_info = dict()
         user_info['create_card'] = rows[0][0]
         user_info['min_top'] = rows[0][1]
-        user_info['max_top'] = rows[0][2]
-        user_info['balance'] = rows[0][3]
-        user_info['sum_balance'] = rows[0][4]
+        user_info['balance'] = rows[0][2]
+        user_info['sum_balance'] = rows[0][3]
         return user_info
 
     # 用户基本信息资料
@@ -177,7 +176,7 @@ class SqlData(object):
             return info_list
 
     def search_sum_card_balance(self, user_id):
-        sql = "SELECT SUM(balance) FROM card_info WHERE user_id={} AND status='T'".format(user_id)
+        sql = "SELECT SUM(card_amount) FROM card_info WHERE user_id={} AND card_status='T'".format(user_id)
         conn, cursor = self.connect()
         cursor.execute(sql)
         rows = cursor.fetchone()
@@ -187,7 +186,7 @@ class SqlData(object):
         return rows[0]
 
     def search_sum_card_remain(self):
-        sql = "SELECT SUM(balance) FROM card_info WHERE status='T'"
+        sql = "SELECT SUM(card_amount) FROM card_info WHERE card_status='T'"
         conn, cursor = self.connect()
         cursor.execute(sql)
         rows = cursor.fetchone()
@@ -197,7 +196,7 @@ class SqlData(object):
         return rows[0]
 
     def search_one_card_status(self, crad_no):
-        sql = "SELECT status from card_info WHERE card_number='{}'".format(crad_no)
+        sql = "SELECT card_status from card_info WHERE card_number='{}'".format(crad_no)
         conn, cursor = self.connect()
         cursor.execute(sql)
         rows = cursor.fetchone()
@@ -267,7 +266,7 @@ class SqlData(object):
         return rows[0][0]
 
     def search_card_info(self, user_id, status, sql1, sql2):
-        sql = "SELECT * FROM card_info WHERE user_id={} AND status!='{}' {} {}".format(user_id, status, sql1, sql2)
+        sql = "SELECT * FROM card_info WHERE user_id={} AND card_status!='{}' {} {}".format(user_id, status, sql1, sql2)
         conn, cursor = self.connect()
         cursor.execute(sql)
         rows = cursor.fetchall()
@@ -281,11 +280,11 @@ class SqlData(object):
                 info_dict['id'] = i[0]
                 info_dict['card_number'] = "\t" + i[2]
                 info_dict['expire'] = i[3]
-                info_dict['cvc'] = i[4]
+                info_dict['cvc'] = i[5]
                 info_dict['valid_start_on'] = str(i[6])
                 info_dict['valid_end_on'] = str(i[7])
-                info_dict['label'] = i[8]
-                info_dict['status'] = '正常' if i[9] == 'T' else '注销'
+                info_dict['label'] = i[9]
+                info_dict['status'] = '正常' if i[10] == 'T' else '注销'
                 info_dict['detail'] = "双击查看"
                 info_list.append(info_dict)
             return info_list
@@ -333,7 +332,7 @@ class SqlData(object):
     def insert_card(self, card_number, cvc, expiry, card_id, last4, valid_start_on, valid_end_on, label, status,
                     balance, user_id):
         sql = "INSERT INTO card_info(card_number, cvc, expiry, card_id, last4, valid_start_on, valid_end_on, label, " \
-              "status, balance, user_id) VALUES('{}','{}','{}',{},'{}','{}','{}','{}','{}',{},{})" \
+              "card_status, card_amount, user_id) VALUES('{}','{}','{}',{},'{}','{}','{}','{}','{}',{},{})" \
             .format(card_number, cvc, expiry, card_id, last4, valid_start_on, valid_end_on, label, status, balance,
                     user_id)
         conn, cursor = self.connect()
@@ -376,7 +375,7 @@ class SqlData(object):
             info_dict['trans_type'] = i[2]
             info_dict['do_type'] = i[3]
             info_dict['card_no'] = "\t" + i[4]
-            info_dict['do_money'] = i[5] if i[2] == '收入' else -i[5]
+            info_dict['do_money'] = i[5] if i[2] == '收入' else  '-' + i[5]
             info_dict['before_balance'] = i[6]
             info_dict['balance'] = i[7]
             info_list.append(info_dict)
@@ -662,14 +661,14 @@ class SqlData(object):
                 account_dict['create_price'] = i[5]
                 account_dict['min_top'] = i[6]
                 account_dict['max_top'] = i[7]
-                account_dict['balance'] = i[8]
-                account_dict['sum_balance'] = i[9]
-                account_dict['last_login_time'] = str(i[10])
-                account_dict['free_number'] = str(i[12])
-                account_dict['hand'] = i[13]
+                account_dict['balance'] = i[10]
+                account_dict['sum_balance'] = i[11]
+                account_dict['last_login_time'] = str(i[9])
+                account_dict['free_number'] = str(i[13])
+                account_dict['hand'] = i[14]
                 account_dict['create_card'] = self.search_value_count('card_info', 'WHERE user_id={}'.format(i[0]))
                 account_dict['card_true'] = self.search_value_count('card_info',
-                                                                    "WHERE user_id={} AND status='T'".format(i[0]))
+                                                                    "WHERE user_id={} AND card_status='T'".format(i[0]))
                 account_list.append(account_dict)
             return account_list
 
@@ -706,7 +705,7 @@ class SqlData(object):
         self.close_connect(conn, cursor)
 
     def update_user_free_number(self, number, user_id):
-        sql = "UPDATE user_info set free_number=free_number+{} WHERE id={}".format(number, user_id)
+        sql = "UPDATE user_info set free=free+{} WHERE id={}".format(number, user_id)
         conn, cursor = self.connect()
         try:
             cursor.execute(sql)
@@ -778,10 +777,10 @@ class SqlData(object):
             conn.rollback()
         self.close_connect(conn, cursor)
 
-    def insert_account(self, account, password, phone_num, name, create_price, min_top, max_top, middle_id, hand):
-        sql = "INSERT INTO user_info(account, password, phone_num, name, create_price, min_top, max_top, middle_id, hand) " \
-              "VALUES ('{}','{}','{}','{}',{},{},{},{},{})".format(account, password, phone_num, name, create_price,
-                                                             min_top, max_top, middle_id, hand)
+    def insert_account(self, account, password, phone_num, name, create_price, min_top, middle_id, hand):
+        sql = "INSERT INTO user_info(account, password, phone_num, name, create_price, min_top, middle_id, hand) " \
+              "VALUES ('{}','{}','{}','{}',{},{},{},{})".format(account, password, phone_num, name, create_price,
+                                                             min_top, middle_id, hand)
         conn, cursor = self.connect()
         try:
             cursor.execute(sql)
@@ -988,15 +987,16 @@ class SqlData(object):
             info_dict['cvv'] = i[4]
             info_dict['valid_start_on'] = str(i[6])
             info_dict['valid_end_on'] = str(i[7])
-            info_dict['label'] = i[8]
-            info_dict['status'] = '正常' if i[9] == 'T' else '注销'
+            info_dict['label'] = i[9]
+            info_dict['status'] = '正常' if i[10] == 'T' else '注销'
             info_dict['user_name'] = self.search_user_field('name', i[11])
+            info_dict['user_id'] = i[11]
             info_dict['detail'] = '双击查看'
             info_list.append(info_dict)
         return info_list
 
     def search_card_destroy(self):
-        sql = "SELECT card_number FROM card_info WHERE status='F'"
+        sql = "SELECT card_number FROM card_info WHERE card_status='F'"
         conn, cursor = self.connect()
         cursor.execute(sql)
         rows = cursor.fetchall()
@@ -1023,7 +1023,7 @@ class SqlData(object):
             info_dict['trans_type'] = i[2]
             info_dict['do_type'] = i[3]
             info_dict['card_no'] = "\t" + i[4]
-            info_dict['do_money'] = i[5] if i[2] == '收入' else -i[5]
+            info_dict['do_money'] = i[5]
             info_dict['before_balance'] = i[6]
             info_dict['balance'] = i[7]
             info_dict['cus_name'] = i[9]
@@ -1205,7 +1205,7 @@ class SqlData(object):
 
     # pay
     def insert_pay_log(self, pay_time, pay_money, top_money, ver_code, status, phone, url, account_id):
-        sql = "INSERT INTO pay_log(pay_time, pay_money, top_money, ver_code, status, phone, url, account_id) VALUES ('{}',{},{},'{}','{}','{}', '{}',{})".format(
+        sql = "INSERT INTO pay_log(pay_time, pay_money, top_money, ver_code, status, phone, url, user_id) VALUES ('{}',{},{},'{}','{}','{}', '{}',{})".format(
             pay_time, pay_money, top_money, ver_code, status, phone, url, account_id)
         conn, cursor = self.connect()
 
@@ -1219,8 +1219,7 @@ class SqlData(object):
 
     # pay
     def search_pay_log(self, status):
-        import json
-        sql = "SELECT pay_time,pay_money,top_money,top_up.before_balance,top_up.balance,pay_log.`status`,ver_time,url, user_info.`name`,user_info.id FROM pay_log LEFT JOIN user_info ON pay_log.account_id=user_info.id LEFT JOIN top_up on pay_log.account_id=top_up.user_id AND pay_log.ver_time=top_up.time WHERE pay_log.`status`='{}'".format(
+        sql = "SELECT pay_time,pay_money,top_money,top_up.before_balance,top_up.balance,pay_log.`status`,ver_time,url, user_info.`name`,user_info.id FROM pay_log LEFT JOIN user_info ON pay_log.user_id=user_info.id LEFT JOIN top_up on pay_log.user_id=top_up.user_id AND pay_log.ver_time=top_up.time WHERE pay_log.`status`='{}'".format(
             status)
         conn, cursor = self.connect()
         cursor.execute(sql)
@@ -1247,7 +1246,7 @@ class SqlData(object):
 
     # pay
     def search_pay_code(self, field, cus_name, pay_time):
-        sql = "SELECT {} from pay_log LEFT JOIN user_info ON pay_log.account_id=user_info.id WHERE user_info.`name`='{}' AND pay_time='{}'".format(
+        sql = "SELECT {} from pay_log LEFT JOIN user_info ON pay_log.user_id=user_info.id WHERE user_info.`name`='{}' AND pay_time='{}'".format(
             field, cus_name, pay_time)
         conn, cursor = self.connect()
         cursor.execute(sql)
@@ -1271,7 +1270,7 @@ class SqlData(object):
 
     # pay
     def update_pay_status(self, pay_status, t, cus_name, pay_time):
-        sql = "UPDATE pay_log SET status='{}',ver_time='{}' WHERE account_id={} AND pay_time='{}'".format(pay_status, t,
+        sql = "UPDATE pay_log SET status='{}',ver_time='{}' WHERE user_id={} AND pay_time='{}'".format(pay_status, t,
                                                                                                           cus_name,
                                                                                                           pay_time)
         conn, cursor = self.connect()
@@ -1355,7 +1354,7 @@ class SqlData(object):
 
     # recharge
     def recharge_add_account(self, name, username, password):
-        sql = "INSERT INTO recharge_account(name, username, password) VALUES('{}', '{}', '{}')".format(name, username,
+        sql = "INSERT INTO verify_account(u_name, u_account, u_password) VALUES('{}', '{}', '{}')".format(name, username,
                                                                                                        password)
         conn, cursor = self.connect()
         try:
@@ -1368,7 +1367,7 @@ class SqlData(object):
 
     # recharge
     def recharge_all_account(self):
-        sql = "SELECT * FROM recharge_account"
+        sql = "SELECT * FROM verify_account"
         conn, cursor = self.connect()
         cursor.execute(sql)
         rows = cursor.fetchall()
@@ -1563,7 +1562,7 @@ class SqlData(object):
         return rows[0]
 
     def del_recharge_acc(self, user_id):
-        sql = "DELETE FROM recharge_account WHERE id = {}".format(user_id)
+        sql = "DELETE FROM verify_account WHERE id = {}".format(user_id)
         conn, cursor = self.connect()
         try:
             cursor.execute(sql)
@@ -1586,7 +1585,7 @@ class SqlData(object):
 
     # 更新用户的某一个字段信息(str)
     def update_recharge_account(self, field, value, user_id):
-        sql = "UPDATE recharge_account SET {} = '{}' WHERE id = {}".format(field, value, user_id)
+        sql = "UPDATE verify_account SET {} = '{}' WHERE id = {}".format(field, value, user_id)
         conn, cursor = self.connect()
         try:
             cursor.execute(sql)
@@ -1722,7 +1721,7 @@ class SqlData(object):
             info_dict['transaction_type'] = i[14]
             info_dict['vcn_response'] = i[15]
             info_dict['status'] = i[17]
-            info_dict['label'] = i[18]
+            info_dict['label'] = i[20]
             info_list.append(info_dict)
         return info_list
 
@@ -1844,7 +1843,7 @@ class SqlData(object):
         return rows[0]
 
     def search_card_refund(self, card_no):
-        sql = "SELECT SUM(do_money) FROM user_trans WHERE card_no='{}' AND do_type='退款'".format(card_no)
+        sql = "SELECT IFNULL(SUM(do_money),0) FROM user_trans WHERE card_no='{}' AND do_type='退款'".format(card_no)
         conn, cursor = self.connect()
         cursor.execute(sql)
         rows = cursor.fetchone()
@@ -1926,7 +1925,7 @@ class SqlData(object):
         self.close_connect(conn, cursor)
 
     def update_user_free_card(self, number, user_name):
-        sql = "UPDATE user_info SET free_number=free_number+{} WHERE id = {}".format(number, user_name)
+        sql = "UPDATE user_info SET free=free+{} WHERE id = {}".format(number, user_name)
         conn, cursor = self.connect()
         try:
             cursor.execute(sql)
@@ -1976,8 +1975,8 @@ class SqlData(object):
         self.close_connect(conn, cursor)
         return row[0]
 
-    def search_valid_card(self, number):
-        sql = "SELECT * FROM new_card WHERE status = '' ORDER BY id ASC LIMIT {}".format(number)
+    def search_valid_card(self, number, top_money):
+        sql = "SELECT * FROM new_card WHERE status = '' AND balance={} ORDER BY id ASC LIMIT {}".format(top_money, number)
         conn, cursor = self.connect()
         cursor.execute(sql)
         rows = cursor.fetchall()
@@ -2124,9 +2123,23 @@ class SqlData(object):
             conn.rollback()
         self.close_connect(conn, cursor)
 
+    def update_divvy_hand(self, hand, account):
+        sql = "UPDATE brex_user SET hand={} WHERE account='{}'".format(hand, account)
+        conn, cursor = self.connect()
+        try:
+            cursor.execute(sql)
+            conn.commit()
+        except Exception as e:
+            logging.error("更新divvy用户手续费失败" + str(e))
+            conn.rollback()
+        self.close_connect(conn, cursor)
 
-SqlData = SqlData()
+
+
+SqlData = SqlDataBase()
 
 if __name__ == "__main__":
-    res = SqlData.search_card_id("1")
+    account = 'baocui'
+    password = 'Bento1.0'
+    res = SqlData.search_admin_login(account, password)
     print(res)

@@ -205,7 +205,8 @@ def login_required(view_func):
                 g.vice_id = vice_id
                 # 执行被装饰的视图函数
                 return view_func(*args, **kwargs)
-        except:
+        except Exception as e:
+            print(e)
             return redirect('/user/login/')
 
     return wraaper

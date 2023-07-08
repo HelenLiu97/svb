@@ -3,7 +3,7 @@ import json
 import redis
 
 
-class RedisTool(object):
+class RedisToolBase(object):
     def __init__(self):
 
         pool = redis.ConnectionPool(host='localhost', port=6379, decode_responses=True)
@@ -32,6 +32,6 @@ class RedisTool(object):
         return res
 
 
-RedisTool = RedisTool()
+RedisTool = RedisToolBase()
 # s = RedisTool.string_del('flask_cache_decline_data')
 # print(s)

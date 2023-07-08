@@ -130,13 +130,13 @@ def edit_acc():
         account = data.get('account')
         password = data.get('password')
         if account:
-            res = SqlData.find_in_set('recharge_account', account, 'username')
+            res = SqlData.find_in_set('verify_account', account, 'u_account')
             if res:
                 return jsonify({'code': RET.SERVERERROR, 'msg': '账号已存在！请重新命名。'})
             else:
-                SqlData.update_recharge_account('username', account, int(user_id))
+                SqlData.update_recharge_account('u_account', account, int(user_id))
         if password:
-            SqlData.update_recharge_account('password', password, int(user_id))
+            SqlData.update_recharge_account('u_password', password, int(user_id))
         return jsonify({'code': RET.OK, 'msg': MSG.OK})
 
 
@@ -842,9 +842,9 @@ def card_info_all():
             sql = "WHERE " + field + " LIKE '%" + value + "%'"
         else:
             if card_status == "show":
-                sql = "WHERE status != ''"
+                sql = "WHERE card_status != ''"
             else:
-                sql = "WHERE status = 'T'"
+                sql = "WHERE card_status = 'T'"
         results = dict()
         results['code'] = RET.OK
         results['msg'] = MSG.OK
@@ -922,6 +922,7 @@ def one_detail():
         context['pay_list'] = info_list
         return render_template('user/card_detail.html', **context)
     except Exception as e:
+        print(e)
         logging.error((str(e)))
         return render_template('user/404.html')
 
@@ -1107,10 +1108,11 @@ def add_account():
             max_top = float(30000)
             middle_name = data.get('middle_name')
             hand = float(data.get('hand'))
-            ed_name = SqlData.search_user_field_name('account', name)
-            if ed_name:
+            ed_name = SqlData.search_user_field_name('name', name)
+            ed_account = SqlData.search_user_field_name('account', account)
+            if ed_name or ed_account:
                 results['code'] = RET.SERVERERROR
-                results['msg'] = '该用户名已存在!'
+                results['msg'] = '该用户名或账号已存在!'
                 return jsonify(results)
             if phone_num:
                 ret = re.match(r"^1[35789]\d{9}$", phone_num)
@@ -1124,7 +1126,7 @@ def add_account():
                 middle_id = SqlData.search_middle_name('id', middle_name)
             else:
                 middle_id = 'NULL'
-            SqlData.insert_account(account, password, phone_num, name, create_price, min_top, max_top, middle_id, hand)
+            SqlData.insert_account(account, password, phone_num, name, create_price, min_top, middle_id, hand)
             # 创建用户后插入充值数据
             pay_num = sum_code()
             t = xianzai_time()
@@ -1676,7 +1678,7 @@ def index():
 def index_main():
     cus_count = SqlData.search_value_count('user_info')
     card_using = SqlData.search_value_count('card_info', "WHERE user_id != ''")
-    card_none = SqlData.search_value_count('card_info', "WHERE status ='T'")
+    card_none = SqlData.search_value_count('card_info', "WHERE card_status ='T'")
     sum_top = SqlData.search_table_sum('money', 'top_up', '')
     user_balance = SqlData.search_table_sum('balance', 'user_info', '')
     card_remain = SqlData.search_sum_card_remain()

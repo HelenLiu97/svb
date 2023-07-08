@@ -195,10 +195,10 @@ def top_up():
 
             # 给客户和代充值人发送短信通知
             money_msg = "{}元, 可用余额{}".format(money, balance)
-            if phone:
-                phone_list = phone.split(",")
-                for p in phone_list:
-                    CCP().send_Template_sms(p, ["556338卡段用户, " + cus_name, t, money_msg], 485108)
+            # if phone:
+            #     phone_list = phone.split(",")
+            #     for p in phone_list:
+            #         CCP().send_Template_sms(p, ["556338卡段用户, " + cus_name, t, money_msg], 485108)
             if mid_phone:
                 CCP().send_Template_sms(mid_phone, ["556338卡段用户, " + cus_name, t, money_msg], 485108)
             results['code'] = RET.OK
@@ -425,4 +425,15 @@ def edit_email():
     SqlData.update_verify_email(json_info)
     results = {"code": RET.OK, "msg": MSG.OK}
     return jsonify(results)
+
+
+@verify_pay_blueprint.route('/edit_hand/', methods=['POST'])
+@verify_required
+def edit_hand():
+    user = request.form.get('user')
+    hand = request.form.get('hand')
+    SqlData.update_divvy_hand(hand, user)
+    results = {"code": RET.OK, "msg": MSG.OK}
+    return jsonify(results)
+
 

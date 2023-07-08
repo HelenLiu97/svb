@@ -90,6 +90,7 @@
       <div class="layui-tab-item">
           <table class="layui-hide" id="all_account" lay-filter="all_account"></table>
           <script type="text/html" id="barDemo1">
+              <a class="layui-btn layui-btn-xs" lay-event="edit">编辑</a>
             <a class="layui-btn layui-btn-normal layui-btn-xs" lay-event="del">删除</a>
       </script>
       </div>
@@ -190,6 +191,7 @@
                 {type:'numbers'}
                 , {field: 'account', title: '登录账号', align: 'center',}
                 , {field: 'password', title: '登录密码', align: 'center', }
+                , {field: 'hand', title: '手续费', align: 'center', }
                 , {fixed: 'right', width: 220, align: 'center', toolbar: '#barDemo1'}
             ]]
             , id: 'all_account'
@@ -228,6 +230,39 @@
                     }
                 });
                 })
+            }else if (layEvent === 'edit'){
+                layer.prompt({title: '请输入新的手续费', value:data.hand}, function(num, index){
+
+                    $.ajax({
+                        type : 'POST',
+                        url : '/verify_pay/edit_hand/',
+                        data : {user:data.account,
+                            hand:num
+                        },
+                        dataType : 'json',
+                        beforeSend:function () {
+                            layer.load(2, {shade: false})
+                        },
+                        success : function(data) {
+                            // 成功提示框
+                            if (data.code == 0){
+                                layer.closeAll();
+                                parent.layer.msg(data.msg, {
+                                    icon : 6,
+                                });
+                                location.reload()
+                            }else if(data.code == 502){
+                                layer.closeAll();
+                                parent.layer.msg(data.msg, {
+                                    icon : 5
+                                });
+                            }
+
+                        }
+                    });
+                    layer.close(index);
+
+                });
             }
         });
 

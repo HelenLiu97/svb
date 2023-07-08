@@ -48,7 +48,7 @@ def createCodeImage(width=160, height=50):
     # 创建一张随机的背景图片
     img = Image.new(mode="RGB", size=(width, height), color=background_color)
     # 设置文字的字体(windows路径在C:\\window\\fonts下) linux路径：/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf
-    font = ImageFont.truetype(font="AGENCYR.TTF", size=34)
+    font = ImageFont.truetype(font=r"C:\Windows\Fonts\ariali.ttf", size=34)
     # 图片画笔进行绘制图片
     draw = ImageDraw.Draw(img)
     # 随机生成5位验证码

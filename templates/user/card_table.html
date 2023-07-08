@@ -24,12 +24,12 @@
 </blockquote>
 <table class="layui-table" id="card_info" lay-filter="card_info"></table>
 
-<script type="text/html" id="toolbarDemo">
-  <div class="layui-btn-container">
-      <button class="layui-btn layui-btn-radius" style="background-color:#7D9EC0" lay-event="getCheckData" id="some_top"><i class="layui-icon">&#xe656;批量充值</i></button>
-      <button class="layui-btn layui-btn-radius" style="background-color:#FF6347" lay-event="getCheckLength" id="clear"><i class="layui-icon">&#xe640;清空选中卡</i></button>
-  </div>
-</script>
+{#<script type="text/html" id="toolbarDemo">#}
+{#  <div class="layui-btn-container">#}
+{#      <button class="layui-btn layui-btn-radius" style="background-color:#7D9EC0" lay-event="getCheckData" id="some_top"><i class="layui-icon">&#xe656;批量充值</i></button>#}
+{#      <button class="layui-btn layui-btn-radius" style="background-color:#FF6347" lay-event="getCheckLength" id="clear"><i class="layui-icon">&#xe640;清空选中卡</i></button>#}
+{#  </div>#}
+{#</script>#}
 
 <script type="text/html" id="barDemo">
 {#    <a class="layui-btn layui-btn-primary layui-btn-xs layui-btn-normal" lay-event="remain"><i class="layui-icon">&#xe659;余额</i></a>#}
@@ -85,8 +85,8 @@
             , toolbar: "#toolbarDemo" //开启工具栏，此处显示默认图标，可以自定义模板，详见文档
             , totalRow: true //开启合计行
             , cols: [[ //表头
-                {type: 'checkbox'}
-                , {type: 'numbers'}
+                {#{type: 'checkbox'}#}
+                {type: 'numbers'}
                 , {field: 'display', title: '卡号', align: 'center', style: "mso-number-format:'\@';",}
                 , {field: '', toolbar:"#copy", width:50}
                 , {field: 'expire', title: '有效期', align: 'center', }
@@ -96,7 +96,7 @@
                 {#, {field: 'valid_end_on', title: '失效时间', align: 'center',}#}
                 , {field: 'status', title: '卡状态', align: 'center',}
                 , {field: 'detail', title: '详情', align: 'center',style:'color:red'}
-                , {fixed: 'right', width: 290, align: 'center', toolbar: '#barDemo', id: 'tools'}
+                , {fixed: 'right', width: 390, align: 'center', toolbar: '#barDemo', id: 'tools'}
             ]]
             , id: 'card_info'
             , page: true

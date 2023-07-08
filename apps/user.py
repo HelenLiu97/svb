@@ -314,9 +314,10 @@ def card_trans_dw():
         row += 1
 
     # 保存
-    path = 'H:\svb\static\excel\{}.xls'.format(g.user_name + str(sum_code()))
-    workbook.save(path)
-    return send_file(path)
+    base_path = os.path.abspath(os.path.dirname(os.path.dirname(__file__)))
+    excel_path = os.path.join(base_path, 'static\excel\{}.xls'.format(g.user_name + str(sum_code())))
+    workbook.save(excel_path)
+    return send_file(excel_path)
 
 
 @user_blueprint.route('/del_vice/', methods=['GET'])
@@ -573,7 +574,6 @@ def account_trans():
         do_sql = "AND do_type='" + do_type + "'"
     if trans_type:
         trans_sql = "AND trans_type='" + trans_type + "'"
-
     user_id = g.user_id
     task_info = SqlData.search_account_trans(user_id, card_sql, time_sql, type_sql=do_sql, do_sql=trans_sql)
 
@@ -789,8 +789,8 @@ def create_card():
             if c_card == 'F':
                 return jsonify({'code': RET.SERVERERROR, 'msg': '抱歉您没有权限执行此操作！'})
         data = json.loads(request.form.get('data'))
-        #top_money = data.get('top_money')
-        top_money = 20
+        top_money = data.get('top_money')
+        # top_money = 20
         label = data.get('label')
         card_num = data.get('card_num')
         user_id = g.user_id
@@ -822,7 +822,7 @@ def create_card():
         #     results = {"code": RET.SERVERERROR, "msg": "充值金额不在允许范围内!"}
         #     return jsonify(results)
 
-        new_card = SqlData.search_valid_card(card_num)
+        new_card = SqlData.search_valid_card(card_num, top_money)
         if not card_num == len(new_card):
             results = {"code": RET.SERVERERROR, "msg": "库存不足请五分钟后重试"}
             return jsonify(results)
@@ -844,7 +844,7 @@ def create_card():
                 SqlData.insert_card(card_number, cvc, expiry, card_id, last4, valid_starting_on, valid_ending_on, label, 'T', int(top_money), user_id)
 
                 # 扣去开卡费用
-                free_number = SqlData.search_user_field('free_number', user_id)
+                free_number = SqlData.search_user_field('free', user_id)
                 before_balance = SqlData.search_user_field('balance', user_id)
 
                 # 判断是否有可用免费卡量
@@ -873,6 +873,7 @@ def create_card():
             return jsonify({"code": RET.OK, "msg": "成功开卡! 账户余额为: $"+str(balance)})
 
         except Exception as e:
+            print(e)
             logging.error(str(e))
             return jsonify({"code": RET.SERVERERROR, "msg": "网络繁忙, 开卡失败, 请稍后再试"})
 
@@ -1201,6 +1202,7 @@ def card_info():
         results['count'] = len(info)
         return jsonify(results)
     except Exception as e:
+        print(e)
         logging.error(e)
         return jsonify({'code': RET.SERVERERROR, 'msg': MSG.SERVERERROR})
 
@@ -1402,7 +1404,7 @@ def notice():
 def user_main():
     user_id = g.user_id
     balance = SqlData.search_user_field('balance', user_id)
-    free_number = SqlData.search_user_field('free_number', user_id)
+    free_number = SqlData.search_user_field('free', user_id)
     # 支出中有部分退款产生，所以所有支出减去退款才是真实支出
     sum_out_money = SqlData.search_trans_sum(user_id) - SqlData.search_income_money(user_id)
     sum_top_money = SqlData.search_user_field('sum_balance', user_id)
@@ -1574,11 +1576,11 @@ def login():
                     pass_word = user_data.get('password')
                     name = user_data.get('name')
                     if user_pass == pass_word:
-                        last_login_time = SqlData.search_user_field('last_login_time', user_id)
+                        last_login_time = SqlData.search_user_field('login_time', user_id)
                         if not last_login_time:
                             return jsonify({'code': 307, 'msg': MSG.OK})
                         now_time = xianzai_time()
-                        SqlData.update_user_field('last_login_time', now_time, user_id)
+                        SqlData.update_user_field('login_time', now_time, user_id)
                         session['user_id'] = user_id
                         session['name'] = name
                         session['vice_id'] = None
@@ -1628,6 +1630,7 @@ def login():
 
         except Exception as e:
             logging.error(str(e))
+            print(e)
             results['code'] = RET.SERVERERROR
             results['msg'] = MSG.DATAERROR
             return jsonify(results)

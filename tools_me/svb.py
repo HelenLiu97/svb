@@ -1,5 +1,7 @@
 import json
 import logging
+import os
+
 import requests
 from hashlib import sha256
 import hmac
@@ -199,9 +201,11 @@ class SVB(object):
 
 svb = SVB()
 if __name__ == '__main__':
-
-    r = svb.card_detail(54091998)
-    print(r)
+    # r = svb.card_detail(153467897)
+    # print(r)
+    base_path = os.path.abspath(os.path.dirname(os.path.dirname(__file__)))
+    excel_path = os.path.join(base_path, 'static\excel\{}.xls')
+    print(excel_path)
     """
     print(time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(time.time())))
     res = svb.all_virtualcards()

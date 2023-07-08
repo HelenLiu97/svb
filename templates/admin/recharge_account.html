@@ -69,6 +69,7 @@
             if (layEvent === 'del'){
 
                 layer.confirm('确认删除该用户信息?', function(index){
+                    layer.close(index);
                     $.ajax({
                     type : 'GET',
                     url : '/admin/del_account/?user_id='+data.user_id,
@@ -78,7 +79,6 @@
                             parent.layer.msg(data.msg, {
                             icon : 6,
                         },obj.del());
-
                         }else if(data.code == 502){
                             parent.layer.msg(data.msg, {
                             icon : 5

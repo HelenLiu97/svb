@@ -48,7 +48,7 @@ def search_or_delete(card_number, card_id, first_time, status, user_id):
                 update_balance = available_balance
                 SqlData.update_balance(update_balance, user_id)
                 balance = SqlData.search_user_field("balance", user_id)
-                SqlData.update_card_info_card_no('status', 'F', card_number)
+                SqlData.update_card_info_card_no('card_status', 'F', card_number)
                 n_time = xianzai_time()
                 SqlData.insert_account_trans(n_time, '收入', "注销", card_number,
                                              update_balance, before_balance, balance, user_id)
