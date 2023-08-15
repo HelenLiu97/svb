@@ -59,11 +59,13 @@
     </style>
 </head>
 <body>
+<!--
 <div id="logo" style="padding-top: 20px; padding-left: 40%">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;优惠活动<br>
 通过批量购卡功能可低价<br>购卡，购卡量100张起。<br>价格低至2刀</div>
 <div style="padding-top: 20px; padding-left: 42%">
     <button  class="layui-btn layui-btn-lg layui-btn-radius layui-btn-normal" id="buy_card">批量购卡</button>
 </div>
+-->
 <div class="divForm">
     <form class="layui-form layui-form-pane" onsubmit="return false">
         <div class="layui-form-item">
@@ -92,6 +94,103 @@
             </div>
             <div class="layui-form-mid layui-word-aux">合计: $ <span id="sum_money">0</span></div>
         </div>
+
+        <div class="layui-form-item">
+	    <label class="layui-form-label">国家</label>
+            <div  class="layui-input-inline">
+                <select name="country" lay-search="">
+                  <option value=""></option>
+                  <option value="US">US(美国)</option>
+                </select>
+            </div>
+        </div>
+
+        <div class="layui-form-item">
+	    <label class="layui-form-label">州</label>
+            <div  class="layui-input-inline">
+                <select name="state"  lay-search="">
+                  <option value="">直接选择或搜索选择</option>
+                  <option value="AL">AL(阿拉巴马州)</option>
+                  <option value="AK">AK(阿拉斯加州)</option>
+                  <option value="AZ">AZ(亚利桑那州)</option>
+                  <option value="AR">AR(阿肯色州)</option>
+                  <option value="CA">CA(加利福尼亚州)</option>
+                  <option value="CO">CO(科罗拉多州)</option>
+                  <option value="CT">CT(康涅狄格州)</option>
+                  <option value="DE">DE(特拉华州)</option>
+                  <option value="DC">DC(哥伦毕亚特区)</option>
+                  <option value="FL">FL(佛罗里达州)</option>
+                  <option value="GA">GA(乔治亚州)</option>
+                  <option value="HI">HI(夏威夷州)</option>
+                  <option value="ID">ID(爱达荷州 )</option>
+                  <option value="IL">IL(伊利诺斯州)</option>
+                  <option value="IN">IN(印第安纳州)</option>
+                  <option value="IA">IA(爱荷华州)</option>
+                  <option value="KS">KS(堪萨斯州)</option>
+                  <option value="KY">KY(肯塔基州)</option>
+                  <option value="LA">LA(路易斯安那州)</option>
+                  <option value="ME">ME(缅因州)</option>
+                  <option value="MD">MD(马里兰州)</option>
+                  <option value="MA">MA(马萨诸塞州)</option>
+                  <option value="MI">MI(密歇根州)</option>
+                  <option value="MN">MN(明尼苏达州)</option>
+                  <option value="MS">MS(密西西比州)</option>
+                  <option value="MO">MO(密苏里州)</option>
+                  <option value="MT">MT(蒙大拿州)</option>
+                  <option value="NE">NE(内布拉斯加州)</option>
+                  <option value="NV">NV(内华达州)</option>
+                  <option value="NH">NH(新罕布什尔州)</option>
+                  <option value="NJ">NJ(新泽西州)</option>
+                  <option value="NM">NM(新墨西哥州)</option>
+                  <option value="NY">NY(纽约州)</option>
+                  <option value="NC">NC(北卡罗来纳州)</option>
+                  <option value="ND">ND(北达科他州)</option>
+                  <option value="OH">OH(俄亥俄州)</option>
+                  <option value="OK">OK(俄克拉荷马州)</option>
+                  <option value="OR">OR(俄勒冈州)</option>
+                  <option value="PA">PA(宾夕法尼亚州)</option>
+                  <option value="RI">RI(罗得岛州)</option>
+                  <option value="SC">SC(南卡罗来纳州)</option>
+                  <option value="SD">SD(南达科他州)</option>
+                  <option value="TN">TN(田纳西州)</option>
+                  <option value="TX">TX(德克萨斯州)</option>
+                  <option value="UT">UT(犹他州)</option>
+                  <option value="VT">VT(佛蒙特州)</option>
+                  <option value="VA">VA(弗吉尼亚州)</option>
+                  <option value="WA">WA(华盛顿州)</option>
+                  <option value="WV">WV(西弗吉尼亚州)</option>
+                  <option value="WI">WI(威斯康辛州)</option>
+                  <option value="WY">WY(怀俄明州)</option>
+                  <option value="VI">VI(美属维尔京群岛)</option>
+                  <option value="PR">PR(波多黎各)</option>
+                </select>
+            </div>
+        </div>
+
+        <div class="layui-form-item">
+	    <label class="layui-form-label">城市</label>
+            <div  class="layui-input-inline">
+                <input type="text" name="city" placeholder="城市" autocomplete="off"
+                       class="layui-input" id="top_money">
+            </div>
+        </div>
+
+        <div class="layui-form-item">
+	    <label class="layui-form-label">街道</label>
+            <div  class="layui-input-inline">
+                <input type="text" name="street" placeholder="街道" autocomplete="off"
+                       class="layui-input" id="top_money">
+            </div>
+        </div>
+
+        <div class="layui-form-item">
+	    <label class="layui-form-label">邮编</label>
+            <div  class="layui-input-inline">
+                <input type="text" name="zipcode" placeholder="邮编" autocomplete="off"
+                       class="layui-input" id="top_money">
+            </div>
+        </div>
+
         <div class="layui-form-item">
             <div class="layui-input-block">
                 <button  class="layui-btn layui-btn-lg demo-active" lay-submit="" lay-filter="create_one" id="sub" type="submit">确认</button>

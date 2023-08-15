@@ -1517,7 +1517,7 @@ def material():
             SqlData.update_user_field('phone_num', phone, user_id)
             user_name = SqlData.search_user_field('name', user_id)
             now_time = xianzai_time()
-            SqlData.update_user_field('last_login_time', now_time, user_id)
+            SqlData.update_user_field('login_time', now_time, user_id)
             session['user_id'] = user_id
             session['name'] = user_name
             session['vice_id'] = None

@@ -92,11 +92,10 @@ class SVB(object):
 
 class SqlData(object):
     def __init__(self):
-        host = "127.0.0.1"
+        host = "rm-wz9976147x393x621ro.mysql.rds.aliyuncs.com"
         port = 3306
         user = "root"
-        # password = "gute123"
-        password = "admin"
+        password = "baocui@799677"
         database = "svb"
         self.connect = pymysql.Connect(
             host=host, port=port, user=user,
@@ -136,18 +135,19 @@ class SqlData(object):
 
 sqldata = SqlData()
 
-if __name__ == '__main__':
+
+def main(card_amount, set_card_number):
     # 记录开始时间，在200s后停止开卡，避免再次开卡使用相同卡名重复卡名
     before_t = time.time()
 
-    card_amount = 10
+    # card_amount = 10
     # 根据需求创建缓存卡
     user_card_num = sqldata.search_card_num(card_amount, '')
     create_num = 1
-    new_card = 10 - user_card_num
+    new_card = set_card_number - user_card_num
 
     while create_num <= new_card:
-        if time.time() > before_t + 100:
+        if time.time() > before_t + 120:
             break
         # 卡余额放大了100倍，所以20是2000
         data = SVB().create_card(card_amount * 100)
@@ -162,3 +162,7 @@ if __name__ == '__main__':
             valid_ending_on = data.get('valid_ending_on')
             sqldata.insert_card(card_number, available_balance/100, cvc, expiry, card_id, valid_starting_on, valid_ending_on, last4)
             create_num += 1
+
+
+if __name__ == '__main__':
+    main(10, 100)

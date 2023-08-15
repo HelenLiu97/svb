@@ -201,11 +201,11 @@ class SVB(object):
 
 svb = SVB()
 if __name__ == '__main__':
-    # r = svb.card_detail(153467897)
-    # print(r)
-    base_path = os.path.abspath(os.path.dirname(os.path.dirname(__file__)))
-    excel_path = os.path.join(base_path, 'static\excel\{}.xls')
-    print(excel_path)
+    r = svb.card_detail(154566359)
+    print(r)
+    # base_path = os.path.abspath(os.path.dirname(os.path.dirname(__file__)))
+    # excel_path = os.path.join(base_path, 'static\excel\{}.xls')
+    # print(excel_path)
     """
     print(time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(time.time())))
     res = svb.all_virtualcards()
