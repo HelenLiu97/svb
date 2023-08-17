@@ -514,7 +514,7 @@ def change_card_name():
         auth_dict = RedisTool.hash_get('svb_vice_auth', vice_id)
         if auth_dict is None:
             return render_template('user/no_auth.html')
-        c_card = auth_dict.get('refund')
+        c_card = auth_dict.get('up_label')
         if c_card == 'F':
             return render_template('user/no_auth.html')
 
@@ -603,7 +603,7 @@ def card_delete():
             auth_dict = RedisTool.hash_get('svb_vice_auth', vice_id)
             if auth_dict is None:
                 return jsonify({'code': RET.SERVERERROR, 'msg': '抱歉您没有权限执行此操作！'})
-            c_card = auth_dict.get('refund')
+            c_card = auth_dict.get('del_card')
             if c_card == 'F':
                 return jsonify({'code': RET.SERVERERROR, 'msg': '抱歉您没有权限执行此操作！'})
         # return jsonify({"code": RET.SERVERERROR, "msg": "暂时关闭卡删除，开放日期请咨询客服！"})

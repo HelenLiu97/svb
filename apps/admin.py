@@ -78,7 +78,7 @@ def account_card():
     page = request.args.get('page')
     limit = request.args.get('limit')
     if card_status == "hide":
-        sql = " AND status != 'F'"
+        sql = " AND card_status != 'F'"
     else:
         sql = ""
     card_info = SqlData.search_card_info_admin("WHERE user_id = {} {}".format(u_id, sql))

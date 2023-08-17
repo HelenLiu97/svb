@@ -1,5 +1,7 @@
 import datetime
-
+import sys
+# 服务器部署打开注释，加入到绝对路径中执行脚本
+# sys.path.append(r'/home/admin/556338/svb-master/')
 from tools_me.mysql_tools import SqlData
 from tools_me.svb import svb
 from config import logging
