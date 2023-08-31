@@ -8,6 +8,8 @@ import time
 import uuid
 
 import xlwt
+from openpyxl.reader.excel import load_workbook
+
 from config import cache
 from tools_me.other_tools import xianzai_time, login_required, check_float, account_lock, get_nday_list, \
     verify_login_time, trans_lock, sum_code, create_card, dic_key
@@ -19,7 +21,7 @@ from tools_me.img_code import createCodeImage
 from tools_me.des_code import ImgCode
 from tools_me.svb import svb
 from . import user_blueprint
-from flask import render_template, request, jsonify, session, g, redirect, send_file
+from flask import render_template, request, jsonify, session, g, redirect, send_file, make_response, send_from_directory
 from tools_me.mysql_tools import SqlData
 from concurrent.futures.thread import ThreadPoolExecutor
 
@@ -998,12 +1000,13 @@ def one_detail():
                 "issuer_response": td.get("issuer_response"),
                 "mcc": td.get("mcc"),
                 "mcc_description": td.get("mcc_description"),
-                "merchant_amount": float(td.get("merchant_amount")/100),
+                "merchant_amount": float(float(td.get("merchant_amount"))/100),
                 "merchant_currency": td.get("merchant_currency"),
                 "merchant_id": td.get("merchant_id"),
                 "merchant_name": td.get("merchant_name"),
                 "transaction_date_time": td.get("transaction_date_time"),
                 "vcn_response": td.get("vcn_response"),
+                "transaction_type": td.get("transaction_type"),
             })
 
         settle = list()
@@ -1016,11 +1019,12 @@ def one_detail():
                 "billing_currency": td.get("billing_currency"),
                 "mcc": td.get("mcc"),
                 "mcc_description": td.get("mcc_description"),
-                "merchant_amount": float(td.get("merchant_amount") / 100),
+                "merchant_amount": float(float(td.get("merchant_amount")) / 100),
                 "merchant_currency": td.get("merchant_currency"),
                 "merchant_id": td.get("merchant_id"),
                 "merchant_name": td.get("merchant_name"),
                 "transaction_date_time": td.get("settlement_date"),
+                "transaction_type": td.get("transaction_type"),
             })
         context['pay_list'] = info_list
         context['settle'] = settle
@@ -1634,3 +1638,209 @@ def login():
             results['code'] = RET.SERVERERROR
             results['msg'] = MSG.DATAERROR
             return jsonify(results)
+
+
+@user_blueprint.route('/excel_card/', methods=['GET', 'POST'])
+@login_required
+def excel_card():
+    if request.method == 'GET':
+        return render_template('user/excel_card.html')
+
+
+@user_blueprint.route('/model_excel/', methods=['GET', 'POST'])
+@login_required
+def model_excel():
+    user_id = g.user_id
+    base_path = r'E:\svb\static\excel'
+    if request.method == 'GET':
+        file_name = request.args.get('fileName')
+        if file_name == 'testAjaxDownload.xlsx':
+            file_name = '导入建卡模板.xlsx'
+        else:
+            res = SqlData.select_excel_info(user_id, sql="AND file_name='{}'".format(file_name))
+            progress = res[0].get('progress')
+            if progress != 100:
+                results = {"code": RET.SERVERERROR, "msg": "请在进度完成100后下载!"}
+                return jsonify(results)
+        response = make_response(send_from_directory(base_path, file_name, as_attachment=True))
+        response.headers["Access-Control-Expose-Headers"] = "Content-disposition"
+        return response
+    if request.method == 'POST':
+        # pass
+        # 判断是否有开卡任务在执行
+        data = SqlData.select_excel_info(user_id)
+        if data:
+            info = data[-1]
+            progress = info.get('progress')
+            if not int(progress) in [999, 100]:
+                results = {"code": RET.SERVERERROR, "msg": "请在上次任务完成后在重新上传!"}
+                return jsonify(results)
+
+        file = request.files.get('file')
+        file_name = sum_code() + '.xlsx'
+        xlsx_save_path = os.path.join(base_path, file_name)
+        file.save(xlsx_save_path)
+        # 打开模板表写入题目数据
+        wb = load_workbook(xlsx_save_path)
+        sheets = wb.worksheets  # 获取当前所有的sheet
+        # 获取第一张sheet
+        sheet1 = sheets[0]
+        rows = sheet1.max_row
+        # 获取工作表总列数
+        cols = sheet1.max_column
+        # 总行，总列
+        # print(rows, cols)
+        # 读取
+        all_list = []
+        for r in range(1, rows + 1):
+            row_list = []
+            for i in range(1, cols + 1):
+                cell_value = sheet1.cell(row=r, column=i).value
+                if not cell_value:
+                    break
+                row_list.append(cell_value)
+            if row_list:
+                all_list.append(row_list)
+        # 校验表头是否是模板表表头
+        results = dict()
+        for z in all_list[0]:
+            if z not in ['国家(US)', '州', '城市', '街道', '邮编', '金额', '备注'] or len(all_list[0]) != 7:
+                results['code'] = RET.SERVERERROR
+                results['msg'] = '请使用原模板表上传!'
+                return results
+        wb.close()
+
+        user_data = SqlData.search_user_index(user_id)
+        create_price = user_data.get('create_card')
+        balance = user_data.get('balance')
+        # 比较可开卡数量与已开卡数量
+        card_num = len(all_list[1:])
+        if card_num > 100:
+            results = {"code": RET.SERVERERROR, "msg": "一次批量开卡不能超过100张!"}
+            return jsonify(results)
+        sum_amount = 0
+        for i in all_list[1:]:
+            try:
+                amount = i[5]
+                sum_amount += int(amount)
+            except Exception as e:
+                results = {"code": RET.SERVERERROR, "msg": "请检查充值金额后重试!"}
+                return jsonify(results)
+        sum_money = sum_amount + card_num * create_price
+        # 本次开卡需要的费用,计算余额是否充足
+        if sum_money > balance:
+            results = {"code": RET.SERVERERROR, "msg": "本次消费金额:" + str(sum_money) + ",账号余额不足!"}
+            return jsonify(results)
+        SqlData.insert_excel_info(file_name, 0, user_id)
+        executor.submit(excel_create_card, all_list[1:], user_id, create_price, xlsx_save_path, file_name)
+        results = dict()
+        results['code'] = RET.OK
+        results['msg'] = MSG.OK
+        return results
+
+
+def excel_create_card(card_info, user_id, create_price, excel_path, file_name):
+    try:
+        wb = load_workbook(excel_path)
+        sheets = wb.worksheets  # 获取当前所有的sheet
+        # 获取第一张sheet
+        sheet = sheets[0]
+        line_num = 1
+        print(card_info)
+        for z in card_info:
+            line_num += 1
+            percentage = int((line_num - 1) / len(card_info) * 100)
+            SqlData.update_excel_info(percentage, file_name)
+            label = ''
+            if len(z) == 7:
+                country, state, city, street, zipCode, limit, label = z
+            elif len(z) == 5:
+                country, state, city, street, zipCode, limit = z
+            else:
+                sheet.cell(line_num, 8).value = '失败: 缺少卡名或地址必填参数'
+                continue
+            if not limit:
+                sheet.cell(line_num, 8).value = '失败: 缺少充值金额'
+                continue
+            limit = int(limit)
+            res = svb.create_card(limit * 100)
+
+            if not res:
+                sheet.cell(line_num, 9).value = '失败: 创建卡失败'
+                continue
+
+            n_time = xianzai_time()
+
+            card_number = res.get('card_number')
+            cvc = res.get('cvc')
+            expiry = res.get('expiry')
+            card_id = res.get('card_id')
+            last4 = res.get('last4')
+            valid_start_on = res.get('valid_start_on')
+            valid_ending_on = res.get('valid_ending_on')
+
+            # 插入卡信息
+            SqlData.insert_card(card_number, cvc, expiry, card_id, last4, valid_start_on, valid_ending_on, label,
+                                'T', int(limit), user_id)
+
+            # 扣去开卡费用
+            free_number = SqlData.search_user_field('free', user_id)
+            before_balance = SqlData.search_user_field('balance', user_id)
+
+            # 判断是否有可用免费卡量
+            if free_number > 0:
+                SqlData.update_user_free_number(-1, user_id)
+                SqlData.insert_account_trans(n_time, TRANS_TYPE.OUT, DO_TYPE.CREATE_CARD, card_number,
+                                             0, before_balance, before_balance, user_id)
+            else:
+                create_price_do_money = float(create_price) - float(create_price) * 2
+                SqlData.update_balance(create_price_do_money, user_id)
+                balance = SqlData.search_user_field("balance", user_id)
+                # balance = before_balance - create_price
+                SqlData.insert_account_trans(n_time, TRANS_TYPE.OUT, DO_TYPE.CREATE_CARD, card_number,
+                                             create_price, before_balance, balance, user_id)
+
+            # 扣去充值费用
+            before_balance = SqlData.search_user_field('balance', user_id)
+            # 当前只有20刀的余额
+            top_money = int(limit)
+            top_money_do_money = top_money - top_money * 2
+            SqlData.update_balance(top_money_do_money, user_id)
+            balance = SqlData.search_user_field("balance", user_id)
+            n_time = xianzai_time()
+            SqlData.insert_account_trans(n_time, TRANS_TYPE.OUT, DO_TYPE.TOP_UP, card_number,
+                                         top_money, before_balance, balance, user_id)
+
+            sheet.cell(line_num, 8).value = '成功'
+
+        wb.save(excel_path)
+        wb.close()
+    except Exception as e:
+        print(e)
+        SqlData.update_excel_info(999, file_name)
+
+
+@user_blueprint.route('/excel_info/', methods=['GET'])
+@login_required
+@account_lock
+def excel_info():
+    limit = request.args.get('limit')
+    page = request.args.get('page')
+    results = {}
+    results['code'] = RET.OK
+    results['msg'] = MSG.OK
+    user_id = g.user_id
+    data = SqlData.select_excel_info(user_id)
+    if not data:
+        results['code'] = RET.SERVERERROR
+        results['msg'] = MSG.NODATA
+        return jsonify(results)
+    page_list = list()
+    info = list(reversed(data))
+    for i in range(0, len(info), int(limit)):
+        page_list.append(info[i:i + int(limit)])
+    data = page_list[int(page) - 1]
+    # data = get_card_remain(data)
+    results['data'] = data
+    results['count'] = len(info)
+    return jsonify(results)

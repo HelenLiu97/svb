@@ -86,6 +86,7 @@
             <th>商户名称</th>
             <th>交易时间</th>
             <th>VCN回应信息</th>
+            <th>交易类型</th>
           </tr>
         </thead>
         <tbody>
@@ -104,6 +105,7 @@
                 <td>{{ i.merchant_name}}</td>
                 <td>{{ i.transaction_date_time}}</td>
                 <td>{{ i.vcn_response}}</td>
+                <td>{{ i.transaction_type}}</td>
             </tr>
         {% endfor %}
         </tbody>
@@ -129,6 +131,7 @@
             <th>交易ID</th>
             <th>商户名称</th>
             <th>结算时间</th>
+            <th>交易类型</th>
           </tr>
         </thead>
         <tbody>
@@ -145,6 +148,7 @@
                 <td>{{ i.merchant_id}}</td>
                 <td>{{ i.merchant_name}}</td>
                 <td>{{ i.transaction_date_time}}</td>
+                <td>{{ i.transaction_type}}</td>
             </tr>
         {% endfor %}
         </tbody>

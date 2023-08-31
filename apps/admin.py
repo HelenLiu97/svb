@@ -338,7 +338,7 @@ def push_log():
             if card_number:
                 card_sql = " card_trans.card_number LIKE '%" + card_number + "%'"
             if cus_name:
-                cus_sql = " user_info.`name` LIKE '%" + cus_name + "%'"
+                cus_sql = " user_name LIKE '%" + cus_name + "%'"
             if card_number and cus_name:
                 sql = "AND" + card_sql + " AND " + cus_sql
             else:
@@ -899,6 +899,7 @@ def one_detail():
                 "merchant_name": td.get("merchant_name"),
                 "transaction_date_time": td.get("transaction_date_time"),
                 "vcn_response": td.get("vcn_response"),
+                "transaction_type": td.get("transaction_type"),
             })
 
         settle = list()
@@ -1352,15 +1353,17 @@ def edit_parameter():
             if password:
                 SqlData.update_account_field('password', password, name)
             if account:
+                SqlData.update_account_field('account', account, name)
+            if account_name:
                 # 取消消费记录的关联增快消费记录的查询速度，不支持直接修改用户名
-                #account = account.strip()
-                #ed_name = SqlData.search_user_field_name('account', account)
-                #if ed_name:
+                # account = account.strip()
+                # ed_name = SqlData.search_user_field_name('account', account)
+                # if ed_name:
                 results['code'] = RET.SERVERERROR
                 results['msg'] = "请联系管理员处理！"
                 return jsonify(results)
-                #SqlData.update_account_field('account', account, name)
-            if account_name:
+                # SqlData.update_account_field('account', account, name)
+                """
                 account_name = account_name.strip()
                 ed_name = SqlData.search_user_field_name('name', account_name)
                 if ed_name:
@@ -1368,6 +1371,7 @@ def edit_parameter():
                     results['msg'] = '该用户名已存在!'
                     return jsonify(results)
                 SqlData.update_account_field('name', account_name, name)
+                """
             if hand:
                 SqlData.update_account_field('hand', hand, name)
             return jsonify(results)

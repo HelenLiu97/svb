@@ -5,6 +5,10 @@
 			"icon": "&#xe638;",
 			"href": "/user/create_card/"
 		},{
+			"title": "批量建卡",
+			"icon": "&#xe62d;",
+			"href": "/user/excel_card/"
+		},{
 			"title": "所有卡信息",
 			"icon": "&#xe62d;",
 			"href": "/user/card_table/"

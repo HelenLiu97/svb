@@ -53,6 +53,28 @@ def update_trans_balance():
                 else:
                     status = 'T'
                 SqlData.insert_card_trans(card_number, acquirer_ica, approval_code, billing_amount, billing_currency, issuer_response, mcc, mcc_description, merchant_amount, merchant_currency, merchant_id, merchant_name, transaction_date_time, transaction_type, vcn_response, card_id, status, user_name, user_id)
+
+            clearings = res.get('data').get('clearings')
+            for td in clearings:
+                acquirer_ica = td.get("acquirer_ica")
+                approval_code = td.get("approval_code")
+                billing_amount = float(td.get("billing_amount") / 100)
+                billing_currency = td.get("billing_currency")
+                clearing_type = td.get("clearing_type")
+                mcc = td.get("mcc")
+                mcc_description = td.get("mcc_description")
+                merchant_amount = float(float(td.get("merchant_amount")) / 100)
+                merchant_currency = td.get("merchant_currency")
+                merchant_id = td.get("merchant_id")
+                merchant_name = td.get("merchant_name")
+                exchange_rate = td.get("exchange_rate")
+                authorization_date = td.get("authorization_date")
+                settlement_date = td.get("settlement_date")
+                SqlData.insert_card_trans_settle(card_number, acquirer_ica, approval_code, authorization_date, billing_amount,
+                                 billing_currency,
+                                 clearing_type, exchange_rate, mcc,
+                                 mcc_description, merchant_amount, merchant_currency, merchant_id, merchant_name,
+                                 settlement_date, card_id)
         else:
             logging.error('定时查询卡交易失败，card_id: ' + str(card_id))
     t = xianzai_time()

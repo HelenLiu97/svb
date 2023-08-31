@@ -201,7 +201,7 @@ class SVB(object):
 
 svb = SVB()
 if __name__ == '__main__':
-    r = svb.card_detail(154566359)
+    r = svb.card_detail(154566373)
     print(r)
     # base_path = os.path.abspath(os.path.dirname(os.path.dirname(__file__)))
     # excel_path = os.path.join(base_path, 'static\excel\{}.xls')

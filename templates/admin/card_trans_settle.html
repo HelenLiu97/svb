@@ -12,6 +12,7 @@
 <div class="layui-inline">
     <input type="number" class="layui-input" name="card_no" id="card_no" autocomplete="off" placeholder="请输入卡号">
 </div>
+    <!--
     <div class="layui-inline">
         <select name="quiz" id="trans_status">
           <option value="">请选择</option>
@@ -19,6 +20,7 @@
         <option value="F">不含手续费</option>
         </select>
     </div>
+    -->
 <button class="layui-btn" lay-submit="" lay-filter="trans_sear" type="submit">搜索</button>
 <button type="reset" class="layui-btn layui-btn-primary" id="">重置</button>
     </form>
@@ -59,8 +61,8 @@
                 , {field: 'merchant_currency', title: '交易币种',align: 'center', style: 'color: #436EEE'}
                 , {field: 'merchant_name', title: '商户名称', align: 'center',width:'20%',style:"color: #030303"}
                 , {field: 'settlement_date', title: '结算时间',width:'12%', align: 'center', style:"color: #8B0A50"}
-                , {field: 'handing_fee', title: '手续费', align: 'center',style:"color: #EE5C42", sort: true}
-                , {field: 'name', title: '用户', align: 'center',style:"color: #030303"}
+                //, {field: 'handing_fee', title: '手续费', align: 'center',style:"color: #EE5C42", sort: true}
+                //, {field: 'name', title: '用户', align: 'center',style:"color: #030303"}
             ]]
             , id: 'push_log'
             , page: true

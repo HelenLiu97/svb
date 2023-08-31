@@ -5,13 +5,18 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="6d8d786e-ad10-4630-ad92-b9cc656a22cd" name="Default Changelist" comment="上线生产前的初版提交">
-      <change afterPath="$PROJECT_DIR$/static/log/card.log" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/static/excel/导入建卡模板.xlsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/templates/user/excel_card.html" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/apps/admin.py" beforeDir="false" afterPath="$PROJECT_DIR$/apps/admin.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/apps/user.py" beforeDir="false" afterPath="$PROJECT_DIR$/apps/user.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/static/json/usernavs.json" beforeDir="false" afterPath="$PROJECT_DIR$/static/json/usernavs.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/templates/admin/card_trans_settle.html" beforeDir="false" afterPath="$PROJECT_DIR$/templates/admin/card_trans_settle.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/templates/user/card_detail.html" beforeDir="false" afterPath="$PROJECT_DIR$/templates/user/card_detail.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/templates/user/card_trans_settle.html" beforeDir="false" afterPath="$PROJECT_DIR$/templates/user/card_trans_settle.html" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/time_task/card_trans.py" beforeDir="false" afterPath="$PROJECT_DIR$/time_task/card_trans.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/time_task/delete_card.py" beforeDir="false" afterPath="$PROJECT_DIR$/time_task/delete_card.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/time_task/middle_money.py" beforeDir="false" afterPath="$PROJECT_DIR$/time_task/middle_money.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tools_me/mysql_tools.py" beforeDir="false" afterPath="$PROJECT_DIR$/tools_me/mysql_tools.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tools_me/svb.py" beforeDir="false" afterPath="$PROJECT_DIR$/tools_me/svb.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -47,8 +52,8 @@
       <list>
         <option value="Flask Main" />
         <option value="JavaScript File" />
-        <option value="HTML File" />
         <option value="Python Script" />
+        <option value="HTML File" />
       </list>
     </option>
   </component>
@@ -235,32 +240,33 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent"><![CDATA[{
-  "keyToString": {
-    "RunOnceActivity.OpenProjectViewOnStart": "true",
-    "RunOnceActivity.ShowReadmeOnStart": "true",
-    "WebServerToolWindowFactoryState": "false",
-    "last_opened_file_path": "E:/new_bento",
-    "node.js.detected.package.eslint": "true",
-    "node.js.detected.package.tslint": "true",
-    "node.js.selected.package.eslint": "(autodetect)",
-    "node.js.selected.package.tslint": "(autodetect)",
-    "settings.editor.selected.configurable": "vcs.Git",
-    "vue.rearranger.settings.migration": "true"
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;DefaultHtmlFileTemplate&quot;: &quot;HTML File&quot;,
+    &quot;RunOnceActivity.OpenProjectViewOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;WebServerToolWindowFactoryState&quot;: &quot;false&quot;,
+    &quot;last_opened_file_path&quot;: &quot;E:/svb/static/excel&quot;,
+    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
+    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
+    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
+    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
+    &quot;settings.editor.selected.configurable&quot;: &quot;vcs.Git&quot;,
+    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
   },
-  "keyToStringList": {
-    "com.intellij.ide.scratch.ScratchImplUtil$2/新建临时文件": [
-      "Ini"
+  &quot;keyToStringList&quot;: {
+    &quot;com.intellij.ide.scratch.ScratchImplUtil$2/新建临时文件&quot;: [
+      &quot;Ini&quot;
     ]
   }
-}]]></component>
+}</component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
+      <recent name="E:\svb\static\excel" />
       <recent name="H:\svb\templates\user" />
       <recent name="H:\svb\static\css" />
       <recent name="H:\svb\time_task" />
       <recent name="H:\svb\templates\admin" />
-      <recent name="H:\svb\static\images" />
     </key>
     <key name="MoveFile.RECENT_KEYS">
       <recent name="E:\svb\time_task" />
@@ -270,7 +276,7 @@
       <recent name="H:\svb\tools_me" />
     </key>
   </component>
-  <component name="RunManager" selected="Python.svb">
+  <component name="RunManager" selected="Python.manager">
     <configuration name="card_trans" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
       <module name="svb" />
       <option name="INTERPRETER_OPTIONS" value="" />
@@ -398,8 +404,8 @@
     </configuration>
     <recent_temporary>
       <list>
-        <item itemvalue="Python.svb" />
         <item itemvalue="Python.manager" />
+        <item itemvalue="Python.svb" />
         <item itemvalue="Python.new_card" />
         <item itemvalue="Python.delete_card" />
         <item itemvalue="Python.card_trans" />
@@ -586,7 +592,18 @@
       <workItem from="1692110375742" duration="2552000" />
       <workItem from="1692149691948" duration="195000" />
       <workItem from="1692261432024" duration="2432000" />
-      <workItem from="1692282876757" duration="1961000" />
+      <workItem from="1692282876757" duration="1990000" />
+      <workItem from="1692321070230" duration="747000" />
+      <workItem from="1692347841660" duration="1793000" />
+      <workItem from="1692582634513" duration="9015000" />
+      <workItem from="1692666553021" duration="2916000" />
+      <workItem from="1693059561961" duration="7776000" />
+      <workItem from="1693133978905" duration="1480000" />
+      <workItem from="1693186880729" duration="29000" />
+      <workItem from="1693289790627" duration="2376000" />
+      <workItem from="1693386551299" duration="1266000" />
+      <workItem from="1693453159661" duration="6041000" />
+      <workItem from="1693467361425" duration="674000" />
     </task>
     <task id="LOCAL-00001" summary="首次推送svb">
       <created>1582278040297</created>
@@ -756,7 +773,14 @@
       <option name="project" value="LOCAL" />
       <updated>1692110536107</updated>
     </task>
-    <option name="localTasksCounter" value="25" />
+    <task id="LOCAL-00025" summary="上线生产前的初版提交">
+      <created>1692288476114</created>
+      <option name="number" value="00025" />
+      <option name="presentableId" value="LOCAL-00025" />
+      <option name="project" value="LOCAL" />
+      <updated>1692288476114</updated>
+    </task>
+    <option name="localTasksCounter" value="26" />
     <servers />
   </component>
   <component name="TimeTrackingManager">
@@ -837,9 +861,9 @@
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
     <SUITE FILE_PATH="coverage/svb$mysql_tools.coverage" NAME="mysql_tools 覆盖结果" MODIFIED="1688452143939" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/tools_me" />
     <SUITE FILE_PATH="coverage/svb$new_card.coverage" NAME="new_card 覆盖结果" MODIFIED="1688957906026" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/time_task" />
-    <SUITE FILE_PATH="coverage/svb$manager.coverage" NAME="manager 覆盖结果" MODIFIED="1690444803443" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+    <SUITE FILE_PATH="coverage/svb$manager.coverage" NAME="manager 覆盖结果" MODIFIED="1693466189784" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/svb$delete_card.coverage" NAME="delete_card 覆盖结果" MODIFIED="1688808427927" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/tools_me" />
-    <SUITE FILE_PATH="coverage/svb$svb.coverage" NAME="svb 覆盖结果" MODIFIED="1692080443317" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/tools_me" />
+    <SUITE FILE_PATH="coverage/svb$svb.coverage" NAME="svb 覆盖结果" MODIFIED="1693453467057" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/tools_me" />
     <SUITE FILE_PATH="coverage/svb$card_trans.coverage" NAME="card_trans 覆盖结果" MODIFIED="1688807600454" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/time_task" />
     <SUITE FILE_PATH="coverage/svb$verify_pay.coverage" NAME="verify_pay 覆盖结果" MODIFIED="1631260641138" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/apps" />
   </component>

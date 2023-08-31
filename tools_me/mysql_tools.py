@@ -375,7 +375,7 @@ class SqlDataBase(object):
             info_dict['trans_type'] = i[2]
             info_dict['do_type'] = i[3]
             info_dict['card_no'] = "\t" + i[4]
-            info_dict['do_money'] = i[5] if i[2] == '收入' else  '-' + i[5]
+            info_dict['do_money'] = i[5] if i[2] == '收入' else '-' + i[5]
             info_dict['before_balance'] = i[6]
             info_dict['balance'] = i[7]
             info_list.append(info_dict)
@@ -984,7 +984,7 @@ class SqlDataBase(object):
             info_dict['card_id'] = i[1]
             info_dict['card_no'] = "\t" + i[2]
             info_dict['expire'] = i[3]
-            info_dict['cvv'] = i[4]
+            info_dict['cvv'] = i[5]
             info_dict['valid_start_on'] = str(i[6])
             info_dict['valid_end_on'] = str(i[7])
             info_dict['label'] = i[9]
@@ -1023,7 +1023,7 @@ class SqlDataBase(object):
             info_dict['trans_type'] = i[2]
             info_dict['do_type'] = i[3]
             info_dict['card_no'] = "\t" + i[4]
-            info_dict['do_money'] = i[5]
+            info_dict['do_money'] = i[5] if i[2] == '收入' else '-' + i[5]
             info_dict['before_balance'] = i[6]
             info_dict['balance'] = i[7]
             info_dict['cus_name'] = i[9]
@@ -1285,7 +1285,7 @@ class SqlDataBase(object):
     # pay
     def del_pay_log(self, user_id, pay_time):
         # sql = "DELETE FROM pay_log WHERE account_id = {} AND pay_time='{}'".format(user_id, pay_time)
-        sql = "UPDATE pay_log SET status='已删除' WHERE account_id = {} AND pay_time='{}'".format(user_id, pay_time)
+        sql = "UPDATE pay_log SET status='已删除' WHERE user_id = {} AND pay_time='{}'".format(user_id, pay_time)
         conn, cursor = self.connect()
         try:
             cursor.execute(sql)
@@ -1745,8 +1745,8 @@ class SqlDataBase(object):
             info_dict['merchant_currency'] = i[12]
             info_dict['merchant_name'] = i[14]
             info_dict['settlement_date'] = i[15]
-            info_dict['handing_fee'] = i[17]
-            info_dict['label'] = i[18]
+            # info_dict['handing_fee'] = i[17]
+            info_dict['label'] = i[17]
             info_list.append(info_dict)
         return info_list
 
@@ -2131,6 +2131,47 @@ class SqlDataBase(object):
             conn.commit()
         except Exception as e:
             logging.error("更新divvy用户手续费失败" + str(e))
+            conn.rollback()
+        self.close_connect(conn, cursor)
+
+    def select_excel_info(self, user_id, sql=''):
+        sql = "SELECT * FROM excel_info WHERE user_id='{}' {}".format(user_id, sql)
+        conn, cursor = self.connect()
+        cursor.execute(sql)
+        rows = cursor.fetchall()
+        self.close_connect(conn, cursor)
+        data = []
+        try:
+            for i in rows:
+                data.append({
+                    "file_name": i[1],
+                    "progress": i[2],
+                })
+        except Exception as e:
+            logging.warning(str(e))
+        return data
+
+    def update_excel_info(self, progress, file_name):
+        sql = "UPDATE excel_info SET progress={} WHERE file_name = '{}'".format(progress, file_name)
+        conn, cursor = self.connect()
+        try:
+            cursor.execute(sql)
+            conn.commit()
+        except Exception as e:
+            logging.error(str(e))
+            conn.rollback()
+        self.close_connect(conn, cursor)
+
+
+    def insert_excel_info(self, file_name, progress, user_id):
+        sql = "INSERT INTO excel_info( file_name, progress, user_id) VALUES('{}','{}','{}')".format(
+                file_name, progress, user_id)
+        conn, cursor = self.connect()
+        try:
+            cursor.execute(sql)
+            conn.commit()
+        except Exception as e:
+            logging.error("添加用户免费卡量记录失败!" + str(e))
             conn.rollback()
         self.close_connect(conn, cursor)
 
