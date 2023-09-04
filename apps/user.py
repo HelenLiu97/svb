@@ -1024,7 +1024,7 @@ def one_detail():
                 "merchant_id": td.get("merchant_id"),
                 "merchant_name": td.get("merchant_name"),
                 "transaction_date_time": td.get("settlement_date"),
-                "transaction_type": td.get("transaction_type"),
+                "transaction_type": td.get("clearing_type"),
             })
         context['pay_list'] = info_list
         context['settle'] = settle
@@ -1704,7 +1704,7 @@ def model_excel():
         # 校验表头是否是模板表表头
         results = dict()
         for z in all_list[0]:
-            if z not in ['国家(US)', '州', '城市', '街道', '邮编', '金额', '备注'] or len(all_list[0]) != 7:
+            if z not in ['国家(US)', '州', '城市', '街道', '邮编', '金额', '卡名'] or len(all_list[0]) != 7:
                 results['code'] = RET.SERVERERROR
                 results['msg'] = '请使用原模板表上传!'
                 return results

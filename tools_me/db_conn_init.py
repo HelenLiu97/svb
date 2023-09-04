@@ -11,10 +11,10 @@ class ConnMysql(object):
 
     def __getconn(self):
         if self.__pool is None:
-            host = "127.0.0.1"
+            host = "3.17.178.128"
             port = 3306
             user = "root"
-            password = "admin"
+            password = "liuxiao@140922"
             database = "svb"
             self.__pool = PooledDB(pymysql, 4, host=host, port=port,
                                  user=user, passwd=password, db=database,

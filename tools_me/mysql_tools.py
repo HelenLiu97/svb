@@ -247,7 +247,7 @@ class SqlDataBase(object):
         self.close_connect(conn, cursor)
 
     def update_card_balance(self, balance, card_id):
-        sql = "UPDATE card_info SET balance={} WHERE card_id={}".format(balance, card_id)
+        sql = "UPDATE card_info SET card_amount={} WHERE card_id={}".format(balance, card_id)
         conn, cursor = self.connect()
         try:
             cursor.execute(sql)

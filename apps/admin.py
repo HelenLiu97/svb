@@ -918,6 +918,7 @@ def one_detail():
                 "merchant_id": td.get("merchant_id"),
                 "merchant_name": td.get("merchant_name"),
                 "transaction_date_time": td.get("settlement_date"),
+                "transaction_type": td.get("clearing_type"),
             })
         context['settle'] = settle
         context['pay_list'] = info_list

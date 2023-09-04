@@ -28,14 +28,16 @@ def search_or_delete(card_number, card_id, first_time, status, user_id):
                 return
             available_balance = card_detail.get('data').get('available_balance')
             available_balance = float(available_balance/100)
-            authorizations = card_detail.get('data').get('authorizations')
+            clearings = card_detail.get('data').get('clearings')
             pend_money = 0
-            for pend in authorizations:
-                response = pend.get('issuer_response')
-                mcc = pend.get('mcc')
-                if "Decline" not in response and mcc != '7999':
-                    trans_money = float(pend.get("billing_amount") / 100)
-                    pend_money += trans_money
+            for clear in clearings:
+                clearing_type = clear.get('clearing_type')
+                billing_amount = clear.get('billing_amount')
+                if clearing_type == 'CREDIT':
+                    trans_money = float(billing_amount / 100)
+                else:
+                    trans_money = -float(billing_amount / 100)
+                pend_money += trans_money
             sum_top = SqlData.search_card_top(card_number)
             sum_refund = SqlData.search_card_refund(card_number)
             remain = sum_top - sum_refund
