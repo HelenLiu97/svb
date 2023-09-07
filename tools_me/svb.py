@@ -121,6 +121,7 @@ class SVB(object):
         try:
             resp = self.requests.get(url, headers=self.create_header(method, path, params=params), timeout=60)
             if resp.status_code == 200:
+                print(resp.text)
                 return resp.json()
             else:
                 return {}
@@ -201,7 +202,7 @@ class SVB(object):
 
 svb = SVB()
 if __name__ == '__main__':
-    r = svb.card_detail(154566373)
+    r = svb.card_detail(154567967)
     print(r)
     # base_path = os.path.abspath(os.path.dirname(os.path.dirname(__file__)))
     # excel_path = os.path.join(base_path, 'static\excel\{}.xls')

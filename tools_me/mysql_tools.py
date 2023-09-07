@@ -283,6 +283,7 @@ class SqlDataBase(object):
                 info_dict['cvc'] = i[5]
                 info_dict['valid_start_on'] = str(i[6])
                 info_dict['valid_end_on'] = str(i[7])
+                info_dict['create_time'] = str(i[8])
                 info_dict['label'] = i[9]
                 info_dict['status'] = '正常' if i[10] == 'T' else '注销'
                 info_dict['detail'] = "双击查看"
@@ -1741,6 +1742,7 @@ class SqlDataBase(object):
             info_dict['authorization_date'] = i[4]
             info_dict['billing_amount'] = i[5]
             info_dict['billing_currency'] = i[6]
+            info_dict['clearing_type'] = i[7]
             info_dict['merchant_amount'] = i[11]
             info_dict['merchant_currency'] = i[12]
             info_dict['merchant_name'] = i[14]
@@ -1798,6 +1800,7 @@ class SqlDataBase(object):
             info_dict['authorization_date'] = i[4]
             info_dict['billing_amount'] = i[5]
             info_dict['billing_currency'] = i[6]
+            info_dict['clearing_type'] = i[7]
             info_dict['merchant_amount'] = i[11]
             info_dict['merchant_currency'] = i[12]
             info_dict['merchant_name'] = i[14]

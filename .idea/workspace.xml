@@ -5,14 +5,13 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="6d8d786e-ad10-4630-ad92-b9cc656a22cd" name="Default Changelist" comment="添加导入批量开卡功能">
-      <change afterPath="$PROJECT_DIR$/tools_me/注销差额处理.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/apps/admin.py" beforeDir="false" afterPath="$PROJECT_DIR$/apps/admin.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/apps/user.py" beforeDir="false" afterPath="$PROJECT_DIR$/apps/user.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/templates/admin/card_trans_settle.html" beforeDir="false" afterPath="$PROJECT_DIR$/templates/admin/card_trans_settle.html" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/templates/user/card_table.html" beforeDir="false" afterPath="$PROJECT_DIR$/templates/user/card_table.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/time_task/delete_card.py" beforeDir="false" afterPath="$PROJECT_DIR$/time_task/delete_card.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/tools_me/db_conn_init.py" beforeDir="false" afterPath="$PROJECT_DIR$/tools_me/db_conn_init.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/templates/user/card_trans_settle.html" beforeDir="false" afterPath="$PROJECT_DIR$/templates/user/card_trans_settle.html" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/tools_me/mysql_tools.py" beforeDir="false" afterPath="$PROJECT_DIR$/tools_me/mysql_tools.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tools_me/svb.py" beforeDir="false" afterPath="$PROJECT_DIR$/tools_me/svb.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -242,7 +241,7 @@
     &quot;RunOnceActivity.OpenProjectViewOnStart&quot;: &quot;true&quot;,
     &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
     &quot;WebServerToolWindowFactoryState&quot;: &quot;false&quot;,
-    &quot;last_opened_file_path&quot;: &quot;E:/new_bento&quot;,
+    &quot;last_opened_file_path&quot;: &quot;E:/rpa-python&quot;,
     &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
     &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
     &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
@@ -272,7 +271,7 @@
       <recent name="H:\svb\tools_me" />
     </key>
   </component>
-  <component name="RunManager" selected="Python.注销差额处理">
+  <component name="RunManager" selected="Python.svb">
     <configuration name="注销差额处理" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
       <module name="svb" />
       <option name="INTERPRETER_OPTIONS" value="" />
@@ -400,9 +399,9 @@
     </configuration>
     <recent_temporary>
       <list>
+        <item itemvalue="Python.svb" />
         <item itemvalue="Python.注销差额处理" />
         <item itemvalue="Python.db_conn_init" />
-        <item itemvalue="Python.svb" />
         <item itemvalue="Python.manager" />
         <item itemvalue="Python.new_card" />
       </list>
@@ -601,7 +600,11 @@
       <workItem from="1693453159661" duration="6041000" />
       <workItem from="1693467361425" duration="1159000" />
       <workItem from="1693808849199" duration="1147000" />
-      <workItem from="1693810326432" duration="6573000" />
+      <workItem from="1693810326432" duration="7327000" />
+      <workItem from="1693827018245" duration="722000" />
+      <workItem from="1693895659044" duration="1621000" />
+      <workItem from="1693968066049" duration="1482000" />
+      <workItem from="1694049919290" duration="2296000" />
     </task>
     <task id="LOCAL-00001" summary="首次推送svb">
       <created>1582278040297</created>
@@ -785,7 +788,14 @@
       <option name="project" value="LOCAL" />
       <updated>1693470283137</updated>
     </task>
-    <option name="localTasksCounter" value="27" />
+    <task id="LOCAL-00027" summary="添加导入批量开卡功能">
+      <created>1693819377304</created>
+      <option name="number" value="00027" />
+      <option name="presentableId" value="LOCAL-00027" />
+      <option name="project" value="LOCAL" />
+      <updated>1693819377304</updated>
+    </task>
+    <option name="localTasksCounter" value="28" />
     <servers />
   </component>
   <component name="TimeTrackingManager">
@@ -866,13 +876,14 @@
   </component>
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
     <SUITE FILE_PATH="coverage/svb$mysql_tools.coverage" NAME="mysql_tools 覆盖结果" MODIFIED="1688452143939" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/tools_me" />
-    <SUITE FILE_PATH="coverage/svb$.coverage" NAME="注销差额处理 覆盖结果" MODIFIED="1693819187491" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/tools_me" />
+    <SUITE FILE_PATH="coverage/svb$.coverage" NAME="注销差额处理 覆盖结果" MODIFIED="1693819235866" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/tools_me" />
     <SUITE FILE_PATH="coverage/svb$new_card.coverage" NAME="new_card 覆盖结果" MODIFIED="1688957906026" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/time_task" />
     <SUITE FILE_PATH="coverage/svb$manager.coverage" NAME="manager 覆盖结果" MODIFIED="1693466189784" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/svb$delete_card.coverage" NAME="delete_card 覆盖结果" MODIFIED="1688808427927" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/tools_me" />
-    <SUITE FILE_PATH="coverage/svb$svb.coverage" NAME="svb 覆盖结果" MODIFIED="1693814336722" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/tools_me" />
+    <SUITE FILE_PATH="coverage/svb$svb.coverage" NAME="svb 覆盖结果" MODIFIED="1693827145531" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/tools_me" />
     <SUITE FILE_PATH="coverage/svb$card_trans.coverage" NAME="card_trans 覆盖结果" MODIFIED="1688807600454" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/time_task" />
     <SUITE FILE_PATH="coverage/svb$verify_pay.coverage" NAME="verify_pay 覆盖结果" MODIFIED="1631260641138" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/apps" />
+    <SUITE FILE_PATH="coverage/svb$db_conn_init.coverage" NAME="db_conn_init 覆盖结果" MODIFIED="1693819230457" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/tools_me" />
   </component>
   <component name="editorHistoryManager">
     <entry file="file://$PROJECT_DIR$/templates/user/free_card.html">

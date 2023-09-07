@@ -1777,7 +1777,7 @@ def excel_create_card(card_info, user_id, create_price, excel_path, file_name):
             card_id = res.get('card_id')
             last4 = res.get('last4')
             valid_start_on = res.get('valid_start_on')
-            valid_ending_on = res.get('valid_ending_on')
+            valid_ending_on = res.get('valid_end_on')
 
             # 插入卡信息
             SqlData.insert_card(card_number, cvc, expiry, card_id, last4, valid_start_on, valid_ending_on, label,
