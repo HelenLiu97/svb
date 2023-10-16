@@ -282,8 +282,8 @@ def card_settle_dw():
     # 保存
     base_path = os.path.abspath(os.path.dirname(os.path.dirname(__file__)))
     excel_path = os.path.join(base_path, 'static\excel\{}.xls'.format(g.user_name + str(sum_code())))
-    workbook.save(path)
-    return send_file(path)
+    workbook.save(excel_path)
+    return send_file(excel_path)
 
 
 @user_blueprint.route('/card_trans_dw/', methods=['GET'])

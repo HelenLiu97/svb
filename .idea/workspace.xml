@@ -4,24 +4,8 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="6d8d786e-ad10-4630-ad92-b9cc656a22cd" name="Default Changelist" comment="添加导入批量开卡功能">
-      <change afterPath="$PROJECT_DIR$/tools_me/seach_card_amount.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/apps/admin.py" beforeDir="false" afterPath="$PROJECT_DIR$/apps/admin.py" afterDir="false" />
+    <list default="true" id="6d8d786e-ad10-4630-ad92-b9cc656a22cd" name="Default Changelist" comment="新增卡消费记录时间段查询">
       <change beforePath="$PROJECT_DIR$/apps/user.py" beforeDir="false" afterPath="$PROJECT_DIR$/apps/user.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/manager.py" beforeDir="false" afterPath="$PROJECT_DIR$/manager.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/templates/admin/card_decline.html" beforeDir="false" afterPath="$PROJECT_DIR$/templates/admin/card_decline.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/templates/admin/card_trans.html" beforeDir="false" afterPath="$PROJECT_DIR$/templates/admin/card_trans.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/templates/admin/card_trans_settle.html" beforeDir="false" afterPath="$PROJECT_DIR$/templates/admin/card_trans_settle.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/templates/admin/card_using.html" beforeDir="false" afterPath="$PROJECT_DIR$/templates/admin/card_using.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/templates/user/card_decline.html" beforeDir="false" afterPath="$PROJECT_DIR$/templates/user/card_decline.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/templates/user/card_trans.html" beforeDir="false" afterPath="$PROJECT_DIR$/templates/user/card_trans.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/templates/user/card_trans_settle.html" beforeDir="false" afterPath="$PROJECT_DIR$/templates/user/card_trans_settle.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/tools_me/db_conn_init.py" beforeDir="false" afterPath="$PROJECT_DIR$/tools_me/db_conn_init.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/tools_me/mysql_tools.py" beforeDir="false" afterPath="$PROJECT_DIR$/tools_me/mysql_tools.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/tools_me/other_tools.py" beforeDir="false" afterPath="$PROJECT_DIR$/tools_me/other_tools.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/tools_me/svb.py" beforeDir="false" afterPath="$PROJECT_DIR$/tools_me/svb.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/tools_me/注销差额处理.py" beforeDir="false" afterPath="$PROJECT_DIR$/tools_me/注销差额处理.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -632,7 +616,7 @@
       <workItem from="1696732737627" duration="1253000" />
       <workItem from="1697161227918" duration="1260000" />
       <workItem from="1697184121917" duration="797000" />
-      <workItem from="1697423355332" duration="9710000" />
+      <workItem from="1697423355332" duration="9846000" />
     </task>
     <task id="LOCAL-00001" summary="首次推送svb">
       <created>1582278040297</created>
@@ -830,7 +814,14 @@
       <option name="project" value="LOCAL" />
       <updated>1694057060478</updated>
     </task>
-    <option name="localTasksCounter" value="29" />
+    <task id="LOCAL-00029" summary="新增卡消费记录时间段查询">
+      <created>1697442908866</created>
+      <option name="number" value="00029" />
+      <option name="presentableId" value="LOCAL-00029" />
+      <option name="project" value="LOCAL" />
+      <updated>1697442908866</updated>
+    </task>
+    <option name="localTasksCounter" value="30" />
     <servers />
   </component>
   <component name="TimeTrackingManager">
@@ -907,7 +898,8 @@
     <MESSAGE value="新增brex充值和确认" />
     <MESSAGE value="上线生产前的初版提交" />
     <MESSAGE value="添加导入批量开卡功能" />
-    <option name="LAST_COMMIT_MESSAGE" value="添加导入批量开卡功能" />
+    <MESSAGE value="新增卡消费记录时间段查询" />
+    <option name="LAST_COMMIT_MESSAGE" value="新增卡消费记录时间段查询" />
   </component>
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
     <SUITE FILE_PATH="coverage/svb$mysql_tools.coverage" NAME="mysql_tools 覆盖结果" MODIFIED="1688452143939" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/tools_me" />
