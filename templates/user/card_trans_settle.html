@@ -19,6 +19,9 @@
         <option value="F">不含手续费</option>
         </select>
     </div>
+    <div class="layui-inline">
+<input type="text" class="layui-input" id="test8" autocomplete="off" placeholder="时间范围">
+</div>
 <button class="layui-btn" lay-submit="" lay-filter="trans_sear" type="submit">搜索</button>
 <button type="reset" class="layui-btn layui-btn-primary" id="">重置</button>
     <a href="/user/card_settle_dw/" id="download"><button type="button" id="btnDownload" class="layui-btn layui-btn-normal layui-btn-radius"
@@ -29,12 +32,12 @@
 <script>
     layui.use(['table','laydate','form','jquery'], function () {
         var table=layui.table,
-            date=layui.laydate,
+            laydate=layui.laydate,
             form=layui.form,
             $=layui.jquery;
 
-        date.render({
-            elem: '#test10'
+        laydate.render({
+            elem: '#test8'
             ,range: true
           });
 
@@ -71,13 +74,15 @@
 
         form.on('submit(trans_sear)', function(data){
              var card_no = $("#card_no").val(),
-                 trans_status = $("#trans_status").val();
+                 trans_status = $("#trans_status").val(),
+                 time_range = $('#test8').val();
              table.reload("push_log", {
                  page: {
                    curr: 1 //重新从第 1 页开始
                  },where: {
                      card_no:card_no,
-                     trans_status: trans_status
+                     trans_status: trans_status,
+                     time_range:time_range
                    }
                }, '/user/push_log/');
             return false;

@@ -1,11 +1,25 @@
+"""
+coding:utf-8
+@software:PyCharm
+@Time:2023/9/16 10:12
+@Author:Helen
+"""
+# (dabao) H:\bento_web_version2\tools_me>pyinstaller.exe -F -i search.ico new_bento.py -p H:\bento_web_version2\dabao\Lib\site-packages\
+
+
+from requests.adapters import HTTPAdapter
+import pymysql
+import threading
+from threading import Lock
 import json
 import logging
-import os
-
 import requests
 from hashlib import sha256
 import hmac
 import time
+
+
+lock = Lock()
 
 
 class SVB(object):
@@ -22,7 +36,10 @@ class SVB(object):
         self.base_url = 'https://api.svb.com'
 
         self.requests = requests.session()
-        self.requests.keep_alive = False
+        adapter = requests.adapters.HTTPAdapter(
+            pool_connections=100, pool_maxsize=100)
+        self.requests.mount('https://', adapter)
+        self.requests.keep_alive = True
 
     def create_header(self, method, path, params="", body=""):
         '''
@@ -117,16 +134,13 @@ class SVB(object):
         method = "GET"
         params = 'show_card_number=true&show_realtime_auths=true'
         url = self.base_url + path + "?" + params
-        # proxies = {'http': '107.150.104.119:2000'}
         try:
             resp = self.requests.get(url, headers=self.create_header(method, path, params=params), timeout=60)
             if resp.status_code == 200:
-                print(resp.text)
                 return resp.json()
             else:
                 return {}
         except requests.exceptions.RequestException as e:
-            print(e)
             logging.error("card_detail_api_error:" + str(e))
             return False
 
@@ -200,26 +214,165 @@ class SVB(object):
         print(resp.json())
 
 
+class SqlData(object):
+    def __init__(self):
+        host = "3.17.178.128"
+        port = 3306
+        user = "root"
+        password = "liuxiao@140922"
+        database = 'svb'
+        self.connect = pymysql.Connect(
+            host=host, port=port, user=user,
+            passwd=password, db=database,
+            charset='utf8',
+            connect_timeout=10)
+        self.cursor = self.connect.cursor()
+
+    def __del__(self):
+        self.close_connect()
+
+    def search_user_id(self, user_name):
+        sql = "SELECT id FROM user_info WHERE `name`='{}'".format(user_name)
+        self.cursor.execute(sql)
+        rows = self.cursor.fetchone()
+        if not rows:
+            return False
+        return rows[0]
+
+    def search_card_data(self, user_id):
+        sql = "select card_id, card_number from card_info where user_id={}".format(user_id)
+        self.cursor.execute(sql)
+        rows = self.cursor.fetchall()
+        return tuple(reversed(rows))
+
+    def search_card_data_set(self, alias):
+        sql = "select card_info.alias, card_info.card_id, card_info.card_number, user_info.name from card_info join user_info on card_info.user_id=user_info.id where  card_info.alias = '{}'".format(
+            alias)
+        self.cursor.execute(sql)
+        rows = self.cursor.fetchone()
+        return rows
+
+    def search_card_top(self, card_no):
+        sql = "SELECT SUM(do_money) FROM user_trans WHERE card_no='{}' AND trans_type='支出' AND  do_type !='开卡'".format(
+            card_no)
+        self.cursor.execute(sql)
+        rows = self.cursor.fetchone()
+        return rows[0]
+
+    def search_card_refund(self, card_no):
+        sql = "SELECT IFNULL(SUM(do_money),0) FROM user_trans WHERE card_no='{}' AND trans_type='收入'".format(
+            card_no)
+        self.cursor.execute(sql)
+        rows = self.cursor.fetchone()
+        return rows[0]
+
+    def close_connect(self):
+        if self.cursor:
+            self.cursor.close()
+        if self.connect:
+            self.connect.close()
+
+
 svb = SVB()
-if __name__ == '__main__':
-    r = svb.card_detail(154565921)
-    print(r)
-    # d, s = svb.update_card(161380559, 2100)
-    # print(d, s)
-    # print(r)
-    # base_path = os.path.abspath(os.path.dirname(os.path.dirname(__file__)))
-    # excel_path = os.path.join(base_path, 'static\excel\{}.xls')
-    # print(excel_path)
-    """
-    print(time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(time.time())))
-    res = svb.all_virtualcards()
-    card_list = res.get('data')
-    print(len(card_list))
-    for i in card_list:
-        card_id = i.get('id')
-        print(card_id)
-        if card_id == "34025878":
-            print('找到了！')
-    # print(res.get('data').get('clearings'))
-    print(time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(time.time())))
-    """
+
+
+def remain_trans(card_id, card_number, user_name):
+    try:
+        print("开始查询卡号：{}".format(card_number))
+        card_detail = svb.card_detail(card_id)
+        available_balance = card_detail.get('data').get('available_balance')
+        trans = card_detail.get('data').get('clearings')
+        if available_balance is None:
+            available_balance = 0
+
+        card_real_pay = 0
+        if len(trans) > 0:
+            for tran in trans:
+                clearing_type = tran.get('clearing_type')
+                billing_amount = float(float(tran.get("billing_amount")) / 100)
+                if clearing_type == 'CREDIT':
+                    trans_money = billing_amount
+                else:
+                    trans_money = -billing_amount
+                card_real_pay += trans_money
+        sum_top = SqlData().search_card_top(card_number)
+        # print('充值', sum_top)
+        sum_refund = SqlData().search_card_refund(card_number)
+        # print('退款', sum_refund)
+        remain = sum_top - sum_refund
+        remain = round(remain, 2)
+        available_balance = round(available_balance / 100, 2)
+        card_real_pay = round(card_real_pay, 2)
+        # print(remain)
+
+        if round(remain + card_real_pay, 2) != available_balance:
+            diff = round(remain + card_real_pay - available_balance, 2)
+            s = '{},{},{},{},{},{},{},{}'.format(available_balance, card_real_pay, sum_top, sum_refund, card_number,
+                                              user_name, diff, card_id)
+            text_name = user_name + ".txt"
+            with open(text_name, 'a', encoding='utf-8') as f:
+                f.write(s + "\n")
+
+
+    except Exception as e:
+        text_name = user_name + "查询失败的卡信息.txt"
+        print(e)
+        with open(text_name, 'a', encoding='utf-8') as f:
+            f.write('卡号: {} 异常,查询失败！查询交易记录失败'.format(card_number) + "\n")
+    return
+
+
+def main():
+    username = input('请输入需要查询的用户名:')
+    # username = 'TKA04'
+    user_id = SqlData().search_user_id(username)
+    if not user_id:
+        print('无该用户，请核实后重试！')
+        time.sleep(3)
+        return
+    # 按时间段查询操作过得卡
+    data = SqlData().search_card_data(user_id)
+    card_ = list()
+    for i in data:
+        card_.append(i)
+    card_int = len(card_)
+    print(card_)
+    print("共计卡量 [" + str(card_int) + "] 张。")
+    # return
+    text_name = str(username) + ".txt"
+    with open(text_name, 'a', encoding='utf-8') as f:
+        f.write('卡余额,卡总支出,卡总充值,总退款,卡号,用户,差额,卡ID' + "\n")
+    card_info = list(card_)
+    print('开始校验余额.........')
+    while True:
+        loops_len = len(card_info)
+        num = 20
+        if loops_len < 20:
+            num = loops_len
+        threads = []
+        for i in range(num):
+            card_one = card_info.pop()
+            card_id = card_one[0]
+            card_number = card_one[1]
+            # username = ''
+            t = threading.Thread(target=remain_trans, args=(card_id, card_number, username))
+            threads.append(t)
+        for i in threads:  # start threads 此处并不会执行线程，而是将任务分发到每个线程，同步线程。等同步完成后再开始执行start方法
+            i.start()
+        for i in threads:  # jion()方法等待线程完成
+            i.join()
+        no_check = len(card_info)
+        checked = card_int - no_check
+        res = checked / card_int
+        bb = "%.2f%%" % (res * 100)
+        print("已完成：" + bb)
+        if len(card_info) == 0:
+            print('即将退出程序........')
+            time.sleep(5)
+            break
+
+
+if __name__ == "__main__":
+    # res = SqlData().search_card_refund('5563386772995206')
+    # print(res)
+    main()

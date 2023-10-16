@@ -428,5 +428,22 @@ def dic_key(dic):
     return float(dic['day_money'])
 
 
+def between_day_list(start_date_input, end_date_input):
+    # start_date_input = input("请输入起始日期（YYYY-MM-DD）：")
+    # end_date_input = input("请输入结束日期（YYYY-MM-DD）：")
+    start_date = datetime.datetime.strptime(start_date_input, "%Y-%m-%d")
+    end_date = datetime.datetime.strptime(end_date_input, "%Y-%m-%d")
+
+    date_range = []
+    current_date = start_date
+
+    while current_date <= end_date:
+        date_range.append(current_date.strftime("%Y-%m-%d"))
+        current_date += datetime.timedelta(days=1)
+    return date_range
+
+
 if __name__ == "__main__":
-    print(sum_code())
+    res = between_day_list('2023-09-23', '2027-02-23')
+    print(res)
+

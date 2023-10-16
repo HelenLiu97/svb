@@ -12,7 +12,7 @@ from openpyxl.reader.excel import load_workbook
 
 from config import cache
 from tools_me.other_tools import xianzai_time, login_required, check_float, account_lock, get_nday_list, \
-    verify_login_time, trans_lock, sum_code, create_card, dic_key
+    verify_login_time, trans_lock, sum_code, create_card, dic_key, between_day_list
 from tools_me.parameter import RET, MSG, TRANS_TYPE, DO_TYPE, DIR_PATH
 from tools_me.redis_tools import RedisTool
 from tools_me.send_email import send
@@ -280,7 +280,8 @@ def card_settle_dw():
         row += 1
 
     # 保存
-    path = 'H:\svb\static\excel\{}.xls'.format(g.user_name + str(sum_code()))
+    base_path = os.path.abspath(os.path.dirname(os.path.dirname(__file__)))
+    excel_path = os.path.join(base_path, 'static\excel\{}.xls'.format(g.user_name + str(sum_code())))
     workbook.save(path)
     return send_file(path)
 
@@ -1048,6 +1049,7 @@ def push_log_settle():
         limit = request.args.get('limit')
         card_number = request.args.get('card_no')
         trans_status = request.args.get('trans_status')
+        time_range = request.args.get('time_range')
 
         if trans_status and card_number:
             sql_1 = " AND card_trans_settle.card_number LIKE '%{}%'".format(card_number)
@@ -1069,6 +1071,15 @@ def push_log_settle():
         results['msg'] = MSG.OK
         results['code'] = RET.OK
         info = SqlData.search_card_trans_settle(user_id, sql)
+        if time_range:
+            min_time = time_range.split(' - ')[0]
+            max_time = time_range.split(' - ')[1]
+            day_list = between_day_list(min_time, max_time)
+            _info = list()
+            for z in info:
+                if z.get('authorization_date')[:10] in day_list:
+                    _info.append(z)
+            info = _info
         if not info:
             results['msg'] = MSG.NODATA
             return jsonify(results)
@@ -1099,6 +1110,7 @@ def push_log():
         limit = request.args.get('limit')
         card_number = request.args.get('card_no')
         trans_status = request.args.get('trans_status')
+        time_range = request.args.get('time_range')
 
         if trans_status and card_number:
             sql = " AND card_trans.card_number LIKE '%{}%' AND card_trans.status = '{}'".format(card_number, trans_status)
@@ -1112,6 +1124,15 @@ def push_log():
         results['msg'] = MSG.OK
         results['code'] = RET.OK
         info = SqlData.search_card_trans(user_id, sql)
+        if time_range:
+            min_time = time_range.split(' - ')[0]
+            max_time = time_range.split(' - ')[1]
+            day_list = between_day_list(min_time, max_time)
+            _info = list()
+            for z in info:
+                if z.get('transaction_date_time')[:10] in day_list:
+                    _info.append(z)
+            info = _info
         if not info:
             results['msg'] = MSG.NODATA
             return jsonify(results)

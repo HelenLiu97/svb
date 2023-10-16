@@ -23,7 +23,7 @@ def main(user_id, n_time, cardnumber, refund_limit):
     print(cardnumber, refund_limit)
 
 
-wb = load_workbook(r'C:\Users\Administrator\Desktop\5563注销差额恢复.xlsx')
+wb = load_workbook(r'C:\Users\Administrator\Desktop\注销差额恢复5.xlsx')
 sheets = wb.worksheets  # 获取当前所有的sheet
 # 获取第一张sheet
 sheet1 = sheets[0]

@@ -12,6 +12,9 @@
 <div class="layui-inline">
     <input type="number" class="layui-input" name="card_no" id="card_no" autocomplete="off" placeholder="请输入卡号">
 </div>
+        <div class="layui-inline">
+<input type="text" class="layui-input" id="test8" autocomplete="off" placeholder="时间范围">
+</div>
 <button class="layui-btn" lay-submit="" lay-filter="trans_sear" type="submit">搜索</button>
 <button type="reset" class="layui-btn layui-btn-primary" id="">重置</button>
     </form>
@@ -20,12 +23,12 @@
 <script>
     layui.use(['table','laydate','form','jquery'], function () {
         var table=layui.table,
-            date=layui.laydate,
+            laydate=layui.laydate,
             form=layui.form,
             $=layui.jquery;
 
-        date.render({
-            elem: '#test10'
+        laydate.render({
+            elem: '#test8'
             ,range: true
           });
 
@@ -65,13 +68,15 @@
         });
 
         form.on('submit(trans_sear)', function(data){
-             var card_no = $("#card_no").val();
+             var card_no = $("#card_no").val(),
+                 time_range = $('#test8').val();
              table.reload("push_log", {
                  page: {
                    curr: 1 //重新从第 1 页开始
                  },where: {
                      card_no:card_no,
-                     trans_status: 'F'
+                     trans_status: 'F',
+                     time_range:time_range
                    }
                }, '/user/push_log/');
             return false;

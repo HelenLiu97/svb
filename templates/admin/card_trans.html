@@ -15,6 +15,9 @@
 <div class="layui-inline">
 <input type="text" class="layui-input" id="test10" autocomplete="off" placeholder="客户">
 </div>
+    <div class="layui-inline">
+<input type="text" class="layui-input" id="test8" autocomplete="off" placeholder="时间范围">
+</div>
 <button class="layui-btn" lay-submit="" lay-filter="trans_sear" type="submit">搜索</button>
 <button type="reset" class="layui-btn layui-btn-primary" id="">重置</button>
     </form>
@@ -23,10 +26,14 @@
 <script>
     layui.use(['table','laydate','form','jquery'], function () {
         var table=layui.table,
-            date=layui.laydate,
+            laydate=layui.laydate,
             form=layui.form,
             $=layui.jquery;
 
+        laydate.render({
+            elem: '#test8'
+            , range: true
+        });
 
         //执行一个 table 实例
         table.render({
@@ -58,13 +65,15 @@
 
         form.on('submit(trans_sear)', function(data){
              var card_no = $("#card_no").val(),
-                 time_range = $('#test10').val();
+                 cus_name = $('#test10').val(),
+                 time_range = $('#test8').val();
              table.reload("push_log", {
                  page: {
                    curr: 1 //重新从第 1 页开始
                  },where: {
                      card_no:card_no,
-                     cus_name:time_range,
+                     cus_name:cus_name,
+                     time_range:time_range,
                    }
                }, '/user/push_log/');
             return false;
@@ -78,13 +87,15 @@
                 var code = theEvent.keyCode || theEvent.which || theEvent.charCode;
                 if (code == 13) {
                     var card_no = $("#card_no").val(),
-                     time_range = $('#test10').val();
+                        cus_name = $('#test10').val(),
+                        time_range = $('#test8').val();
                      table.reload("push_log", {
                          page: {
                            curr: 1 //重新从第 1 页开始
                          },where: {
                              card_no:card_no,
-                             cus_name:time_range,
+                             cus_name:cus_name,
+                             time_range:time_range
                            }
                        }, '/user/push_log/');
                     return false;

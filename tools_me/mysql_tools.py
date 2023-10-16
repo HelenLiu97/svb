@@ -1805,8 +1805,6 @@ class SqlDataBase(object):
             info_dict['merchant_currency'] = i[12]
             info_dict['merchant_name'] = i[14]
             info_dict['settlement_date'] = i[15]
-            info_dict['handing_fee'] = i[17]
-            info_dict['name'] = i[18]
             info_list.append(info_dict)
         return info_list
 

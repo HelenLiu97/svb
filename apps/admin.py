@@ -12,7 +12,8 @@ from tools_me.svb import svb
 from tools_me.des_code import ImgCode
 from tools_me.img_code import createCodeImage
 from tools_me.mysql_tools import SqlData
-from tools_me.other_tools import admin_required, sum_code, xianzai_time, get_nday_list, verify_login_time
+from tools_me.other_tools import admin_required, sum_code, xianzai_time, get_nday_list, verify_login_time, \
+    between_day_list
 from tools_me.parameter import RET, MSG, DIR_PATH
 from tools_me.redis_tools import RedisTool
 from tools_me.send_sms.send_sms import CCP
@@ -280,6 +281,7 @@ def push_log_settle():
         limit = request.args.get('limit')
         card_number = request.args.get('card_no')
         trans_status = request.args.get('trans_status')
+        time_range = request.args.get('time_range')
         # 这是所有消费记录的sql
         if trans_status and card_number:
             sql_1 = " AND card_number LIKE '%{}%'".format(card_number)
@@ -302,6 +304,15 @@ def push_log_settle():
         results['msg'] = MSG.OK
         results['code'] = RET.OK
         info = SqlData.search_admin_card_trans_settle(sql)
+        if time_range:
+            min_time = time_range.split(' - ')[0]
+            max_time = time_range.split(' - ')[1]
+            day_list = between_day_list(min_time, max_time)
+            _info = list()
+            for z in info:
+                if z.get('authorization_date')[:10] in day_list:
+                    _info.append(z)
+            info = _info
         if not info:
             results['msg'] = MSG.NODATA
             return jsonify(results)
@@ -331,6 +342,7 @@ def push_log():
         card_number = request.args.get('card_no')
         cus_name = request.args.get('cus_name')
         status = request.args.get('status')
+        time_range = request.args.get('time_range')
         # 这是所有消费记录的sql
         if card_number or cus_name:
             card_sql = ""
@@ -353,6 +365,15 @@ def push_log():
         results['msg'] = MSG.OK
         results['code'] = RET.OK
         info = SqlData.search_admin_card_trans(sql)
+        if time_range:
+            min_time = time_range.split(' - ')[0]
+            max_time = time_range.split(' - ')[1]
+            day_list = between_day_list(min_time, max_time)
+            _info = list()
+            for z in info:
+                if z.get('transaction_date_time')[:10] in day_list:
+                    _info.append(z)
+            info = _info
         if not info:
             results['msg'] = MSG.NODATA
             return jsonify(results)
@@ -1282,8 +1303,8 @@ def acc_pay():
             if f_money < 0:
                 return jsonify({'code': RET.SERVERERROR, 'msg': '请输入正数金额！'})
             balance = SqlData.search_user_field_name('balance', name)
-            if f_money > balance:
-                return jsonify({'code': RET.SERVERERROR, 'msg': '扣费余额不足！'})
+            # if f_money > balance:
+            #     return jsonify({'code': RET.SERVERERROR, 'msg': '扣费余额不足！'})
             user_id = SqlData.search_user_field_name('id', name)
             SqlData.update_balance(-f_money, user_id)
             a_balance = SqlData.search_user_field("balance", user_id)
