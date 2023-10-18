@@ -1637,18 +1637,18 @@ class SqlDataBase(object):
                                  billing_currency,
                                  clearing_type, exchange_rate, mcc,
                                  mcc_description, merchant_amount, merchant_currency, merchant_id, merchant_name,
-                                 settlement_date, card_id):
+                                 settlement_date, card_id, user_name, user_id):
         # 这么写sql是为了插入的交易数据重复，因为交易信息内没有唯一标识
         sql = "Insert into card_trans_settle(`card_number`, `acquirer_ica`,`approval_code`, `authorization_date`,`billing_amount`,`billing_currency`," \
               "`clearing_type`, `exchange_rate`,`mcc`,`mcc_description`,`merchant_amount`,`merchant_currency`,`merchant_id`," \
-              "`merchant_name`, `settlement_date`, `card_id`)select '{0}','{1}','{2}','{3}',{4},'{5}','{6}','{7}',{8},'{9}','{10}','{11}','{12}','{13}','{14}',{15} " \
+              "`merchant_name`, `settlement_date`, `card_id`, `user_name`, `user_id`)select '{0}','{1}','{2}','{3}',{4},'{5}','{6}','{7}',{8},'{9}','{10}','{11}','{12}','{13}','{14}',{15},'{16}',{17} " \
               "from DUAL where not exists (select * from card_trans_settle where `card_number`='{0}' and `acquirer_ica` = '{1}' and `approval_code`='{2}' and `authorization_date`='{3}' and `billing_amount`={4} and `billing_currency`='{5}' and " \
               "`clearing_type`='{6}' and `exchange_rate`='{7}' and `mcc`='{8}' and `mcc_description` ='{9}' and `merchant_amount` = {10} and  `merchant_currency`= '{11}' and `merchant_id`='{12}' and " \
-              "`merchant_name`='{13}' and `settlement_date`='{14}' and `card_id`='{15}')".format(card_number, acquirer_ica, approval_code, authorization_date, billing_amount,
+              "`merchant_name`='{13}' and `settlement_date`='{14}' and `card_id`='{15}' and `user_name`='{16}' and `user_id`={17})".format(card_number, acquirer_ica, approval_code, authorization_date, billing_amount,
                                  billing_currency,
                                  clearing_type, exchange_rate, mcc,
                                  mcc_description, merchant_amount, merchant_currency, merchant_id, merchant_name,
-                                 settlement_date, card_id)
+                                 settlement_date, card_id, user_name, user_id)
         conn, cursor = self.connect()
         try:
             cursor.execute(sql)
@@ -1675,7 +1675,7 @@ class SqlDataBase(object):
         return info_list
 
     def update_settle_handing(self, money, info_id):
-        sql = "UPDATE card_trans_settle SET handing_fee = {} WHERE id={}".format(money, info_id)
+        sql = "UPDATE card_trans_settle SET expense = {} WHERE id={}".format(money, info_id)
         conn, cursor = self.connect()
         try:
             cursor.execute(sql)
@@ -1805,6 +1805,10 @@ class SqlDataBase(object):
             info_dict['merchant_currency'] = i[12]
             info_dict['merchant_name'] = i[14]
             info_dict['settlement_date'] = i[15]
+            info_dict['expense'] = i[17]
+            info_dict['user_name'] = i[18]
+            info_dict['user_id'] = i[19]
+            info_dict['_id'] = i[0]
             info_list.append(info_dict)
         return info_list
 

@@ -74,7 +74,7 @@ def update_trans_balance():
                                  billing_currency,
                                  clearing_type, exchange_rate, mcc,
                                  mcc_description, merchant_amount, merchant_currency, merchant_id, merchant_name,
-                                 settlement_date, card_id)
+                                 settlement_date, card_id, user_name, user_id)
         else:
             logging.error('定时查询卡交易失败，card_id: ' + str(card_id))
     t = xianzai_time()

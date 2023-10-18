@@ -282,6 +282,7 @@ def push_log_settle():
         card_number = request.args.get('card_no')
         trans_status = request.args.get('trans_status')
         time_range = request.args.get('time_range')
+        cus_name = request.args.get('cus_name')
         # 这是所有消费记录的sql
         if trans_status and card_number:
             sql_1 = " AND card_number LIKE '%{}%'".format(card_number)
@@ -297,6 +298,8 @@ def push_log_settle():
                 sql = " AND handing_fee != 0"
             else:
                 sql = " AND handing_fee = 0"
+        elif cus_name:
+            sql = " AND user_name LIKE '%" + cus_name + "%'"
         else:
             sql = ""
 
