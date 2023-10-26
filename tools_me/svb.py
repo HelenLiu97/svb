@@ -171,12 +171,12 @@ class SVB(object):
                 available_balance = resp_data.get('data').get('total_card_amount')
                 if available_balance == cents:
                     return True, resp_data.get('data').get('available_balance')
-                return False
+                return False, 0
             else:
-                return False
+                return False, 0
         except Exception as e:
             logging.error("update_card_api_error:" + str(e))
-            return False
+            return False, 0
 
     def card_admin(self):
         path = '/v1/admin/virtualcard'
@@ -202,10 +202,10 @@ class SVB(object):
 
 svb = SVB()
 if __name__ == '__main__':
-    r = svb.card_detail(154565921)
-    print(r)
-    # d, s = svb.update_card(161380559, 2100)
-    # print(d, s)
+    # r = svb.card_detail(159759615)
+    # print(r)
+    d, s = svb.update_card(160864955, 300)
+    print(d, s)
     # print(r)
     # base_path = os.path.abspath(os.path.dirname(os.path.dirname(__file__)))
     # excel_path = os.path.join(base_path, 'static\excel\{}.xls')

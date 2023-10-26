@@ -616,6 +616,7 @@ def card_delete():
         if not real_status:
             results = {"code": RET.SERVERERROR, "msg": "请不要违规操作!"}
             return jsonify(results)
+        """
         card_status = SqlData.search_one_card_status(card_number)
         if card_status:
             status = SqlData.search_delete_in(card_number)
@@ -626,6 +627,51 @@ def card_delete():
             return jsonify({'code': RET.OK, 'msg': '操作成功！正在删卡中...（此过程可能需要10-20分钟）'})
         else:
             return jsonify({'code': RET.SERVERERROR, 'msg': '该卡已注销！'})
+        """
+        card_id = SqlData.search_card_field('card_id', card_number)
+        card_detail = svb.card_detail(card_id)
+        if not card_detail:
+            return jsonify({'code': RET.SERVERERROR, 'msg': '该卡已注销！'})
+        available_balance = card_detail.get('data').get('available_balance')
+        available_balance = float(available_balance / 100)
+        clearings = card_detail.get('data').get('clearings')
+        pend_money = 0
+        for clear in clearings:
+            clearing_type = clear.get('clearing_type')
+            billing_amount = clear.get('billing_amount')
+            if clearing_type == 'CREDIT':
+                trans_money = float(billing_amount / 100)
+            else:
+                trans_money = -float(billing_amount / 100)
+            pend_money += trans_money
+        sum_top = SqlData.search_card_top(card_number)
+        sum_refund = SqlData.search_card_refund(card_number)
+        remain = sum_top - sum_refund
+        remain = round(remain, 2)
+        pend_money = round(pend_money, 2)
+        differ = 0
+        if remain - pend_money < available_balance:
+            theory_refund = round(remain - pend_money, 2)
+            differ = round(theory_refund - available_balance, 2)
+        res = svb.delete_card(card_id)
+        if res:
+            before_balance = SqlData.search_user_field('balance', user_id)
+            update_balance = available_balance
+            SqlData.update_balance(update_balance, user_id)
+            balance = SqlData.search_user_field("balance", user_id)
+            SqlData.update_card_info_card_no('card_status', 'F', card_number)
+            n_time = xianzai_time()
+            SqlData.insert_account_trans(n_time, '收入', "注销", card_number,
+                                         update_balance, before_balance, balance, user_id)
+            if differ != 0:
+                before_balance = SqlData.search_user_field('balance', user_id)
+                SqlData.update_balance(differ, user_id)
+                balance = SqlData.search_user_field("balance", user_id)
+                SqlData.insert_account_trans(n_time, '支出', "注销差额", card_number,
+                                             abs(differ), before_balance, balance, user_id)
+            return jsonify({'code': RET.OK, 'msg': '删卡操作成功!'})
+        return jsonify({'code': RET.SERVERERROR, 'msg': '请求超时请稍后重试！'})
+
 
 
 # 批量充值
@@ -707,8 +753,8 @@ def card_batch():
 # 充值
 @user_blueprint.route('/card_top/', methods=['GET', 'POST'])
 @login_required
-@account_lock
-@trans_lock
+# @account_lock
+# @trans_lock
 def top_up():
     # 判断是否是子账号用户
     vice_id = g.vice_id
@@ -751,6 +797,25 @@ def top_up():
         card_detail = svb.card_detail(card_id)
         if card_detail:
             available_balance = card_detail.get('data').get('total_card_amount')
+            clearings = card_detail.get('data').get('clearings')
+            pend_money = 0
+            for clear in clearings:
+                clearing_type = clear.get('clearing_type')
+                billing_amount = clear.get('billing_amount')
+                if clearing_type == 'CREDIT':
+                    trans_money = float(billing_amount / 100)
+                else:
+                    trans_money = -float(billing_amount / 100)
+                pend_money += trans_money
+            sum_top = SqlData.search_card_top(card_number)
+            sum_refund = SqlData.search_card_refund(card_number)
+            remain = sum_top - sum_refund
+            remain = round(remain, 2)
+            pend_money = round(pend_money, 2)
+            # 如果当前得卡余额大于则设置当前得理论余额为基础余额
+            if remain - pend_money < available_balance:
+                available_balance = int(round(remain - pend_money, 2) * 100)
+
             now_balance = available_balance + int(top_money) * 100
             res, card_balance = svb.update_card(card_id, now_balance)
             if res:
