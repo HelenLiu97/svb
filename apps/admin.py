@@ -28,7 +28,6 @@ def edit_ustd():
     if request.method == 'GET':
         url = request.args.get('url')
         status = SqlData.search_ustd_field('status', url)
-        print(status)
         # status:1为锁定，0为正常，2为置顶
         if status == 2:
             SqlData.update_ustd_info('status', 0, url)
@@ -68,10 +67,7 @@ def add_ustd():
     pic_url = data.get('pic_url')
     t = xianzai_time()
     SqlData.insert_ustd_code(pic_url, t, address)
-    print(data)
     return jsonify(results)
-    top_people = data.get('top_people')
-    email = data.get('email')
 
 
 @admin_blueprint.route('/upload_ustd/', methods=['POST'])
