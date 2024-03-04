@@ -1,11 +1,83 @@
+"""
+coding:utf-8
+@software:PyCharm
+@Time:2023/11/9 14:58
+@Author:Helen
+"""
+import hmac
 import json
 import logging
-import os
+import time
+from hashlib import sha256
 
 import requests
-from hashlib import sha256
-import hmac
-import time
+import pymysql
+from requests.adapters import HTTPAdapter
+
+
+class SqlData(object):
+    def __init__(self):
+        host = "3.17.178.128"
+        port = 3306
+        user = "root"
+        password = "liuxiao@140922"
+        database = 'svb'
+        self.connect = pymysql.Connect(
+            host=host, port=port, user=user,
+            passwd=password, db=database,
+            charset='utf8',
+            connect_timeout=10)
+        self.cursor = self.connect.cursor()
+
+    def __del__(self):
+        self.close_connect()
+
+    def search_user_id(self, user_name):
+        sql = "SELECT id FROM user_info WHERE `name`='{}'".format(user_name)
+        self.cursor.execute(sql)
+        rows = self.cursor.fetchone()
+        if not rows:
+            return False
+        return rows[0]
+
+    def search_card_data(self, user_id):
+        sql = "select card_id, card_number from card_info where user_id={}".format(user_id)
+        self.cursor.execute(sql)
+        rows = self.cursor.fetchall()
+        return tuple(reversed(rows))
+
+    def search_card_data_set(self, alias):
+        sql = "select card_info.alias, card_info.card_id, card_info.card_number, user_info.name from card_info join user_info on card_info.user_id=user_info.id where  card_info.alias = '{}'".format(
+            alias)
+        self.cursor.execute(sql)
+        rows = self.cursor.fetchone()
+        return rows
+
+    def search_card_top(self, card_no):
+        sql = "SELECT SUM(do_money) FROM user_trans WHERE card_no='{}' AND trans_type='支出' AND  do_type !='开卡' AND  do_type !='手续费'".format(
+            card_no)
+        self.cursor.execute(sql)
+        rows = self.cursor.fetchone()
+        return rows[0]
+
+    def search_card_refund(self, card_no):
+        sql = "SELECT IFNULL(SUM(do_money),0) FROM user_trans WHERE card_no='{}' AND trans_type='收入'".format(
+            card_no)
+        self.cursor.execute(sql)
+        rows = self.cursor.fetchone()
+        return rows[0]
+
+    def search_card_info(self):
+        sql = "SELECT card_info.card_id, card_info.card_number, user_info.name FROM card_info join user_info on card_info.user_id=user_info.id WHERE card_info.card_status='T'".format()
+        self.cursor.execute(sql)
+        rows = self.cursor.fetchall()
+        return rows
+
+    def close_connect(self):
+        if self.cursor:
+            self.cursor.close()
+        if self.connect:
+            self.connect.close()
 
 
 class SVB(object):
@@ -22,7 +94,10 @@ class SVB(object):
         self.base_url = 'https://api.svb.com'
 
         self.requests = requests.session()
-        self.requests.keep_alive = False
+        adapter = requests.adapters.HTTPAdapter(
+            pool_connections=100, pool_maxsize=100)
+        self.requests.mount('https://', adapter)
+        self.requests.keep_alive = True
 
     def create_header(self, method, path, params="", body=""):
         '''
@@ -117,29 +192,21 @@ class SVB(object):
         method = "GET"
         params = 'show_card_number=true&show_realtime_auths=true'
         url = self.base_url + path + "?" + params
-        # proxies = {'http': '107.150.104.119:2000'}
         try:
             resp = self.requests.get(url, headers=self.create_header(method, path, params=params), timeout=60)
             if resp.status_code == 200:
-                print(resp.text)
                 return resp.json()
             else:
                 return {}
         except requests.exceptions.RequestException as e:
-            print(e)
             logging.error("card_detail_api_error:" + str(e))
             return False
 
     def all_virtualcards(self):
         path = '/v1/virtualcards'
         method = 'GET'
-        params = {
-            'page': 10,
-            'limit': 20
-        }
         url = self.base_url + path
-        resp = self.requests.get(url, headers=self.create_header(method, path), timeout=60, params=params)
-        print(resp.text)
+        resp = self.requests.get(url, headers=self.create_header(method, path), timeout=60)
         return resp.json()
 
     def delete_card(self, card_id):
@@ -176,12 +243,12 @@ class SVB(object):
                 available_balance = resp_data.get('data').get('total_card_amount')
                 if available_balance == cents:
                     return True, resp_data.get('data').get('available_balance')
-                return False, 0
+                return False
             else:
-                return False, 0
+                return False
         except Exception as e:
             logging.error("update_card_api_error:" + str(e))
-            return False, 0
+            return False
 
     def card_admin(self):
         path = '/v1/admin/virtualcard'
@@ -205,28 +272,47 @@ class SVB(object):
         print(resp.json())
 
 
+sqlData = SqlData()
 svb = SVB()
-if __name__ == '__main__':
-    r = svb.card_detail(166043305)
-    print(r)
-    # total_card_amount = r.get('data').get('total_card_amount')
-    # print(total_card_amount)
-    # d, s = svb.update_card(127756470, 10)
-    # print(d, s)
-    # print(r)
-    # base_path = os.path.abspath(os.path.dirname(os.path.dirname(__file__)))
-    # excel_path = os.path.join(base_path, 'static\excel\{}.xls')
-    # print(excel_path)
-    """
-    print(time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(time.time())))
-    res = svb.all_virtualcards()
-    card_list = res.get('data')
-    print(len(card_list))
-    for i in card_list:
-        card_id = i.get('id')
-        print(card_id)
-        if card_id == "34025878":
-            print('找到了！')
-    # print(res.get('data').get('clearings'))
-    print(time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(time.time())))
-    """
+
+
+def main(card_id, card_number, user_name):
+    card_detail = svb.card_detail(card_id)
+    if not card_detail:
+        return
+    available_balance = card_detail.get('data').get('available_balance')
+    available_balance = float(available_balance / 100)
+    clearings = card_detail.get('data').get('clearings')
+    pend_money = 0
+    for clear in clearings:
+        clearing_type = clear.get('clearing_type')
+        billing_amount = clear.get('billing_amount')
+        if clearing_type == 'CREDIT':
+            trans_money = float(billing_amount / 100)
+        else:
+            trans_money = -float(billing_amount / 100)
+        pend_money += trans_money
+    sum_top = sqlData.search_card_top(card_number)
+    sum_refund = sqlData.search_card_refund(card_number)
+    remain = sum_top - sum_refund
+    remain = round(remain, 2)
+    pend_money = round(pend_money, 2)
+
+    theory_refund = round(remain + pend_money, 2)
+    if theory_refund != available_balance:
+        differ = round(theory_refund - available_balance, 2)
+        with open(file_path, 'a', encoding='utf-8') as f:
+            f.write('{},{},{},{},{},{},{}'.format(card_number, card_id, sum_top, sum_refund, available_balance, pend_money, differ) + "\n")
+
+
+if __name__ == "__main__":
+    res = sqlData.search_card_info()
+    file_path = './ALL.txt'
+    with open(file_path, 'a', encoding='utf-8') as f:
+        f.write('卡号,卡ID,系统消费,系统退款,卡余额,卡消费,差额,用户' + "\n")
+    for z in res:
+        card_id, card_number, user_name = z
+        print(card_number)
+        with open('./search.txt', 'a', encoding='utf-8') as f:
+            f.write('{},'.format(card_number))
+        main(card_id, card_number, user_name)

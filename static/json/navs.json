@@ -144,6 +144,12 @@
 					"icon": "&#xe630;",
 					"href": "/admin/bank_msg/",
 					"spread": false
+				},
+				{
+					"title": "USTD地址信息",
+					"icon": "&#xe735;",
+					"href": "/admin/ustd_code/",
+					"spread": false
 				}
 			]
 		}

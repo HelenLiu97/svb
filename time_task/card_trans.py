@@ -13,7 +13,7 @@ def xianzai_time():
 
 
 def update_trans_balance():
-    card_info = SqlData.search_card_info_admin("WHERE card_status='F'")
+    card_info = SqlData.search_card_info_admin("WHERE card_number='5563386245379665'")
     for i in card_info:
         print(i)
         card_id = i.get('card_id')
@@ -29,8 +29,22 @@ def update_trans_balance():
             else:
                 n += 1
                 continue
+        t = xianzai_time()
         if res:
             available_balance = res.get('data').get('available_balance')
+            if available_balance < 0:
+                total_card_amount = res.get('data').get('total_card_amount')
+                amount = available_balance / 100
+                update_money = total_card_amount + abs(available_balance)
+                res, card_balance = svb.update_card(card_id, update_money)
+                if res:
+                    before_balance = SqlData.search_user_field('balance', user_id)
+                    SqlData.update_balance(amount, user_id)
+                    balance = SqlData.search_user_field("balance", user_id)
+                    SqlData.insert_account_trans(t, '支出', "充值", card_number,
+                                                 abs(amount), before_balance, balance, user_id)
+                    available_balance = card_balance
+
             # SqlData.update_card_balance(int(available_balance/100), card_id)
             authorizations = res.get('data').get('authorizations')
             for c in authorizations:
@@ -40,7 +54,7 @@ def update_trans_balance():
                 billing_currency = c.get('billing_currency')
                 issuer_response = c.get('issuer_response')
                 mcc = c.get('mcc')
-                mcc_description = c.get('mcc_description')
+                mcc_description = c.get('mcc_description').replace("'", '*')
                 merchant_amount = float(c.get('merchant_amount')/100)
                 merchant_currency = c.get('merchant_currency')
                 merchant_id = c.get('merchant_id')

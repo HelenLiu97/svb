@@ -4,10 +4,23 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="6d8d786e-ad10-4630-ad92-b9cc656a22cd" name="Default Changelist" comment="新增手续费处理问题">
+    <list default="true" id="6d8d786e-ad10-4630-ad92-b9cc656a22cd" name="Default Changelist" comment="删卡改为实时删卡，不做定时删卡。充值卡得时候校验余额多退少不补">
+      <change afterPath="$PROJECT_DIR$/static/images/usdt.jpg" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/templates/admin/ustd_code.html" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/templates/user/pay_pic_usdt.html" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/time_task/check_card.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/apps/admin.py" beforeDir="false" afterPath="$PROJECT_DIR$/apps/admin.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/apps/user.py" beforeDir="false" afterPath="$PROJECT_DIR$/apps/user.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/static/json/navs.json" beforeDir="false" afterPath="$PROJECT_DIR$/static/json/navs.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/templates/admin/cus_list.html" beforeDir="false" afterPath="$PROJECT_DIR$/templates/admin/cus_list.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/templates/admin/cus_top_table.html" beforeDir="false" afterPath="$PROJECT_DIR$/templates/admin/cus_top_table.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/templates/admin/cus_trans.html" beforeDir="false" afterPath="$PROJECT_DIR$/templates/admin/cus_trans.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/templates/user/pay_top.html" beforeDir="false" afterPath="$PROJECT_DIR$/templates/user/pay_top.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/time_task/card_trans.py" beforeDir="false" afterPath="$PROJECT_DIR$/time_task/card_trans.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/time_task/test.py" beforeDir="false" afterPath="$PROJECT_DIR$/time_task/test.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/tools_me/db_conn_init.py" beforeDir="false" afterPath="$PROJECT_DIR$/tools_me/db_conn_init.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tools_me/mysql_tools.py" beforeDir="false" afterPath="$PROJECT_DIR$/tools_me/mysql_tools.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/tools_me/svb.py" beforeDir="false" afterPath="$PROJECT_DIR$/tools_me/svb.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/tools_me/注销差额处理.py" beforeDir="false" afterPath="$PROJECT_DIR$/tools_me/注销差额处理.py" afterDir="false" />
     </list>
@@ -45,8 +58,8 @@
       <list>
         <option value="Flask Main" />
         <option value="JavaScript File" />
-        <option value="HTML File" />
         <option value="Python Script" />
+        <option value="HTML File" />
       </list>
     </option>
   </component>
@@ -255,11 +268,11 @@
 }</component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
+      <recent name="E:\svb\static\images" />
+      <recent name="E:\svb\templates\user" />
       <recent name="E:\svb\static\excel" />
       <recent name="H:\svb\templates\user" />
       <recent name="H:\svb\static\css" />
-      <recent name="H:\svb\time_task" />
-      <recent name="H:\svb\templates\admin" />
     </key>
     <key name="MoveFile.RECENT_KEYS">
       <recent name="E:\svb\time_task" />
@@ -269,7 +282,7 @@
       <recent name="H:\svb\tools_me" />
     </key>
   </component>
-  <component name="RunManager" selected="Python.svb">
+  <component name="RunManager" selected="Python.manager">
     <configuration name="注销差额处理" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
       <module name="svb" />
       <option name="INTERPRETER_OPTIONS" value="" />
@@ -292,7 +305,7 @@
       <option name="INPUT_FILE" value="" />
       <method v="2" />
     </configuration>
-    <configuration name="card_expense" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
+    <configuration name="del_card" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
       <module name="svb" />
       <option name="INTERPRETER_OPTIONS" value="" />
       <option name="PARENT_ENVS" value="true" />
@@ -300,12 +313,12 @@
         <env name="PYTHONUNBUFFERED" value="1" />
       </envs>
       <option name="SDK_HOME" value="" />
-      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/time_task" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/tools_me" />
       <option name="IS_MODULE_SDK" value="true" />
       <option name="ADD_CONTENT_ROOTS" value="true" />
       <option name="ADD_SOURCE_ROOTS" value="true" />
       <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
-      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/time_task/card_expense.py" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/tools_me/del_card.py" />
       <option name="PARAMETERS" value="" />
       <option name="SHOW_COMMAND_LINE" value="false" />
       <option name="EMULATE_TERMINAL" value="false" />
@@ -336,28 +349,6 @@
       <option name="INPUT_FILE" value="" />
       <method v="2" />
     </configuration>
-    <configuration name="other_tools" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
-      <module name="svb" />
-      <option name="INTERPRETER_OPTIONS" value="" />
-      <option name="PARENT_ENVS" value="true" />
-      <envs>
-        <env name="PYTHONUNBUFFERED" value="1" />
-      </envs>
-      <option name="SDK_HOME" value="" />
-      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/tools_me" />
-      <option name="IS_MODULE_SDK" value="true" />
-      <option name="ADD_CONTENT_ROOTS" value="true" />
-      <option name="ADD_SOURCE_ROOTS" value="true" />
-      <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
-      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/tools_me/other_tools.py" />
-      <option name="PARAMETERS" value="" />
-      <option name="SHOW_COMMAND_LINE" value="false" />
-      <option name="EMULATE_TERMINAL" value="false" />
-      <option name="MODULE_MODE" value="false" />
-      <option name="REDIRECT_INPUT" value="false" />
-      <option name="INPUT_FILE" value="" />
-      <method v="2" />
-    </configuration>
     <configuration name="svb" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
       <module name="svb" />
       <option name="INTERPRETER_OPTIONS" value="" />
@@ -372,6 +363,28 @@
       <option name="ADD_SOURCE_ROOTS" value="true" />
       <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
       <option name="SCRIPT_NAME" value="$PROJECT_DIR$/tools_me/svb.py" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="false" />
+      <option name="EMULATE_TERMINAL" value="false" />
+      <option name="MODULE_MODE" value="false" />
+      <option name="REDIRECT_INPUT" value="false" />
+      <option name="INPUT_FILE" value="" />
+      <method v="2" />
+    </configuration>
+    <configuration name="test" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
+      <module name="svb" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/time_task" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/time_task/test.py" />
       <option name="PARAMETERS" value="" />
       <option name="SHOW_COMMAND_LINE" value="false" />
       <option name="EMULATE_TERMINAL" value="false" />
@@ -398,10 +411,10 @@
     <recent_temporary>
       <list>
         <item itemvalue="Python.manager" />
+        <item itemvalue="Python.test" />
         <item itemvalue="Python.svb" />
         <item itemvalue="Python.注销差额处理" />
-        <item itemvalue="Python.card_expense" />
-        <item itemvalue="Python.other_tools" />
+        <item itemvalue="Python.del_card" />
       </list>
     </recent_temporary>
   </component>
@@ -625,7 +638,33 @@
       <workItem from="1697591389735" duration="7690000" />
       <workItem from="1697615395646" duration="1883000" />
       <workItem from="1697765275322" duration="328000" />
-      <workItem from="1698308179193" duration="3341000" />
+      <workItem from="1698308179193" duration="4019000" />
+      <workItem from="1698628903418" duration="6604000" />
+      <workItem from="1698830470467" duration="674000" />
+      <workItem from="1698974945137" duration="6115000" />
+      <workItem from="1699080320252" duration="1738000" />
+      <workItem from="1699234170227" duration="10239000" />
+      <workItem from="1699322128640" duration="66000" />
+      <workItem from="1699439609178" duration="5296000" />
+      <workItem from="1699460269642" duration="734000" />
+      <workItem from="1699499139781" duration="28000" />
+      <workItem from="1699513121691" duration="3812000" />
+      <workItem from="1699578657407" duration="2647000" />
+      <workItem from="1699672195504" duration="7495000" />
+      <workItem from="1699925223379" duration="1643000" />
+      <workItem from="1700038423449" duration="3906000" />
+      <workItem from="1700447145921" duration="867000" />
+      <workItem from="1700535229830" duration="12000" />
+      <workItem from="1700634072988" duration="571000" />
+      <workItem from="1700637203361" duration="2310000" />
+      <workItem from="1701095107870" duration="739000" />
+      <workItem from="1701239984187" duration="32000" />
+      <workItem from="1701309480029" duration="7607000" />
+      <workItem from="1701654751040" duration="4831000" />
+      <workItem from="1702437368092" duration="651000" />
+      <workItem from="1702516143447" duration="1375000" />
+      <workItem from="1703143040744" duration="130000" />
+      <workItem from="1709520094731" duration="15907000" />
     </task>
     <task id="LOCAL-00001" summary="首次推送svb">
       <created>1582278040297</created>
@@ -844,7 +883,14 @@
       <option name="project" value="LOCAL" />
       <updated>1697614655251</updated>
     </task>
-    <option name="localTasksCounter" value="32" />
+    <task id="LOCAL-00032" summary="删卡改为实时删卡，不做定时删卡。充值卡得时候校验余额多退少不补">
+      <created>1698311609102</created>
+      <option name="number" value="00032" />
+      <option name="presentableId" value="LOCAL-00032" />
+      <option name="project" value="LOCAL" />
+      <updated>1698311609102</updated>
+    </task>
+    <option name="localTasksCounter" value="33" />
     <servers />
   </component>
   <component name="TimeTrackingManager">
@@ -923,21 +969,25 @@
     <MESSAGE value="添加导入批量开卡功能" />
     <MESSAGE value="新增卡消费记录时间段查询" />
     <MESSAGE value="新增手续费处理问题" />
-    <option name="LAST_COMMIT_MESSAGE" value="新增手续费处理问题" />
+    <MESSAGE value="删卡改为实时删卡，不做定时删卡。充值卡得时候校验余额多退少不补" />
+    <option name="LAST_COMMIT_MESSAGE" value="删卡改为实时删卡，不做定时删卡。充值卡得时候校验余额多退少不补" />
   </component>
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
-    <SUITE FILE_PATH="coverage/svb$mysql_tools.coverage" NAME="mysql_tools 覆盖结果" MODIFIED="1688452143939" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/tools_me" />
-    <SUITE FILE_PATH="coverage/svb$seach_card_amount.coverage" NAME="seach_card_amount 覆盖结果" MODIFIED="1695373865895" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/tools_me" />
-    <SUITE FILE_PATH="coverage/svb$.coverage" NAME="注销差额处理 覆盖结果" MODIFIED="1697765518187" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/tools_me" />
     <SUITE FILE_PATH="coverage/svb$new_card.coverage" NAME="new_card 覆盖结果" MODIFIED="1688957906026" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/time_task" />
-    <SUITE FILE_PATH="coverage/svb$card_expense.coverage" NAME="card_expense 覆盖结果" MODIFIED="1697613727661" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/time_task" />
-    <SUITE FILE_PATH="coverage/svb$manager.coverage" NAME="manager 覆盖结果" MODIFIED="1698311348341" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
-    <SUITE FILE_PATH="coverage/svb$delete_card.coverage" NAME="delete_card 覆盖结果" MODIFIED="1688808427927" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/tools_me" />
-    <SUITE FILE_PATH="coverage/svb$svb.coverage" NAME="svb 覆盖结果" MODIFIED="1698310301152" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/tools_me" />
+    <SUITE FILE_PATH="coverage/svb$manager.coverage" NAME="manager 覆盖结果" MODIFIED="1709542991281" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+    <SUITE FILE_PATH="coverage/svb$test.coverage" NAME="test 覆盖结果" MODIFIED="1701313638669" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/time_task" />
     <SUITE FILE_PATH="coverage/svb$card_trans.coverage" NAME="card_trans 覆盖结果" MODIFIED="1688807600454" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/time_task" />
+    <SUITE FILE_PATH="coverage/svb$del_card.coverage" NAME="del_card 覆盖结果" MODIFIED="1699786323454" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/tools_me" />
     <SUITE FILE_PATH="coverage/svb$verify_pay.coverage" NAME="verify_pay 覆盖结果" MODIFIED="1631260641138" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/apps" />
     <SUITE FILE_PATH="coverage/svb$db_conn_init.coverage" NAME="db_conn_init 覆盖结果" MODIFIED="1693819230457" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/tools_me" />
     <SUITE FILE_PATH="coverage/svb$other_tools.coverage" NAME="other_tools 覆盖结果" MODIFIED="1697427819653" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/tools_me" />
+    <SUITE FILE_PATH="coverage/svb$mysql_tools.coverage" NAME="mysql_tools 覆盖结果" MODIFIED="1688452143939" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/tools_me" />
+    <SUITE FILE_PATH="coverage/svb$seach_card_amount.coverage" NAME="seach_card_amount 覆盖结果" MODIFIED="1695373865895" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/tools_me" />
+    <SUITE FILE_PATH="coverage/svb$.coverage" NAME="注销差额处理 覆盖结果" MODIFIED="1701095213411" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/tools_me" />
+    <SUITE FILE_PATH="coverage/svb$card_expense.coverage" NAME="card_expense 覆盖结果" MODIFIED="1697613727661" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/time_task" />
+    <SUITE FILE_PATH="coverage/svb$delete_card.coverage" NAME="delete_card 覆盖结果" MODIFIED="1688808427927" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/tools_me" />
+    <SUITE FILE_PATH="coverage/svb$svb.coverage" NAME="svb 覆盖结果" MODIFIED="1701312770351" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/tools_me" />
+    <SUITE FILE_PATH="coverage/svb$check_card.coverage" NAME="check_card 覆盖结果" MODIFIED="1699515663837" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/time_task" />
   </component>
   <component name="editorHistoryManager">
     <entry file="file://$PROJECT_DIR$/templates/user/free_card.html">

@@ -341,7 +341,7 @@ class SqlDataBase(object):
             cursor.execute(sql)
             conn.commit()
         except Exception as e:
-            logging.error("插入卡信息失败!" + str(e))
+            logging.error("插入卡信息失败!CardId:" + str(card_id) + '; ' + str(e))
             conn.rollback()
         self.close_connect(conn, cursor)
 
@@ -716,9 +716,9 @@ class SqlDataBase(object):
             conn.rollback()
         self.close_connect(conn, cursor)
 
-    def insert_top_up(self, pay_num, now_time, money, before_balance, balance, user_id):
-        sql = "INSERT INTO top_up(pay_num, `time`, money, before_balance, balance, user_id) VALUES ('{}','{}',{},{},{},{})".format(
-            pay_num, now_time, money, before_balance, balance, user_id)
+    def insert_top_up(self, pay_num, now_time, money, before_balance, balance, user_id, text=''):
+        sql = "INSERT INTO top_up(pay_num, `time`, money, before_balance, balance, user_id, remark) VALUES ('{}','{}',{},{},{},{},'{}')".format(
+            pay_num, now_time, money, before_balance, balance, user_id, text)
         conn, cursor = self.connect()
         try:
             cursor.execute(sql)
@@ -747,7 +747,8 @@ class SqlDataBase(object):
                 info_dict['before_balance'] = i[4]
                 info_dict['balance'] = i[5]
                 info_dict['user_id'] = i[6]
-                info_dict['name'] = i[11]
+                info_dict['remark'] = i[7]
+                info_dict['name'] = i[12]
                 info_list.append(info_dict)
             return info_list
 
@@ -1629,7 +1630,7 @@ class SqlDataBase(object):
             cursor.execute(sql)
             conn.commit()
         except Exception as e:
-            logging.error("插入卡交易记录数据失败" + str(e))
+            logging.error("插入卡信息失败!CardId:" + str(card_id) + '; ' + str(e))
             conn.rollback()
         self.close_connect(conn, cursor)
 
@@ -1654,7 +1655,7 @@ class SqlDataBase(object):
             cursor.execute(sql)
             conn.commit()
         except Exception as e:
-            logging.error("插入卡交易记录数据失败" + str(e))
+            logging.error("插入卡信息失败!CardId:" + str(card_id) + '; ' + str(e))
             conn.rollback()
         self.close_connect(conn, cursor)
 
@@ -2177,6 +2178,72 @@ class SqlDataBase(object):
             conn.commit()
         except Exception as e:
             logging.error("添加用户免费卡量记录失败!" + str(e))
+            conn.rollback()
+        self.close_connect(conn, cursor)
+
+    def insert_ustd_code(self, url, up_date, address):
+        sql = "INSERT INTO ustd(url, up_date, address) VALUES('{}', '{}', '{}')".format(url, up_date, address)
+        conn, cursor = self.connect()
+        try:
+            cursor.execute(sql)
+            conn.commit()
+        except Exception as e:
+            logging.error("添加收款二维码失败!" + str(e))
+            conn.rollback()
+        self.close_connect(conn, cursor)
+
+    def search_ustd_code(self, sql):
+        sql = "SELECT * FROM ustd {}".format(sql)
+        conn, cursor = self.connect()
+        cursor.execute(sql)
+        rows = cursor.fetchall()
+        self.close_connect(conn, cursor)
+        if not rows:
+            return False
+        info_list = list()
+        for i in rows:
+            info_dict = dict()
+            info_dict['qr_code'] = i[1]
+            info_dict['qr_date'] = str(i[2])
+            info_dict['address'] = i[3]
+            info_dict['sum_money'] = i[4]
+            if i[5] == 0:
+                info_dict['status'] = '正常'
+            elif i[5] == 1:
+                info_dict['status'] = '锁定'
+            else:
+                info_dict['status'] = '置顶'
+            info_list.append(info_dict)
+        return info_list
+
+    def search_ustd_field(self, field, url):
+        sql = "SELECT {} FROM ustd WHERE url='{}'".format(field, url)
+        conn, cursor = self.connect()
+        cursor.execute(sql)
+        rows = cursor.fetchall()
+        self.close_connect(conn, cursor)
+        if not rows:
+            return False
+        return rows[0][0]
+
+    def update_ustd_info(self, file, value, url):
+        sql = "UPDATE ustd SET {}={} WHERE url='{}'".format(file, value, url)
+        conn, cursor = self.connect()
+        try:
+            cursor.execute(sql)
+            conn.commit()
+        except Exception as e:
+            logging.error("更新收款码状态失败!" + str(e))
+            conn.rollback()
+        self.close_connect(conn, cursor)
+
+    def del_ustd_code(self, url):
+        sql = "DELETE FROM ustd WHERE url = '{}'".format(url)
+        conn, cursor = self.connect()
+        try:
+            cursor.execute(sql)
+            conn.commit()
+        except Exception as e:
             conn.rollback()
         self.close_connect(conn, cursor)
 

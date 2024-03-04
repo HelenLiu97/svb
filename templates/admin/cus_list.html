@@ -280,16 +280,17 @@
         var layEvent = obj.event,
             data = obj.data;
         if (layEvent === 'top_up') {
-                layer.prompt({title: '请输入充值金额'}, function (num, index) {
-
+                layer.prompt({title: '请输入充值金额', formType: 0}, function(num, index){
                     if (isNaN(num)) {
                         layer.msg('请输入数字!')
                     } else {
-
-                        $.ajax({
+                      layer.close(index);
+                        layer.prompt({title: '充值备注', formType: 2}, function(text, index){
+                            {#alert('您输入的密令：'+ num +'；文本：'+ text);#}
+                            $.ajax({
                             type: 'POST',
                             url: '/admin/top_up',
-                            data: {'money': num, 'name': data.name},
+                            data: {'money': num, 'name': data.name, 'text': text},
                             dataType: 'json',
                             success: function (data) {
                                 // 成功提示框
@@ -314,11 +315,14 @@
                                 parent.layer.closeAll('iframe'); //关闭弹框
                             }
                         });
-
+                        tableIns.reload();
+                        layer.close(index);
+                    });
                     }
-                    tableIns.reload();
-                    layer.close(index);
-                });
+
+              });
+
+
             }  else if (layEvent === 'edit') {
                 layer.open({
                     title: '修改客户为 [ ' + data.name + ' ] 的相关信息',

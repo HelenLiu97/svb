@@ -191,6 +191,8 @@ def user_top():
         context['ex_range'] = ex_range
         context['hand'] = hand
         context['dollar_hand'] = dollar_hand
+        usdt_hand = 0.04
+        context['usdt_hand'] = usdt_hand
         return render_template('user/pay_top.html', **context)
     if request.method == 'POST':
         '''
@@ -201,8 +203,16 @@ def user_top():
         data = json.loads(request.form.get('data'))
         sum_money = data.get('sum_money')
         top_money = data.get('top_money')
+        key = data.get('key')
         if float(top_money) < 100:
             return jsonify({'code': RET.SERVERERROR, 'msg': '充值金额不能小于100$'})
+
+        if key == 'USDT':
+            usdt_hand = 0.04
+            if round(float(sum_money), 2) == round((float(top_money) * (1 + usdt_hand)), 2):
+                return jsonify({'code': RET.OK, 'msg': MSG.OK})
+            else:
+                return jsonify({'code': RET.SERVERERROR, 'msg': '请尝试更换充值金额后重试'})
 
         ex_change = SqlData.search_admin_field('ex_change')
         ex_range = SqlData.search_admin_field('ex_range')
@@ -214,6 +224,103 @@ def user_top():
             return jsonify({'code': RET.OK, 'msg': MSG.OK})
         else:
             return jsonify({'code': RET.SERVERERROR, 'msg': '汇率已变动!请刷新界面后重试!'})
+
+
+@user_blueprint.route('/pay_pic_usdt/', methods=['GET', 'POST'])
+@login_required
+def pay_pic_usdt():
+    if request.method == 'GET':
+        sum_money = request.args.get('sum_money')
+        top_money = request.args.get('top_money')
+        qr_info = SqlData.search_ustd_code('WHERE status=2')
+        if qr_info:
+            url = qr_info[0].get('qr_code')
+            address = qr_info[0].get('address')
+        else:
+            qr_info = SqlData.search_ustd_code('WHERE status=0')
+            if qr_info:
+                url = qr_info[0].get('qr_code')
+                address = qr_info[0].get('address')
+            else:
+                url = ''
+                address = '联系管理员设置充值方式'
+        context = dict()
+        context['sum_money'] = sum_money
+        context['top_money'] = top_money
+        context['text'] = address
+        context['qr_code'] = url
+        return render_template('user/pay_pic_usdt.html', **context)
+    if request.method == 'POST':
+        '''
+        获取充值金额, 保存付款截图. 发送邮件通知管理员
+        '''
+        # try:
+        # 两组数据,1,表单信息充值金额,等一下客户信息 2,截图凭证最多可上传5张
+        # print(request.form)
+        # print(request.files)
+        data = json.loads(request.form.get('data'))
+        # print(data)
+        top_money = data.get('top_money')
+        sum_money = data.get('sum_money')
+        exchange = data.get('exchange')
+        url = json.loads(request.form.get('url'))
+        change_type = json.loads(request.form.get("change_type"))
+        bank_name = json.loads(request.form.get("bank_name"))
+        bank_number = json.loads(request.form.get("bank_number"))
+        bank_address = json.loads(request.form.get("bank_address"))
+        results = {'code': RET.OK, 'msg': MSG.OK}
+        cus_name = g.user_name
+        cus_id = g.user_id
+        cus_account = SqlData.search_user_field_name('account', cus_name)
+        phone = SqlData.search_user_field_name('phone_num', cus_name)
+        try:
+            # 保存所有图片
+            file_n = 'file_'
+            pic_list = list()
+            # 判断有无上传图片
+            f_obj = request.files.get("{}{}".format(file_n, 1))
+            if not f_obj:
+                return jsonify({'code': RET.SERVERERROR, 'msg': "请先上传图片再操作"})
+            for i in range(5):
+                file_name = "{}{}".format(file_n, i + 1)
+                fileobj = request.files.get(file_name)
+                if fileobj:
+                    now_time = sum_code()
+                    file_name = cus_account + "_" + str(now_time) + str(i) + ".png"
+                    file_path = os.path.join(DIR_PATH.PHOTO_DIR, file_name)
+                    fileobj.save(file_path)
+                    with open(file_path, 'rb') as f:
+                        c = f.read()
+                        if b'Adobe Photoshop' in c:
+                            logging.error('上传PS的图片可客户名称：' + cus_name)
+                            return jsonify({'code': RET.SERVERERROR, 'msg': "图片存在异常，请勿使用PS截图凭证！"})
+                    pic_list.append(file_path)
+            n_time = xianzai_time()
+            vir_code = str(uuid.uuid1())[:6]
+            context = "客户:  " + cus_name + " , 于<span style='color:red'>" + n_time + "</span>在线申请充值: " \
+                      + top_money + "美元, 折和USDT: <span style='color:red'>" + sum_money + "</span>元。本次计算汇率为: 1, 验证码为: " + vir_code
+
+            sum_money = float(sum_money)
+            top_money = float(top_money)
+            if change_type == "pic":
+                SqlData.insert_pay_log(n_time, sum_money, top_money, vir_code, '待充值', phone, url, cus_id)
+            elif change_type == "bank":
+                SqlData.insert_pay_log(n_time, sum_money, top_money, vir_code, '待充值', phone,
+                                       "{},{},{}".format(bank_name, bank_number, bank_address), cus_id)
+            # 获取要推送邮件的邮箱
+            top_push = SqlData.search_admin_field('top_push')
+            top_dict = json.loads(top_push)
+            email_list = list()
+            for i in top_dict:
+                email_list.append(top_dict.get(i))
+            for p in email_list:
+                executor.submit(send, context, pic_list, p)
+                # send(context, pic_list, p)
+
+            return jsonify(results)
+        except Exception as e:
+            logging.error(str(e))
+            return jsonify({'code': RET.SERVERERROR, 'msg': str(e)})
 
 
 @user_blueprint.route('/free_card/', methods=['GET', 'POST'])
@@ -478,10 +585,31 @@ def bento_refund():
     card_detail = svb.card_detail(card_id)
     if not card_detail:
         return jsonify({"code": RET.SERVERERROR, 'msg': "网络繁忙,请稍后重试！"})
-    available_balance = card_detail.get('data').get('available_balance')
+
+    clearings = card_detail.get('data').get('clearings')
+    pend_money = 0
+    for clear in clearings:
+        clearing_type = clear.get('clearing_type')
+        billing_amount = clear.get('billing_amount')
+        if clearing_type == 'CREDIT':
+            # 默认退款
+            trans_money = float(billing_amount / 100)
+        else:
+            # 其他默认消费
+            trans_money = -float(billing_amount / 100)
+        pend_money += trans_money
+    sum_top = SqlData.search_card_top(card_number)
+    sum_refund = SqlData.search_card_refund(card_number)
+    remain = sum_top - sum_refund
+    remain = round(remain, 2)
+    if float(data) > remain:
+        return jsonify({"code": RET.SERVERERROR, 'msg': "退款金额不可大于充值消费金额, 如有异议联系管理员处理!"})
+    pend_money = round(pend_money, 2)
+    # 如果当前得卡余额大于则设置当前得理论余额为基础余额
+    theoretical_balance = int(round(remain + pend_money, 2) * 100)
     refund_money = float(data) * 100
-    if refund_money >= available_balance:
-        return jsonify({"code": RET.SERVERERROR, 'msg': "卡余额不足!当前卡余额:$" + str(available_balance/100)})
+    if refund_money >= theoretical_balance:
+        return jsonify({"code": RET.SERVERERROR, 'msg': "最大退款余额:$" + str((theoretical_balance - 1)/100)})
 
     # 减少当前额度则是减少余额
     total_card_amount = card_detail.get('data').get('total_card_amount')
@@ -650,8 +778,8 @@ def card_delete():
         remain = round(remain, 2)
         pend_money = round(pend_money, 2)
         differ = 0
-        if remain - pend_money < available_balance:
-            theory_refund = round(remain - pend_money, 2)
+        if remain + pend_money < available_balance:
+            theory_refund = round(remain + pend_money, 2)
             differ = round(theory_refund - available_balance, 2)
         res = svb.delete_card(card_id)
         if res:
@@ -663,7 +791,11 @@ def card_delete():
             n_time = xianzai_time()
             SqlData.insert_account_trans(n_time, '收入', "注销", card_number,
                                          update_balance, before_balance, balance, user_id)
-            if differ != 0:
+            if differ < 0:
+                if refund_limit > 0:
+                    trans_type = '收入'
+                else:
+                    trans_type = '支出'
                 before_balance = SqlData.search_user_field('balance', user_id)
                 SqlData.update_balance(differ, user_id)
                 balance = SqlData.search_user_field("balance", user_id)
@@ -796,15 +928,18 @@ def top_up():
         card_id = SqlData.search_card_field('card_id', card_number)
         card_detail = svb.card_detail(card_id)
         if card_detail:
-            available_balance = card_detail.get('data').get('total_card_amount')
+            total_card_amount = card_detail.get('data').get('total_card_amount')
+            available_balance = card_detail.get('data').get('available_balance')
             clearings = card_detail.get('data').get('clearings')
             pend_money = 0
             for clear in clearings:
                 clearing_type = clear.get('clearing_type')
                 billing_amount = clear.get('billing_amount')
                 if clearing_type == 'CREDIT':
+                    # 默认退款
                     trans_money = float(billing_amount / 100)
                 else:
+                    # 其他默认消费
                     trans_money = -float(billing_amount / 100)
                 pend_money += trans_money
             sum_top = SqlData.search_card_top(card_number)
@@ -813,10 +948,13 @@ def top_up():
             remain = round(remain, 2)
             pend_money = round(pend_money, 2)
             # 如果当前得卡余额大于则设置当前得理论余额为基础余额
-            if remain - pend_money < available_balance:
-                available_balance = int(round(remain - pend_money, 2) * 100)
-
-            now_balance = available_balance + int(top_money) * 100
+            theoretical_balance = int(round(remain + pend_money, 2) * 100)
+            difference = 0
+            if theoretical_balance < available_balance:
+                # 如果实际余额大于理论余额则扣除相差部分
+                # total_card_amount = total_card_amount - (available_balance - theoretical_balance)
+                difference = theoretical_balance - available_balance
+            now_balance = total_card_amount + int(top_money) * 100
             res, card_balance = svb.update_card(card_id, now_balance)
             if res:
                 top_money = int(top_money)
@@ -826,6 +964,13 @@ def top_up():
                 balance = SqlData.search_user_field('balance', user_id)
                 SqlData.insert_account_trans(n_time, TRANS_TYPE.OUT, DO_TYPE.TOP_UP, card_number,
                                              top_money, before_balance, balance, user_id)
+                if difference < 0:
+                    _a = round(difference / 100, 2)
+                    before_balance = SqlData.search_user_field('balance', user_id)
+                    SqlData.update_balance(round(_a, 2), user_id)
+                    balance = SqlData.search_user_field("balance", user_id)
+                    SqlData.insert_account_trans(n_time, '支出', "充值", card_number,
+                                                 abs(_a), before_balance, balance, user_id)
                 return jsonify({'code': RET.OK, 'msg': '充值成功！账户余额:$ ' + str(balance)+",卡余额:$ " + str(card_balance/100)})
             return jsonify({'code': RET.SERVERERROR, 'msg': '网络繁忙,请稍后重试！'})
         else:
@@ -1848,6 +1993,9 @@ def excel_create_card(card_info, user_id, create_price, excel_path, file_name):
             if not limit:
                 sheet.cell(line_num, 8).value = '失败: 缺少充值金额'
                 continue
+            if "'" in label or '"' in label:
+                sheet.cell(line_num, 8).value = '失败: 卡名不可以包含特殊字符'
+                continue
             limit = int(limit)
             res = svb.create_card(limit * 100)
 
@@ -1865,9 +2013,14 @@ def excel_create_card(card_info, user_id, create_price, excel_path, file_name):
             valid_start_on = res.get('valid_start_on')
             valid_ending_on = res.get('valid_end_on')
 
-            # 插入卡信息
-            SqlData.insert_card(card_number, cvc, expiry, card_id, last4, valid_start_on, valid_ending_on, label,
-                                'T', int(limit), user_id)
+            try:
+                # 插入卡信息
+                SqlData.insert_card(card_number, cvc, expiry, card_id, last4, valid_start_on, valid_ending_on, label,
+                                    'T', int(limit), user_id)
+            except Exception as e:
+                sheet.cell(line_num, 8).value = '失败: 卡名不可以包含特殊字符'
+                logging.error('插入卡消费记录失败: ' + str(label))
+                continue
 
             # 扣去开卡费用
             free_number = SqlData.search_user_field('free', user_id)

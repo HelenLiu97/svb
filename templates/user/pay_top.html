@@ -20,11 +20,18 @@
 		</style>
 	</head>
 	<body>
+    <div class="x-nav">
+        <span class="layui-breadcrumb">
+          <a><cite>系统设置</cite></a>
+          <a><cite>账户充值</cite></a>
+        </span>
+        <a class="layui-btn layui-btn-small" style="line-height:1.6em;margin-top:3px;float:right"  href="javascript:location.replace(location.href);" title="刷新"><i class="layui-icon layui-icon-refresh" style="line-height:30px"></i></a>
+    </div>
 		<!-- Head -->
 		<div class="layui-fluid">
 			<div class="layui-row layui-col-space15" style="float: left">
 				<div class="layui-col-sm12 layui-col-md12 zyl_mar_01">
-					<blockquote class="layui-elem-quote">556338·充值界面 (提示: 需要充值时请刷新本界面,重新获取汇率!)&nbsp;&nbsp;&nbsp;&nbsp;<span id="nowTime" style="color: darkmagenta"></span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color: red">充值时间:周一到周六,9:00-12:30,14:00-18:30</span></blockquote>
+					<blockquote class="layui-elem-quote">475440·充值界面 (提示: 需要充值时请刷新本界面,重新获取汇率!)&nbsp;&nbsp;&nbsp;&nbsp;<span id="nowTime" style="color: darkmagenta"></span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color: red">充值时间:周一到六,9:00-12:30,14:00-18:30</span></blockquote>
 				</div>
 			</div>
         </div>
@@ -49,7 +56,7 @@
 		<!-- Footer -->
 		<div class="layui-row">
 			<div class="layui-col-sm12 layui-col-md12 zyl_center zyl_mar_01">
-				© 2021 - 556338充值推送界面
+				© 2023 - 556338充值推送界面
 			</div>
 		</div>
 		<!-- Footer End -->
@@ -62,6 +69,7 @@
                 <ul class="layui-tab-title">
                   <li class="layui-this">人民币充值</li>
                   <li>美元充值</li>
+                    <li>USDT充值</li>
                 </ul>
                 <div class="layui-tab-content" >
                     <div class="layui-tab-item layui-show" >
@@ -149,6 +157,42 @@
                     </form>
                     </div>
                 </div>
+                    <div class="layui-tab-item" >
+                    <div class="pay">
+                      <form class="layui-form" lay-filter="example" id="examples" enctype="multipart/form-data">
+                              <div class="layui-form-item">
+                                <label class="layui-form-label">实收</label>
+                                  <h2 id="usdt" style="line-height:35px; color: red"></h2>
+
+                            </div>
+                        <div class="layui-form-item">
+                            <label class="layui-form-label">充值金额</label>
+                            <div class="layui-input-inline">
+                                <input id="usdt_top" autoComplete='off' class="layui-input" type="number" required lay-verify="required"  placeholder="充值美金金额">
+                            </div>
+                        </div>
+
+                        <div class="layui-form-item">
+                            <label class="layui-form-label">通知电话</label>
+                              <div class="layui-form-mid layui-word-aux"><p style="color:red">&nbsp;&nbsp;根据账号电话信息推送充值通知！</p></div>
+                        </div>
+
+                        <div class="layui-form-item">
+                            <label class="layui-form-label">手续费</label>
+                            <div class="layui-input-inline">
+                                <input id="usdt_hand"  readonly="true" value="" class="layui-input">
+                            </div>
+                        </div>
+
+
+                        <div class="layui-form-item">
+                            <div class="layui-input-block">
+                                <button  class="layui-btn layui-btn-lg" lay-submit="" lay-filter="user_top_usdt" id="" type="submit">确认</button>
+                            </div>
+                        </div>
+                    </form>
+                    </div>
+                </div>
             </div>
 		</div>
         </div>
@@ -210,6 +254,7 @@
 
         $("#hand").attr("value", toPercent('{{ hand }}'));
         $("#dollar_hand").attr("value", toPercent("{{ dollar_hand }}"));
+        $("#usdt_hand").attr("value", toPercent("{{ usdt_hand }}"));
 
 
         //设置轮播主体高度
@@ -299,6 +344,63 @@
                 var sum = accMul(a, hand_exchange);
                 $('#dollar').html(sum);
             });
+        });
+
+        $(function () {
+            $('#usdt_top').bind('input propertychange', function () {
+                var a = $('#usdt_top').val();
+                var hand = toPoint($('#usdt_hand').val()),
+                    hand_exchange = accAdd(hand, '1');
+                console.log(hand, hand_exchange)
+                var sum = accMul(a, hand_exchange);
+                $('#usdt').html(sum);
+            });
+        });
+
+        form.on('submit(user_top_usdt)', function(data){
+            var sum_money = $("#usdt").html(),
+                a = $('#usdt_top').val();
+            var data_info = {sum_money:sum_money, top_money: a, key: 'USDT'};
+            $.ajax({
+				type : 'POST',
+				url : '/user/pay_top/',
+				data : {data: JSON.stringify(data_info)},
+				dataType : 'json',
+				success : function(data) {
+					// 成功弹出上传支付截图
+                    if (data.code == 0){
+                        layer.open({
+                            type: 2
+                            ,offset: 'r' //具体配置参考：http://www.layui.com/doc/modules/layer.html#offset
+                            ,skin:'layui-layer-molv'
+                            ,id: 'layerUSDT'//防止重复弹出
+                            ,title: '充值界面信息'
+                            ,area: ['600px','700px']
+                            ,anim: 2
+                            ,time: 600000
+                            ,shadeClose:true
+                            ,content: '/user/pay_pic_usdt/?sum_money=' + sum_money + "&top_money=" + a
+                            ,btn: '关闭全部'
+                            ,btnAlign: 'c' //按钮居中a
+                            ,shade:  [0.8, '#393D49'] //弹框背景选项
+                            ,success: function(layero, index) {
+                                    var body = layer.getChildFrame('body', index);
+                                    body.contents().find("#sum_money").html(sum_money);
+                                }
+                          });
+                    }else if(data.code == 502){
+                        alert(data.msg);
+                    }
+
+				},
+				error : function(data) {
+					// 异常提示
+					parent.layer.msg('出现网络故障', {
+						icon : 5
+					});
+				}
+			});
+            return false;
         });
 
 

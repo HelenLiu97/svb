@@ -22,6 +22,79 @@ from . import admin_blueprint
 from config import cache
 
 
+@admin_blueprint.route('/edit_ustd/', methods=['GET', 'POST'])
+@admin_required
+def edit_ustd():
+    if request.method == 'GET':
+        url = request.args.get('url')
+        status = SqlData.search_ustd_field('status', url)
+        print(status)
+        # status:1为锁定，0为正常，2为置顶
+        if status == 2:
+            SqlData.update_ustd_info('status', 0, url)
+        else:
+            res = SqlData.search_ustd_code("WHERE status=2")
+            if res:
+                return jsonify({'code': RET.SERVERERROR, 'msg': '请取消已置顶收款码后重试！'})
+            SqlData.update_ustd_info('status', 2, url)
+        return jsonify({'code': RET.OK, 'msg': MSG.OK})
+    if request.method == 'POST':
+        url = request.args.get('url')
+        SqlData.del_ustd_code(url)
+        return jsonify({'code': RET.OK, 'msg': MSG.OK})
+
+
+@admin_blueprint.route('/ustd_info/', methods=['GET'])
+@admin_required
+def ustd_info():
+    results = dict()
+    results['code'] = RET.OK
+    results['msg'] = MSG.OK
+    info_list = SqlData.search_ustd_code('')
+    if not info_list:
+        results['msg'] = MSG.NODATA
+        return jsonify(results)
+    results['data'] = info_list
+    results['count'] = len(info_list)
+    return jsonify(results)
+
+
+@admin_blueprint.route('/add_ustd/', methods=['POST'])
+@admin_required
+def add_ustd():
+    results = {"code": RET.OK, "msg": MSG.OK}
+    data = json.loads(request.form.get('data'))
+    address = data.get('address')
+    pic_url = data.get('pic_url')
+    t = xianzai_time()
+    SqlData.insert_ustd_code(pic_url, t, address)
+    print(data)
+    return jsonify(results)
+    top_people = data.get('top_people')
+    email = data.get('email')
+
+
+@admin_blueprint.route('/upload_ustd/', methods=['POST'])
+@admin_required
+def upload_ustd():
+    results = {'code': RET.OK, 'msg': MSG.OK}
+    file = request.files.get('file')
+    file_name = sum_code() + ".png"
+    # file_path = DIR_PATH.PHOTO_DIR + "/" + file_name
+    file_path = os.path.join(DIR_PATH.PHOTO_DIR, file_name)
+    file.save(file_path)
+    filename = sm_photo(file_path, file_name)
+    if filename:
+        # 上传成功后插入信息的新的收款方式信息
+        os.remove(file_path)
+        t = xianzai_time()
+        url = "http://cdn.trybest.top/" + filename
+        results.update({'url': url})
+        return jsonify(results)
+    else:
+        return jsonify({'code': RET.SERVERERROR, 'msg': MSG.SERVERERROR})
+
+
 @admin_blueprint.route('/user_line_chart/')
 @admin_required
 def line_chart():
@@ -658,6 +731,13 @@ def top_msg():
 def qr_code():
     if request.method == 'GET':
         return render_template('admin/qr_code.html')
+
+
+@admin_blueprint.route('/ustd_code/', methods=['GET', 'POST'])
+@admin_required
+def ustd_code():
+    if request.method == 'GET':
+        return render_template('admin/ustd_code.html')
 
 
 @admin_blueprint.route('/bento_refund', methods=['GET'])
@@ -1327,6 +1407,7 @@ def top_up():
     try:
         data = request.form.get('money')
         name = request.form.get('name')
+        text = request.form.get('text')
         pay_num = sum_code()
         t = xianzai_time()
         money = float(data)
@@ -1336,7 +1417,7 @@ def top_up():
         # 更新账户余额
         SqlData.update_user_balance(money, user_id)
         # 更新客户充值记录
-        SqlData.insert_top_up(pay_num, t, money, before, balance, user_id)
+        SqlData.insert_top_up(pay_num, t, money, before, balance, user_id, text=text)
 
         phone = SqlData.search_user_field_name('phone_num', name)
 
