@@ -121,7 +121,6 @@ class SVB(object):
         try:
             resp = self.requests.get(url, headers=self.create_header(method, path, params=params), timeout=60)
             if resp.status_code == 200:
-                print(resp.text)
                 return resp.json()
             else:
                 return {}
@@ -207,11 +206,50 @@ class SVB(object):
 
 svb = SVB()
 if __name__ == '__main__':
-    r = svb.card_detail(166043305)
-    print(r)
+    card_detail = svb.card_detail(161604400)
+    print(json.dumps(card_detail))
+    authorizations = card_detail.get('data').get('authorizations')
+    pay = ""
+    for td in authorizations:
+        s = "<tr>" + \
+            "<td>" + td.get("acquirer_ica") + "</td>" + \
+            "<td>" + str(td.get("approval_code")) + "</td>" + \
+            "<td>" + str(td.get("billing_amount") / 100) + "</td>" + \
+            "<td>" + td.get("billing_currency") + "</td>" + \
+            "<td>" + td.get("mcc") + "</td>" + \
+            "<td>" + td.get("mcc_description") + "</td>" + \
+            "<td>" + str(td.get("merchant_amount") / 100) + "</td>" + \
+            "<td>" + td.get("merchant_currency") + "</td>" + \
+            "<td>" + td.get("merchant_id") + "</td>" + \
+            "<td>" + td.get("merchant_name") + "</td>" + \
+            "<td>" + td.get("transaction_date_time") + "</td>" + \
+            "<td>" + td.get("merchant_name") + "</td>" + \
+            "<td>" + td.get("vcn_response") + "</td>" + \
+            "</tr>"
+        pay += s
+    clear = ""
+    clearings = card_detail.get('data').get('clearings')
+    for tdd in clearings:
+        print(str(tdd.get("merchant_amount")))
+        print(str(tdd.get("settlement_date")))
+        s = "<tr>" + \
+            "<td>" + tdd.get("acquirer_ica") + "</td>" + \
+            "<td>" + str(tdd.get("approval_code")) + "</td>" + \
+            "<td>" + str(tdd.get("billing_amount") / 100) + "</td>" + \
+            "<td>" + tdd.get("billing_currency") + "</td>" + \
+            "<td>" + tdd.get("mcc") + "</td>" + \
+            "<td>" + tdd.get("mcc_description") + "</td>" + \
+            "<td>" + str(float(tdd.get("merchant_amount")) / 100) + "</td>" + \
+            "<td>" + tdd.get("merchant_currency") + "</td>" + \
+            "<td>" + tdd.get("merchant_id") + "</td>" + \
+            "<td>" + tdd.get("merchant_name") + "</td>" + \
+            "<td>" + str(tdd.get("settlement_date")) + "</td>" + \
+            "</tr>"
+        clear += s
     # total_card_amount = r.get('data').get('total_card_amount')
     # print(total_card_amount)
-    # d, s = svb.update_card(127756470, 10)
+    # # total_card_amount = total_card_amount + 9628
+    # d, s = svb.update_card(131150884, 9700)
     # print(d, s)
     # print(r)
     # base_path = os.path.abspath(os.path.dirname(os.path.dirname(__file__)))

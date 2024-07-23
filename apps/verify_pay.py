@@ -175,11 +175,16 @@ def top_up():
                 bank_money = SqlData.search_bank_top(bank_number)
                 update_money = float(pay_money) + float(bank_money)
                 SqlData.update_bank_top(bank_number, float(pay_money), update_money)
+                pay_num = 'bank' + pay_num
             else:
                 # 更新首款码收款金额
                 # pay_money = SqlData.search_pay_code('pay_money', cus_name, pay_time)
                 url = SqlData.search_pay_code('url', cus_name, pay_time)
                 SqlData.update_qr_money('top_money', pay_money, url)
+                if 'ustd' in url:
+                    pay_num = 'ustd' + pay_num
+                elif 'zfb' in url:
+                    pay_num = 'zfb' + pay_num
 
             # 更新账户余额
             SqlData.update_user_balance(money, user_id)

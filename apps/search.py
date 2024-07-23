@@ -36,7 +36,7 @@ def card_detail():
                     </div>"""
 
         return jsonify({'code': RET.OK, 'msg': context})
-    card_status = SqlData.search_card_like('status', card_num)
+    card_status = SqlData.search_card_like('card_status', card_num)
     if card_status == "T":
         available_balance = card_detail.get('data').get('available_balance')
         balance = available_balance / 100

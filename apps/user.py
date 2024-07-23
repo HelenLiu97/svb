@@ -157,11 +157,12 @@ def pay_pic():
 
             sum_money = float(sum_money)
             top_money = float(top_money)
+            hand = SqlData.search_user_field('hand', g.user_id)
             if change_type == "pic":
-                SqlData.insert_pay_log(n_time, sum_money, top_money, vir_code, '待充值', phone, url, cus_id)
+                SqlData.insert_pay_log(n_time, sum_money, top_money, vir_code, '待充值', phone, url, cus_id, exchange, hand)
             elif change_type == "bank":
                 SqlData.insert_pay_log(n_time, sum_money, top_money, vir_code, '待充值', phone,
-                                         "{},{},{}".format(bank_name, bank_number, bank_address), cus_id)
+                                         "{},{},{}".format(bank_name, bank_number, bank_address), cus_id, exchange, hand)
             # 获取要推送邮件的邮箱
             top_push = SqlData.search_admin_field('top_push')
             top_dict = json.loads(top_push)
@@ -191,7 +192,7 @@ def user_top():
         context['ex_range'] = ex_range
         context['hand'] = hand
         context['dollar_hand'] = dollar_hand
-        usdt_hand = 0.04
+        usdt_hand = SqlData.search_user_field('card_num', g.user_id)
         context['usdt_hand'] = usdt_hand
         return render_template('user/pay_top.html', **context)
     if request.method == 'POST':
@@ -208,7 +209,7 @@ def user_top():
             return jsonify({'code': RET.SERVERERROR, 'msg': '充值金额不能小于100$'})
 
         if key == 'USDT':
-            usdt_hand = 0.04
+            usdt_hand = SqlData.search_user_field('card_num', g.user_id)
             if round(float(sum_money), 2) == round((float(top_money) * (1 + usdt_hand)), 2):
                 return jsonify({'code': RET.OK, 'msg': MSG.OK})
             else:
@@ -302,11 +303,12 @@ def pay_pic_usdt():
 
             sum_money = float(sum_money)
             top_money = float(top_money)
+            hand = SqlData.search_user_field('card_num', g.user_id)
             if change_type == "pic":
-                SqlData.insert_pay_log(n_time, sum_money, top_money, vir_code, '待充值', phone, url, cus_id)
+                SqlData.insert_pay_log(n_time, sum_money, top_money, vir_code, '待充值', phone, url, cus_id, '', hand)
             elif change_type == "bank":
                 SqlData.insert_pay_log(n_time, sum_money, top_money, vir_code, '待充值', phone,
-                                       "{},{},{}".format(bank_name, bank_number, bank_address), cus_id)
+                                       "{},{},{}".format(bank_name, bank_number, bank_address), cus_id, '', hand)
             # 获取要推送邮件的邮箱
             top_push = SqlData.search_admin_field('top_push')
             top_dict = json.loads(top_push)
@@ -791,11 +793,7 @@ def card_delete():
             n_time = xianzai_time()
             SqlData.insert_account_trans(n_time, '收入', "注销", card_number,
                                          update_balance, before_balance, balance, user_id)
-            if differ < 0:
-                if refund_limit > 0:
-                    trans_type = '收入'
-                else:
-                    trans_type = '支出'
+            if differ != 0:
                 before_balance = SqlData.search_user_field('balance', user_id)
                 SqlData.update_balance(differ, user_id)
                 balance = SqlData.search_user_field("balance", user_id)
@@ -803,7 +801,6 @@ def card_delete():
                                              abs(differ), before_balance, balance, user_id)
             return jsonify({'code': RET.OK, 'msg': '删卡操作成功!'})
         return jsonify({'code': RET.SERVERERROR, 'msg': '请求超时请稍后重试！'})
-
 
 
 # 批量充值
@@ -1993,6 +1990,7 @@ def excel_create_card(card_info, user_id, create_price, excel_path, file_name):
             if not limit:
                 sheet.cell(line_num, 8).value = '失败: 缺少充值金额'
                 continue
+            label = str(label)
             if "'" in label or '"' in label:
                 sheet.cell(line_num, 8).value = '失败: 卡名不可以包含特殊字符'
                 continue

@@ -4,10 +4,6 @@ import smtplib  # 引入SMTP协议包
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart  # 创建包含多个部分的邮件体
 from email.mime.image import MIMEImage
-# from concurrent.futures import ThreadPoolExecutor
-# from tools_me.parameter import DIR_PATH
-
-# msg_to = "2404052713@qq.com"  # 收件人邮箱
 
 
 def send(context, pic_list, msg_to):

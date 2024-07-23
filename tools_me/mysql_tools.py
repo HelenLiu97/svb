@@ -749,6 +749,14 @@ class SqlDataBase(object):
                 info_dict['user_id'] = i[6]
                 info_dict['remark'] = i[7]
                 info_dict['name'] = i[12]
+                if 'zfb' in i[1]:
+                    info_dict['source'] = 'zfb'
+                elif 'ustd' in i[1]:
+                    info_dict['source'] = 'ustd'
+                elif 'bank' in i[1]:
+                    info_dict['source'] = '银行卡'
+                else:
+                    info_dict['source'] = ''
                 info_list.append(info_dict)
             return info_list
 
@@ -779,10 +787,10 @@ class SqlDataBase(object):
             conn.rollback()
         self.close_connect(conn, cursor)
 
-    def insert_account(self, account, password, phone_num, name, create_price, min_top, middle_id, hand):
-        sql = "INSERT INTO user_info(account, password, phone_num, name, create_price, min_top, middle_id, hand) " \
-              "VALUES ('{}','{}','{}','{}',{},{},{},{})".format(account, password, phone_num, name, create_price,
-                                                             min_top, middle_id, hand)
+    def insert_account(self, account, password, phone_num, name, create_price, min_top, middle_id, hand, ustd_hand):
+        sql = "INSERT INTO user_info(account, password, phone_num, name, create_price, min_top, middle_id, hand, card_num) " \
+              "VALUES ('{}','{}','{}','{}',{},{},{},{},{})".format(account, password, phone_num, name, create_price,
+                                                             min_top, middle_id, hand, ustd_hand)
         conn, cursor = self.connect()
         try:
             cursor.execute(sql)
@@ -1206,9 +1214,9 @@ class SqlDataBase(object):
         return res
 
     # pay
-    def insert_pay_log(self, pay_time, pay_money, top_money, ver_code, status, phone, url, account_id):
-        sql = "INSERT INTO pay_log(pay_time, pay_money, top_money, ver_code, status, phone, url, user_id) VALUES ('{}',{},{},'{}','{}','{}', '{}',{})".format(
-            pay_time, pay_money, top_money, ver_code, status, phone, url, account_id)
+    def insert_pay_log(self, pay_time, pay_money, top_money, ver_code, status, phone, url, account_id, ex_change, hand):
+        sql = "INSERT INTO pay_log(pay_time, pay_money, top_money, ver_code, status, phone, url, user_id, ex_change, hand) VALUES ('{}',{},{},'{}','{}','{}', '{}',{}, '{}','{}')".format(
+            pay_time, pay_money, top_money, ver_code, status, phone, url, account_id, ex_change, hand)
         conn, cursor = self.connect()
 
         try:

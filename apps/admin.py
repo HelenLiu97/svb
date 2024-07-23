@@ -75,7 +75,7 @@ def add_ustd():
 def upload_ustd():
     results = {'code': RET.OK, 'msg': MSG.OK}
     file = request.files.get('file')
-    file_name = sum_code() + ".png"
+    file_name = 'ustd' + sum_code() + ".png"
     # file_path = DIR_PATH.PHOTO_DIR + "/" + file_name
     file_path = os.path.join(DIR_PATH.PHOTO_DIR, file_name)
     file.save(file_path)
@@ -614,7 +614,7 @@ def ex_change():
 def up_pay_pic():
     results = {'code': RET.OK, 'msg': MSG.OK}
     file = request.files.get('file')
-    file_name = sum_code() + ".png"
+    file_name = 'zfb' + sum_code() + ".png"
     # file_path = DIR_PATH.PHOTO_DIR + "/" + file_name
     file_path = os.path.join(DIR_PATH.PHOTO_DIR, file_name)
     file.save(file_path)
@@ -1210,6 +1210,7 @@ def add_account():
             max_top = float(30000)
             middle_name = data.get('middle_name')
             hand = float(data.get('hand'))
+            ustd_hand = float(data.get('ustd_hand'))
             ed_name = SqlData.search_user_field_name('name', name)
             ed_account = SqlData.search_user_field_name('account', account)
             if ed_name or ed_account:
@@ -1228,7 +1229,7 @@ def add_account():
                 middle_id = SqlData.search_middle_name('id', middle_name)
             else:
                 middle_id = 'NULL'
-            SqlData.insert_account(account, password, phone_num, name, create_price, min_top, middle_id, hand)
+            SqlData.insert_account(account, password, phone_num, name, create_price, min_top, middle_id, hand, ustd_hand)
             # 创建用户后插入充值数据
             pay_num = sum_code()
             t = xianzai_time()
@@ -1446,6 +1447,7 @@ def edit_parameter():
             account_name = data.get('account_name')
             account = data.get('account')
             hand = data.get('hand')
+            ustd_hand = data.get('ustd_hand')
             if create_price:
                 SqlData.update_account_field('create_price', create_price, name)
             if min_top:
@@ -1476,6 +1478,8 @@ def edit_parameter():
                 """
             if hand:
                 SqlData.update_account_field('hand', hand, name)
+            if ustd_hand:
+                SqlData.update_account_field('card_num', ustd_hand, name)
             return jsonify(results)
         except Exception as e:
             logging.error(e)
