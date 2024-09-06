@@ -12,8 +12,7 @@ from tools_me.svb import svb
 from tools_me.des_code import ImgCode
 from tools_me.img_code import createCodeImage
 from tools_me.mysql_tools import SqlData
-from tools_me.other_tools import admin_required, sum_code, xianzai_time, get_nday_list, verify_login_time, \
-    between_day_list
+from tools_me.other_tools import admin_required, sum_code, xianzai_time, get_nday_list, verify_login_time, between_day_list
 from tools_me.parameter import RET, MSG, DIR_PATH
 from tools_me.redis_tools import RedisTool
 from tools_me.send_sms.send_sms import CCP
@@ -28,6 +27,7 @@ def edit_ustd():
     if request.method == 'GET':
         url = request.args.get('url')
         status = SqlData.search_ustd_field('status', url)
+        print(status)
         # status:1为锁定，0为正常，2为置顶
         if status == 2:
             SqlData.update_ustd_info('status', 0, url)
@@ -67,6 +67,7 @@ def add_ustd():
     pic_url = data.get('pic_url')
     t = xianzai_time()
     SqlData.insert_ustd_code(pic_url, t, address)
+    print(data)
     return jsonify(results)
 
 
@@ -75,7 +76,7 @@ def add_ustd():
 def upload_ustd():
     results = {'code': RET.OK, 'msg': MSG.OK}
     file = request.files.get('file')
-    file_name = 'ustd' + sum_code() + ".png"
+    file_name = 'ustd' +  sum_code() + ".png"
     # file_path = DIR_PATH.PHOTO_DIR + "/" + file_name
     file_path = os.path.join(DIR_PATH.PHOTO_DIR, file_name)
     file.save(file_path)
@@ -84,7 +85,7 @@ def upload_ustd():
         # 上传成功后插入信息的新的收款方式信息
         os.remove(file_path)
         t = xianzai_time()
-        url = "http://cdn.trybest.top/" + filename
+        url = "http://cdn.buysys.top/" + filename
         results.update({'url': url})
         return jsonify(results)
     else:
@@ -375,7 +376,8 @@ def push_log_settle():
         results = dict()
         results['msg'] = MSG.OK
         results['code'] = RET.OK
-        info = SqlData.search_admin_card_trans_settle(sql)
+        limit_sql = " order by id DESC limit {} offset {}".format(limit, int(limit) * (int(page) - 1))
+        info = SqlData.search_admin_card_trans_settle(sql + limit_sql)
         if time_range:
             min_time = time_range.split(' - ')[0]
             max_time = time_range.split(' - ')[1]
@@ -391,10 +393,9 @@ def push_log_settle():
         task_info = sorted(info, key=operator.itemgetter('authorization_date'))
         page_list = list()
         task_info = list(reversed(task_info))
-        for i in range(0, len(task_info), int(limit)):
-            page_list.append(task_info[i:i + int(limit)])
-        results['data'] = page_list[int(page) - 1]
-        results['count'] = len(task_info)
+        results['data'] = task_info
+        c = SqlData.search_value_count(" card_trans_settle WHERE id is not null " + sql)
+        results['count'] = c
         return jsonify(results)
     except Exception as e:
         logging.error('查询卡交易推送失败:' + str(e))
@@ -436,7 +437,8 @@ def push_log():
         results = dict()
         results['msg'] = MSG.OK
         results['code'] = RET.OK
-        info = SqlData.search_admin_card_trans(sql)
+        limit_sql = " order by id DESC limit {} offset {}".format(limit, int(limit) * (int(page) - 1))
+        info = SqlData.search_admin_card_trans(sql + limit_sql)
         if time_range:
             min_time = time_range.split(' - ')[0]
             max_time = time_range.split(' - ')[1]
@@ -450,12 +452,10 @@ def push_log():
             results['msg'] = MSG.NODATA
             return jsonify(results)
         task_info = sorted(info, key=operator.itemgetter('transaction_date_time'))
-        page_list = list()
         task_info = list(reversed(task_info))
-        for i in range(0, len(task_info), int(limit)):
-            page_list.append(task_info[i:i + int(limit)])
-        results['data'] = page_list[int(page) - 1]
-        results['count'] = len(task_info)
+        results['data'] = task_info
+        c = SqlData.search_value_count(" card_trans WHERE id is not null " + sql)
+        results['count'] = c
         return jsonify(results)
     except Exception as e:
         logging.error('查询卡交易推送失败:' + str(e))
@@ -623,10 +623,9 @@ def up_pay_pic():
         # 上传成功后插入信息的新的收款方式信息
         os.remove(file_path)
         t = xianzai_time()
-        url = "http://cdn.trybest.top/" + filename
+        url = "http://cdn.buysys.top/" + filename
         SqlData.insert_qr_code(url, t)
         return jsonify(results)
-    else:
         return jsonify({'code': RET.SERVERERROR, 'msg': MSG.SERVERERROR})
 
 
@@ -873,27 +872,25 @@ def account_trans():
     if time_range:
         min_time = time_range.split(' - ')[0]
         max_time = time_range.split(' - ')[1] + ' 23:59:59'
-        time_sql = "AND user_trans.do_date BETWEEN " + "'" + min_time + "'" + " and " + "'" + max_time + "'"
+        time_sql = " AND user_trans.do_date BETWEEN " + "'" + min_time + "'" + " and " + "'" + max_time + "'"
     if trans_card:
-        card_sql = "AND user_trans.card_no LIKE '%{}%'".format(trans_card.strip())
+        card_sql = " AND user_trans.card_no LIKE '%{}%'".format(trans_card.strip())
     if cus_name:
-        cus_sql = "AND user_info.name LIKE '%" + cus_name + "%'"
+        cus_sql = " AND user_info.name LIKE '%" + cus_name + "%'"
     if do_type:
-        do_sql = "AND user_trans.do_type LIKE '%{}%'".format(do_type)
+        do_sql = " AND user_trans.do_type LIKE '%{}%'".format(do_type)
 
-    task_info = SqlData.search_trans_admin(cus_sql, card_sql, time_sql, do_sql, sql)
+    limit_sql = " order by id DESC limit {} offset {}".format(limit, int(limit) * (int(page) - 1))
+    c = SqlData.search_value_count("user_trans LEFT JOIN user_info ON user_trans.user_id = user_info.id WHERE user_trans.do_date != ''", cus_sql + card_sql + time_sql + do_sql + sql)
+    task_info = SqlData.search_trans_admin(cus_sql, card_sql, time_sql, do_sql, sql + limit_sql)
     results = {"code": RET.OK, "msg": MSG.OK, "count": 0, "data": ""}
     if len(task_info) == 0:
         results['MSG'] = MSG.NODATA
         return jsonify(results)
-    page_list = list()
     task_info = sorted(task_info, key=operator.itemgetter('date'))
-
     task_info = list(reversed(task_info))
-    for i in range(0, len(task_info), int(limit)):
-        page_list.append(task_info[i:i + int(limit)])
-    results['data'] = page_list[int(page) - 1]
-    results['count'] = len(task_info)
+    results['data'] = task_info
+    results['count'] = c
     return jsonify(results)
 
 
@@ -948,17 +945,16 @@ def card_info_all():
         results = dict()
         results['code'] = RET.OK
         results['msg'] = MSG.OK
-        info_list = SqlData.search_card_info_admin(sql)
+        limit_sql = " order by id DESC limit {} offset {}".format(limit, int(limit) * (int(page) - 1))
+        info_list = SqlData.search_card_info_admin(sql + limit_sql)
         if not info_list:
             results['code'] = RET.OK
             results['msg'] = MSG.NODATA
             return jsonify(results)
-        page_list = list()
         info_list = list(reversed(info_list))
-        for i in range(0, len(info_list), int(limit)):
-            page_list.append(info_list[i:i + int(limit)])
-        results['data'] = page_list[int(page) - 1]
-        results['count'] = len(info_list)
+        results['data'] = info_list
+        c = SqlData.search_value_count(" card_info " + sql)
+        results['count'] = c
         return jsonify(results)
     except Exception as e:
         logging.error(str(e))
@@ -1384,7 +1380,7 @@ def acc_pay():
                 return jsonify({'code': RET.SERVERERROR, 'msg': '请输入正数金额！'})
             balance = SqlData.search_user_field_name('balance', name)
             # if f_money > balance:
-            #     return jsonify({'code': RET.SERVERERROR, 'msg': '扣费余额不足！'})
+            #    return jsonify({'code': RET.SERVERERROR, 'msg': '扣费余额不足！'})
             user_id = SqlData.search_user_field_name('id', name)
             SqlData.update_balance(-f_money, user_id)
             a_balance = SqlData.search_user_field("balance", user_id)
@@ -1448,6 +1444,7 @@ def edit_parameter():
             account = data.get('account')
             hand = data.get('hand')
             ustd_hand = data.get('ustd_hand')
+            credit_hand = data.get('credit_hand')
             if create_price:
                 SqlData.update_account_field('create_price', create_price, name)
             if min_top:
@@ -1480,6 +1477,8 @@ def edit_parameter():
                 SqlData.update_account_field('hand', hand, name)
             if ustd_hand:
                 SqlData.update_account_field('card_num', ustd_hand, name)
+            if credit_hand:
+                SqlData.update_account_field('login_ip', credit_hand, name)
             return jsonify(results)
         except Exception as e:
             logging.error(e)
@@ -1582,7 +1581,8 @@ def account_info():
         sql = "WHERE middle_id={}".format(middle_id)
     else:
         sql = ''
-    task_one = SqlData.search_account_info(sql)
+    limit_sql = " limit {} offset {}".format(limit, int(limit) * (int(page) - 1))
+    task_one = SqlData.search_account_info(sql + limit_sql)
     if len(task_one) == 0:
         results['MSG'] = MSG.NODATA
         return results
@@ -1601,9 +1601,7 @@ def account_info():
     task_info = list()
     for i in sorted(task_info_status):
         task_info.append(task_info_status[i])
-    for i in range(0, len(task_info), int(limit)):
-        page_list.append(task_info[i:i + int(limit)])
-    data = page_list[int(page) - 1]
+    data = task_info
     new_data = list()
     # 取出列表中的用户计算总消费和卡总余额
     for i in data:
@@ -1612,9 +1610,14 @@ def account_info():
         card_remain = SqlData.search_sum_card_balance(u_id)
         i.update({'sum_out_money': round(sum_out_money, 2)})
         i.update({'card_remain': card_remain})
+
+        i.update({'create_card': SqlData.search_value_count('card_info', 'WHERE user_id={}'.format(u_id))})
+        i.update({'card_true': SqlData.search_value_count('card_info', "WHERE user_id={} AND card_status='T'".format(u_id))})
+
         new_data.append(i)
     results['data'] = new_data
-    results['count'] = len(task_info)
+    c = SqlData.search_value_count(" user_info " + sql)
+    results['count'] = c
     return jsonify(results)
 
 

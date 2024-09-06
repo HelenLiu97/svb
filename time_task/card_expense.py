@@ -37,6 +37,20 @@ def main():
             SqlData.update_settle_handing(money, _id)
             SqlData.insert_account_trans(xianzai_time(), '支出', '手续费', card_number,
                                          money, before_balance, balance, user_id)
+        if clearing_type == 'CREDIT':
+            rate = SqlData.search_user_field('login_ip', user_id)
+            if not rate:
+                continue
+            money = round(float(billing_amount) * float(rate), 2)
+            if money == 0:
+                money = 0.01
+            print(f'需要扣费: {money}')
+            before_balance = SqlData.search_user_field('balance', user_id)
+            SqlData.update_balance(-money, user_id)
+            balance = SqlData.search_user_field("balance", user_id)
+            SqlData.update_settle_handing(money, _id)
+            SqlData.insert_account_trans(xianzai_time(), '支出', '退款手续费', card_number,
+                                         money, before_balance, balance, user_id)
 
 
 if __name__ == "__main__":

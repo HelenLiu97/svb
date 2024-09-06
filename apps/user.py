@@ -989,6 +989,7 @@ def create_card():
         context['create_price'] = create_price
         return render_template('user/create_card.html', **context)
     if request.method == 'POST':
+        return jsonify({"code": RET.SERVERERROR, "msg": "开卡异常正在处理！"})
         # 判断是否是子账号用户
         vice_id = g.vice_id
         if vice_id:
@@ -1049,7 +1050,10 @@ def create_card():
                 valid_ending_on = i[7]
                 last4 = i[8]
 
-                SqlData.update_new_card_use(card_id)
+                RESULT = SqlData.update_new_card_use(card_id)
+                if not RESULT:
+                    logging.error('更新新卡为已使用卡信息失败!卡号: ' + card_number)
+                    return jsonify({"code": RET.SERVERERROR, "msg": "开卡失败,请重试！"})
                 # 插入卡信息
                 SqlData.insert_card(card_number, cvc, expiry, card_id, last4, valid_starting_on, valid_ending_on, label, 'T', int(top_money), user_id)
 
@@ -1083,7 +1087,6 @@ def create_card():
             return jsonify({"code": RET.OK, "msg": "成功开卡! 账户余额为: $"+str(balance)})
 
         except Exception as e:
-            print(e)
             logging.error(str(e))
             return jsonify({"code": RET.SERVERERROR, "msg": "网络繁忙, 开卡失败, 请稍后再试"})
 

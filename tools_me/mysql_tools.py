@@ -53,6 +53,7 @@ class SqlDataBase(object):
 
     def search_value_count(self, table_name, sql=""):
         sql = "SELECT COUNT(*) FROM {} {}".format(table_name, sql)
+        print(sql)
         conn, cursor = self.connect()
         cursor.execute(sql)
         row = cursor.fetchone()
@@ -662,14 +663,12 @@ class SqlDataBase(object):
                 account_dict['create_price'] = i[5]
                 account_dict['min_top'] = i[6]
                 account_dict['max_top'] = i[7]
+                account_dict['credit_hand'] = i[8]
                 account_dict['balance'] = i[10]
                 account_dict['sum_balance'] = i[11]
                 account_dict['last_login_time'] = str(i[9])
                 account_dict['free_number'] = str(i[13])
                 account_dict['hand'] = i[14]
-                account_dict['create_card'] = self.search_value_count('card_info', 'WHERE user_id={}'.format(i[0]))
-                account_dict['card_true'] = self.search_value_count('card_info',
-                                                                    "WHERE user_id={} AND card_status='T'".format(i[0]))
                 account_list.append(account_dict)
             return account_list
 
@@ -2003,10 +2002,14 @@ class SqlDataBase(object):
         try:
             cursor.execute(sql)
             conn.commit()
+            self.close_connect(conn, cursor)
+            return True
         except Exception as e:
             logging.error("更新卡信息失败!")
             conn.rollback()
-        self.close_connect(conn, cursor)
+            self.close_connect(conn, cursor)
+            return False
+
 
     def search_brex_user(self, username):
         sql = "SELECT * FROM brex_user WHERE account='{}'".format(username)
@@ -2255,6 +2258,14 @@ class SqlDataBase(object):
             conn.rollback()
         self.close_connect(conn, cursor)
 
+    def check_card_delete(self, card_number, now_time):
+        sql = "SELECT COUNT(*) FROM user_trans WHERE card_no='{}' AND do_date < '{}' AND do_type='注销'".format(card_number, now_time)
+        conn, cursor = self.connect()
+        cursor.execute(sql)
+        rows = cursor.fetchall()
+        self.close_connect(conn, cursor)
+        return rows[0][0]
+
 
 
 SqlData = SqlDataBase()
@@ -2262,5 +2273,7 @@ SqlData = SqlDataBase()
 if __name__ == "__main__":
     account = 'baocui'
     password = 'Bento1.0'
-    res = SqlData.search_admin_login(account, password)
+    card_number = '5563383501829202'
+    now_time = '2023-07-19 22:05:05'
+    res = SqlData.check_card_delete(card_number, now_time)
     print(res)

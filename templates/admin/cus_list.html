@@ -92,8 +92,8 @@
         even: true,
         height : "full-100",
         totalRow: true,
-        limit : 100,
-        limits : [100,200,300,400,500],
+        limit : 10,
+        limits : [10,50,100,500,1000],
         id : "newsListTable",
         cols: [[ //表头
                 {type: 'numbers'}
@@ -127,6 +127,7 @@
                 , {field: 'min_top', title: '最低充值金额', align: 'center', sort: true }
                 , {field: 'hand', title: '手续费', align: 'center', sort: true }
                 , {field: 'max_top', title: 'ustd手续费', align: 'center', sort: true }
+                , {field: 'credit_hand', title: '退款手续费', align: 'center', sort: true }
                 , {fixed: 'right', width: 200, align: 'center', toolbar: '#barDemo_1'}
             ]];
 
@@ -160,10 +161,10 @@
                     , cellMinWidth: '95'
                     , url: '/admin/account_info/' //数据接口
                     , title: '客户信息'
-                    , limit : 100
                     , skin: 'line'
-                    , even: true
-                    , limits : [100,200,300,400,500]
+                    , even: true,
+                     limit : 10,
+                     limits : [10,50,100,500,1000]
                     , toolbar: "#acc_title" //开启工具栏，此处显示默认图标，可以自定义模板，详见文档
                     , totalRow: true //开启合计行
                     , cols: base_info
@@ -330,7 +331,7 @@
                     type: 2,
                     anim: 3,
                     skin:'layui-layer-lan',
-                    area: ['20%', '40%'],//宽高
+                    area: ['40%', '60%'],//宽高
                     shadeClose: true, //点击遮罩关闭
                     content: '/admin/edit_parameter/',
                     success: function (layero, index) {

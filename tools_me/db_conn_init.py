@@ -14,6 +14,7 @@ class ConnMysql(object):
             # host = "3.17.178.128"
             host = "127.0.0.1"
             port = 12588
+            # port = 3306
             user = "root"
             # password = "liuxiao@140922"
             password = "Helen799677"
