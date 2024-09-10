@@ -24,7 +24,11 @@
 			</div>
 		</form>
 	</blockquote>
-<tablse class="layui-hide" id="top_up" lay-filter="top_up"></tablse>
+    <tablse class="layui-hide" id="top_up" lay-filter="top_up"></tablse>
+
+    <script type="text/html" id="barDemo_1">
+		<a class="layui-btn layui-btn-xs layui-btn-warm layui-btn-radius" lay-event="edit">备注</a>
+	</script>
 <script>
     layui.use(['table','laydate','form','jquery'], function () {
         var table = layui.table,
@@ -62,6 +66,7 @@
                 , {field: 'remark', title: '订单备注', align: 'center', sort: true, totalRow: true}
                 , {field: 'source', title: '充值方式', align: 'center', sort: true,}
                 , {field: 'sum_balance', title: '截止当前总充值', align: 'center', sort: true, totalRow: true, style: 'color: #458B74'}
+                , {fixed: 'right', width: 80, align: 'center', toolbar: '#barDemo_1'}
             ]]
             , id: 'top_history'
             , page: true
@@ -85,7 +90,7 @@
 
          document.onkeydown=keyDownSearch;
 
-            function keyDownSearch(e) {
+        function keyDownSearch(e) {
                 // 兼容FF和IE和Opera
                 var theEvent = e || window.event;
                 var code = theEvent.keyCode || theEvent.which || theEvent.charCode;
@@ -107,7 +112,45 @@
                 return true;
             }
 
+        table.on('tool(top_up)', function(obj) {
+            var layEvent = obj.event,
+                data = obj.data;
+            if (layEvent === 'edit') {
+                layer.prompt({title: '充值备注', formType: 2}, function (text, index) {
+                            {#alert('您输入的密令：'+ num +'；文本：'+ text);#}
+                            $.ajax({
+                                type: 'POST',
+                                url: '/admin/top_note',
+                                data: {'pay_num': data.pay_num, 'text': text},
+                                dataType: 'json',
+                                success: function (data) {
+                                    // 成功提示框
+                                    if (data.code == 0) {
+                                        parent.layer.msg(data.msg, {
+                                            icon: 6,
+                                        });
+                                        parent.layer.closeAll('iframe'); //关闭弹框
+                                        {#window.parent.location.reload()#}
+                                    } else if (data.code == 502) {
+                                        parent.layer.msg(data.msg, {
+                                            icon: 5
+                                        });
+                                    }
 
+                                },
+                                error: function (data) {
+                                    // 异常提示
+                                    parent.layer.msg('出现网络故障', {
+                                        icon: 5
+                                    });
+                                    parent.layer.closeAll('iframe'); //关闭弹框
+                                }
+                            });
+                            layer.close(index);
+                        });
+
+            }
+        })
 
     });
 

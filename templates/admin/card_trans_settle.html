@@ -23,9 +23,18 @@
         <option value="F">不含手续费</option>
         </select>
     </div>
-    -->    <div class="layui-inline">
+    -->
+    <div class="layui-inline">
 <input type="text" class="layui-input" id="test8" autocomplete="off" placeholder="时间范围">
 </div>
+    <div class="layui-input-inline">
+                <select name="middle_name" lay-search="" id="middle_name">
+                    <option value="">直接选择或搜索选择</option>
+                    {% for i in middle_name %}
+                    <option value="{{ i }}">{{ i }}</option>
+                    {% endfor %}
+                    </select>
+            </div>
 <button class="layui-btn" lay-submit="" lay-filter="trans_sear" type="submit">搜索</button>
 <button type="reset" class="layui-btn layui-btn-primary" id="">重置</button>
     </form>
@@ -78,6 +87,7 @@
              var card_no = $("#card_no").val(),
                  trans_status = $("#trans_status").val(),
                  cus_name = $('#test10').val(),
+                 middle_name = $('#middle_name').val(),
                  time_range = $('#test8').val();
              table.reload("push_log", {
                  page: {
@@ -85,6 +95,7 @@
                  },where: {
                      card_no:card_no,
                      trans_status: trans_status,
+                     middle_name: middle_name,
                      cus_name: cus_name,
                      time_range:time_range,
                    }
@@ -102,6 +113,7 @@
                     var card_no = $("#card_no").val(),
                         trans_status = $("#trans_status").val(),
                         cus_name = $('#test10').val(),
+                        middle_name = $('#middle_name').val(),
                         time_range = $('#test8').val();
                      table.reload("push_log", {
                          page: {
@@ -111,6 +123,7 @@
                              trans_status: trans_status,
                              cus_name: cus_name,
                              time_range:time_range,
+                             middle_name:middle_name,
                            }
                        }, '/user/push_log/');
                     return false;

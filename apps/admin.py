@@ -21,6 +21,21 @@ from . import admin_blueprint
 from config import cache
 
 
+@admin_blueprint.route('/top_note', methods=['POST'])
+@admin_required
+def top_note():
+    results = {"code": RET.OK, "msg": MSG.OK}
+    try:
+        pay_num = request.form.get('pay_num')
+        text = request.form.get('text')
+        res = SqlData.update_top_remark(pay_num, text)
+        if res:
+            return jsonify(results)
+        return jsonify({'code': RET.SERVERERROR, 'msg': MSG.SERVERERROR})
+    except Exception as e:
+        return jsonify({'code': RET.SERVERERROR, 'msg': MSG.SERVERERROR})
+
+
 @admin_blueprint.route('/edit_ustd/', methods=['GET', 'POST'])
 @admin_required
 def edit_ustd():
@@ -336,7 +351,14 @@ def card_trans_table():
 @admin_blueprint.route('/card_trans_settle/', methods=['GET'])
 @admin_required
 def card_trans_settle():
-    return render_template('admin/card_trans_settle.html')
+    middle_info = SqlData.search_middle_info()
+    middle_name = list()
+    for i in middle_info:
+        name = i.get('name')
+        middle_name.append(name)
+    context = dict()
+    context['middle_name'] = middle_name
+    return render_template('admin/card_trans_settle.html', **context)
 
 
 @admin_blueprint.route('/push_log_settle/', methods=['GET'])
@@ -352,6 +374,7 @@ def push_log_settle():
         card_number = request.args.get('card_no')
         trans_status = request.args.get('trans_status')
         time_range = request.args.get('time_range')
+        middle_name = request.args.get('middle_name')
         cus_name = request.args.get('cus_name')
         # 这是所有消费记录的sql
         if trans_status and card_number:
@@ -370,6 +393,18 @@ def push_log_settle():
                 sql = " AND handing_fee = 0"
         elif cus_name:
             sql = " AND user_name LIKE '%" + cus_name + "%'"
+        elif middle_name:
+            middle_id = SqlData.search_middle_name('id', middle_name)
+            user_info = SqlData.search_user_field_middle(middle_id)
+            if len(user_info) == 0:
+                sql = ""
+            elif len(user_info) == 1:
+                user_info.append({'id': ''})
+                user_id = tuple([user.get('id') for user in user_info])
+                sql = "AND user_id IN {}".format(user_id)
+            else:
+                user_id = tuple([user.get('id') for user in user_info])
+                sql = "AND user_id IN {}".format(user_id)
         else:
             sql = ""
 
@@ -399,6 +434,7 @@ def push_log_settle():
         return jsonify(results)
     except Exception as e:
         logging.error('查询卡交易推送失败:' + str(e))
+        print(e)
         return jsonify({'code': RET.SERVERERROR, 'msg': MSG.SERVERERROR})
 
 

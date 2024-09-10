@@ -92,8 +92,8 @@
         even: true,
         height : "full-100",
         totalRow: true,
-        limit : 10,
-        limits : [10,50,100,500,1000],
+        limit : 100,
+        limits : [100,200,300,400,500],
         id : "newsListTable",
         cols: [[ //表头
                 {type: 'numbers'}
@@ -162,9 +162,10 @@
                     , url: '/admin/account_info/' //数据接口
                     , title: '客户信息'
                     , skin: 'line'
-                    , even: true,
-                     limit : 10,
-                     limits : [10,50,100,500,1000]
+                    , even: true
+                    , page : true
+                    ,limit : 100
+                    ,limits : [100,200,300,400,500]
                     , toolbar: "#acc_title" //开启工具栏，此处显示默认图标，可以自定义模板，详见文档
                     , totalRow: true //开启合计行
                     , cols: base_info
@@ -177,10 +178,11 @@
                     , cellMinWidth: '95'
                     , url: '/admin/account_info/' //数据接口
                     , title: '客户信息'
-                    ,limit : 100
-                    ,limits : [100,200,300,400,500]
+                    , limit : 100
+                    , limits : [100,200,300,400,500]
                     , skin: 'line'
                     , even: true
+                    , page : true
                     , toolbar: "#acc_title" //开启工具栏，此处显示默认图标，可以自定义模板，详见文档
                     , totalRow: true
                     , cols: detail_info

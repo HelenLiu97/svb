@@ -53,7 +53,6 @@ class SqlDataBase(object):
 
     def search_value_count(self, table_name, sql=""):
         sql = "SELECT COUNT(*) FROM {} {}".format(table_name, sql)
-        print(sql)
         conn, cursor = self.connect()
         cursor.execute(sql)
         row = cursor.fetchone()
@@ -2266,6 +2265,19 @@ class SqlDataBase(object):
         self.close_connect(conn, cursor)
         return rows[0][0]
 
+    def update_top_remark(self, pay_num, text):
+        sql = "UPDATE top_up SET remark='{}' WHERE pay_num='{}'".format(text, pay_num)
+        conn, cursor = self.connect()
+        try:
+            cursor.execute(sql)
+            conn.commit()
+            return True
+        except Exception as e:
+            logging.error("充值订单备注信息失败!")
+            conn.rollback()
+            return False
+        finally:
+            self.close_connect(conn, cursor)
 
 
 SqlData = SqlDataBase()
