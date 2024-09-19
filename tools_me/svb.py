@@ -207,7 +207,7 @@ class SVB(object):
 
 svb = SVB()
 if __name__ == '__main__':
-    card_detail = svb.card_detail(167542942)
+    card_detail = svb.card_detail(168278029)
     print(json.dumps(card_detail))
     # total_card_amount = r.get('data').get('total_card_amount')
     # print(total_card_amount)

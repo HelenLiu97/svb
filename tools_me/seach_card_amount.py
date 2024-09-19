@@ -216,7 +216,7 @@ class SVB(object):
 
 class SqlData(object):
     def __init__(self):
-        host = "3.17.178.128"
+        host = "18.218.121.63"
         port = 3306
         user = "root"
         password = "liuxiao@140922"

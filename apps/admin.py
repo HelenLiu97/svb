@@ -1014,6 +1014,8 @@ def one_detail():
         else:
             context['available_balance'] = 0
             context['card_status'] = "已注销"
+        total_card_amount = card_detail.get('data').get('total_card_amount')
+        context['total_card_amount'] = total_card_amount / 100
         info_list = list()
         authorizations = card_detail.get('data').get('authorizations')
         for td in authorizations:
